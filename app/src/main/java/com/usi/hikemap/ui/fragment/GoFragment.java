@@ -1,4 +1,4 @@
-package com.usi.hikemap.ui.go;
+package com.usi.hikemap.ui.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,23 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.usi.hikemap.databinding.FragmentDashboardBinding;
+import com.usi.hikemap.databinding.FragmentGoBinding;
+import com.usi.hikemap.ui.viewmodel.GoViewModel;
 
 public class GoFragment extends Fragment {
 
-    private FragmentDashboardBinding binding;
+    private FragmentGoBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        GoViewModel dashboardViewModel =
+        GoViewModel goViewModel =
                 new ViewModelProvider(this).get(GoViewModel.class);
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        binding = FragmentGoBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView textView = binding.textGo;
+        goViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

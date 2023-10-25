@@ -3,29 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
-
-    <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.usi.hikemap.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
-
-    <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.usi.hikemap.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
-
-    <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.usi.hikemap.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+    app:startDestination="@+id/navigation_go">
 
     <fragment
         android:id="@+id/navigation_go"
-        android:name="com.usi.hikemap.ui.notifications.NotificationsFragment"
-        android:label="Go"
+        android:name="com.usi.hikemap.ui.fragment.GoFragment"
+        android:label="@string/title_go"
         tools:layout="@layout/fragment_go" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.usi.hikemap.ui.fragment.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_search"
+        android:name="com.usi.hikemap.ui.fragment.SearchFragment"
+        android:label="@string/title_search"
+        tools:layout="@layout/fragment_search" />
+
 </navigation>
