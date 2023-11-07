@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "35606227968",
+    "project_id": "hikemap-e9d2a",
+    "storage_bucket": "hikemap-e9d2a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:35606227968:android:7b9029a4f34e182f993ce5",
+        "android_client_info": {
+          "package_name": "com.usi.hikemap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "35606227968-ghsar5djn5litqo4417c1mk5ptmpkc4k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.usi.hikemap",
+            "certificate_hash": "6d0b5a63e8b1d083bfa3da710465a0d8bf19c3cc"
+          }
+        },
+        {
+          "client_id": "35606227968-7fthbhiudp0tnpn9tae31qaln3d605j2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzuFuiRyQ1ItB2WK7b0tQFPUyzNzh59L8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "35606227968-7fthbhiudp0tnpn9tae31qaln3d605j2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
