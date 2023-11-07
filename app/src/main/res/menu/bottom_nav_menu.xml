@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
 
-    <!-- TODO: Change Icon -->
+
 
     <item
         android:id="@+id/navigation_search"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_search" />
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="@string/title_search"/>
+        <!--app:cnb_iconColor="@color/ocra"-->
+
 
     <item
         android:id="@+id/navigation_go"
         android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/title_go" />
+        android:title="@string/title_go"/>
+        <!--app:cnb_iconColor="@color/celestial"-->
+
 
     <item
         android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/title_profile" />
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="@string/title_profile"/>
+        <!--app:cnb_iconColor="@color/green"-->
+
 
 </menu>
