@@ -1,10 +1,55 @@
 <resources>
     <string name="app_name">HikeMap</string>
 
+
     <string name="title_go">Go</string>
     <string name="title_profile">Profile</string>
     <string name="title_search">Search</string>
 
     <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Splash Activity -->
+    <string name="Splash_Text">From</string>
+    <string name="Splash_Title">HikeMap</string>
+
+    <!-- StartPage Fragment -->
+    <string name="Welcome_Title">Welcome!</string>
+    <string name="Registration_Title">Please Join Us</string>
+    <string name="Other_Title">I already have an account</string>
+    <string name="Login_Title">Login</string>
+
+    <!-- Login Fragment -->
+    <string name="Or_Title">OR</string>
+    <string name="Login_SignIn">Sign In</string>
+    <string name="Login_ForgotPassword">Forgot Password?</string>
+
+    <!-- Registration Fragment -->
+    <string name="Registration_Text">Registration</string>
+    <string name="Registration_SignUp">Sign Up</string>
+
+
+    <!-- OPT_Phone Activity -->
+    <string name="Opt_Phone_Title">VERIFICATION WITH OTP CODE</string>
+    <string name="Opt_Phone_Code">The code has not arrived click</string>
+    <string name="Opt_Phone_Button">Continue</string>
+
+    <!-- Phone_Auth Fragment -->
+    <string name="Phone_Auth_Country">Please select the prefix of your phone number</string>
+    <string name="Phone_Auth_Button">Send code</string>
+
+    <!-- Waiting Fragment -->
+    <string name="Waiting_Title">Check your email address to continue</string>
+
+
+    <!-- Confirm_Registration Fragment -->
+    <string name="Confirm_Registration_Title">Confirm your registration</string>
+    <string name="Confirm_Registration_Name">Name:</string>
+    <string name="Confirm_Registration_Surname">Surname:</string>
+    <string name="Confirm_Registration_Username">Username:</string>
+    <string name="Confirm_Registration_Mail">E-mail:</string>
+    <string name="Confirm_Registration_Text">Press next to confirm and enter the app</string>
+    <string name="Confirm_Registration_Button">Next</string>
+
 
 </resources>

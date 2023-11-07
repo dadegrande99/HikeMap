@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/choose_link_navigation"
+    app:startDestination="@id/chooseLinkFragment">
+
+    <fragment
+        android:id="@+id/chooseLinkFragment"
+        android:name="com.usi.hikemap.ui.authentication.chooselink.ChooseLinkFragment"
+        android:label="fragment_choose_link"
+        tools:layout="@layout/fragment_choose_link" >
+        <action
+            android:id="@+id/choose_to_forgot"
+            app:destination="@id/confirmForgotPasswordFragment" />
+        <action
+            android:id="@+id/choose_to_registration"
+            app:destination="@id/confirmRegistrationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/confirmRegistrationFragment"
+        android:name="com.usi.hikemap.ui.authentication.chooselink.ConfirmRegistrationFragment"
+        android:label="fragment_confirm_registration"
+        tools:layout="@layout/fragment_confirm_registration" />
+
+    <fragment
+        android:id="@+id/confirmForgotPasswordFragment"
+        android:name="com.usi.hikemap.ui.authentication.chooselink.ConfirmForgotPasswordFragment"
+        android:label="fragment_confirm_forgot_password"
+        tools:layout="@layout/fragment_confirm_forgot_password" />
+</navigation>
