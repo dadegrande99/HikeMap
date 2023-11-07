@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/authentication_navigation"
+    app:startDestination="@id/startPageFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.usi.hikemap.ui.authentication.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/login_to_startpage"
+            app:destination="@id/startPageFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/registrationFragment"
+        android:name="com.usi.hikemap.ui.authentication.RegistrationFragment"
+        android:label="fragment_registration"
+        tools:layout="@layout/fragment_registration" >
+        <action
+            android:id="@+id/registration_to_waiting"
+            app:destination="@id/waitingFragment" />
+        <action
+            android:id="@+id/registration_to_phone"
+            app:destination="@id/phoneAuthFragment" />
+        <action
+            android:id="@+id/registration_to_startpage"
+            app:destination="@id/startPageFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/startPageFragment"
+        android:name="com.usi.hikemap.ui.authentication.StartPageFragment"
+        android:label="fragment_start_page"
+        tools:layout="@layout/fragment_start_page" >
+        <action
+            android:id="@+id/start_to_registration"
+            app:destination="@id/registrationFragment" />
+        <action
+            android:id="@+id/start_to_login"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/waitingFragment"
+        android:name="com.usi.hikemap.ui.authentication.WaitingFragment"
+        android:label="fragment_waiting"
+        tools:layout="@layout/fragment_waiting" >
+        <!--
+        <action
+            android:id="@+id/waiting_to_choose"
+            app:destination="@id/chooseLinkActivity" />
+        -->
+    </fragment>
+
+    <fragment
+        android:id="@+id/phoneAuthFragment"
+        android:name="com.usi.hikemap.ui.authentication.PhoneAuthFragment"
+        android:label="fragment_phone_auth"
+        tools:layout="@layout/fragment_phone_auth" >
+        <action
+            android:id="@+id/phone_to_otp"
+            app:destination="@id/otpPhoneActivity" />
+    </fragment>
+
+    <activity
+        android:id="@+id/otpPhoneActivity"
+        android:name="com.usi.hikemap.ui.authentication.OtpPhoneActivity"
+        android:label="OtpPhoneFragment"
+        tools:layout="@layout/activity_otp_phone">
+    </activity>
+
+</navigation>

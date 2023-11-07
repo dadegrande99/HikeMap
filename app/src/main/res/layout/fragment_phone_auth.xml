@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/ic_background_shade">
+
+    <TextView
+        android:id="@+id/phone_editText"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/login_tab_layout"
+        android:ems="10"
+        android:inputType="phone"
+        android:minHeight="48dp"
+        android:padding="10dp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.516"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/abel_regular"
+        android:text="@string/Phone_Auth_Country"
+        android:textColor="@color/celestial"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/phone_editText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.824" />
+
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/ccp"
+        android:layout_width="63dp"
+        android:layout_height="48dp"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintBottom_toBottomOf="@+id/phone_editText"
+        app:layout_constraintEnd_toEndOf="@+id/phone_editText"
+        app:layout_constraintStart_toStartOf="@+id/phone_editText"
+        app:layout_constraintTop_toTopOf="@+id/phone_editText"
+        app:layout_constraintVertical_bias="0.0">
+    </com.hbb20.CountryCodePicker>
+
+    <Button
+        android:id="@+id/phoneContinueBtn"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="@string/Phone_Auth_Button"
+        android:fontFamily="@font/abel_regular"
+        android:background="@drawable/layout_login_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phone_editText" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

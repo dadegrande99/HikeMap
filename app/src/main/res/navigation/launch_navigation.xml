@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/launch_graph"
+    app:startDestination="@id/launchActivity">
+
+    <activity
+        android:id="@+id/authenticationActivity"
+        android:name="com.usi.hikemap.ui.authentication.AuthenticationActivity"
+        android:label="activity_authentication"
+        tools:layout="@layout/activity_authentication" />
+
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.usi.hikemap.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" />
+
+    <activity
+        android:id="@+id/launchActivity"
+        android:name="com.usi.hikemap.LaunchActivity"
+        android:label="activity_launch"
+        tools:layout="@layout/activity_launch" />
+
+
+    <action
+        android:id="@+id/action_global_authenticationActivity"
+        app:destination="@id/authenticationActivity" />
+    <action
+        android:id="@+id/action_global_mainActivity"
+        app:destination="@id/mainActivity" />
+</navigation>
