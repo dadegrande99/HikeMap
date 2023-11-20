@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">HikeMap</string>
 
-    <string name="mapbox_access_token">sk.eyJ1IjoiYW5kcmV3aGlrZW1hcCIsImEiOiJjbG93NTM4cmowemxlMnFxZTF0NDVzNmR2In0.EFydrVrCOvngq-4A6dEcqg</string>
+    //refernces a value of local.properties file
+    <string name="mapbox_access_token">${MAPBOX_ACCESS_TOKEN}</string>
 
     <string name="title_go">Go</string>
     <string name="title_profile">Profile</string>

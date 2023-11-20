@@ -142,6 +142,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.gestures.MoveGestureDetector;
@@ -157,11 +158,14 @@ import com.mapbox.maps.plugin.locationcomponent.LocationComponentUtils;
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener;
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener;
 import com.usi.hikemap.R;
+import com.usi.hikemap.databinding.FragmentGoBinding;
+import com.usi.hikemap.ui.viewmodel.GoViewModel;
 
 public class GoFragment extends Fragment {
 
     private MapView mapView;
     private FloatingActionButton floatingActionButton;
+    private FragmentGoBinding binding;
 
     private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
         @Override
@@ -207,17 +211,59 @@ public class GoFragment extends Fragment {
         }
     };
 
+
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_go, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        GoViewModel goViewModel = new ViewModelProvider(this).get(GoViewModel.class);
+
+        binding = FragmentGoBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+        mapView = root.findViewById(R.id.mapView);
+        floatingActionButton = root.findViewById(R.id.focusLocation);
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            activityResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+
+        floatingActionButton.hide();
+
+        mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+            @Override
+            public void onStyleLoaded(@NonNull Style style) {
+                mapView.getMapboxMap().setCamera(new CameraOptions.Builder().zoom(20.0).build());
+                LocationComponentPlugin locationComponentPlugin = LocationComponentUtils.getLocationComponent(mapView);
+                locationComponentPlugin.setEnabled(true);
+                LocationPuck2D locationPuck2D = new LocationPuck2D();
+                locationPuck2D.setBearingImage(AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_location_on_24));
+                locationComponentPlugin.setLocationPuck(locationPuck2D);
+                locationComponentPlugin.addOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener);
+                locationComponentPlugin.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
+                GesturesUtils.getGestures(mapView).addOnMoveListener(onMoveListener);
+
+                floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        locationComponentPlugin.addOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener);
+                        locationComponentPlugin.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
+                        GesturesUtils.getGestures(mapView).addOnMoveListener(onMoveListener);
+                        floatingActionButton.hide();
+                    }
+                });
+            }
+        });
+
+        return root;
     }
 
+    /*
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mapView = view.findViewById(R.id.mapView);
-        floatingActionButton = view.findViewById(R.id.focusLocation);
+
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             activityResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -249,6 +295,8 @@ public class GoFragment extends Fragment {
             }
         });
     }
+
+     */
 }
 
 
