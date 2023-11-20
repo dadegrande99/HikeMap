@@ -38,6 +38,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.navigation:navigation-fragment:2.7.4")
@@ -67,5 +68,14 @@ dependencies {
     //chip navigation bar
     // implementation ("com.ismaeldivita.chipnavigation:chip-navigation-bar:1.2.0")
     // implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.3.70")
+
+    implementation("com.mapbox.maps:android:10.16.2")
+    //implement import com.mapbox.maps.extension.style.expressions.dsl.generated.interpolate;
+
+    //implementation("com.mapbox.mapboxsdk:mapbox-android-sdk:10.2.1")
+
+
+
+
 
 }
