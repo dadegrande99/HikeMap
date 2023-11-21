@@ -6,19 +6,19 @@
     app:startDestination="@+id/navigation_go">
 
     <fragment
-        android:id="@+id/navigation_go"
+        android:id="@+id/gg"
         android:name="com.usi.hikemap.ui.fragment.GoFragment"
         android:label="@string/title_go"
         tools:layout="@layout/fragment_go" />
 
     <fragment
-        android:id="@+id/navigation_profile"
+        android:id="@+id/pp"
         android:name="com.usi.hikemap.ui.fragment.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
 
     <fragment
-        android:id="@+id/navigation_search"
+        android:id="@+id/ss"
         android:name="com.usi.hikemap.ui.fragment.SearchFragment"
         android:label="@string/title_search"
         tools:layout="@layout/fragment_search" />

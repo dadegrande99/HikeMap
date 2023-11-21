@@ -2,7 +2,6 @@ package com.usi.hikemap.ui.fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +15,22 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.type.LatLng;
 import com.mapbox.android.gestures.MoveGestureDetector;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.Style;
+import com.mapbox.maps.extension.style.layers.generated.LineLayer;
+import com.mapbox.maps.extension.style.layers.generated.SymbolLayer;
+import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource;
 import com.mapbox.maps.plugin.LocationPuck2D;
 import com.mapbox.maps.plugin.gestures.GesturesUtils;
 import com.mapbox.maps.plugin.gestures.OnMoveListener;
@@ -31,10 +40,13 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListene
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener;
 import com.usi.hikemap.R;
 
+import java.util.List;
+
 public class GoFragment extends Fragment {
 
     private MapView mapView; //map
-    private FloatingActionButton floatingActionButton; // focus location
+    private FloatingActionButton fButtonLocation, fButtonGo; // focus location
+
 
     @Nullable
     @Override
@@ -43,13 +55,49 @@ public class GoFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_go, container, false);
 
         mapView = root.findViewById(R.id.mapView);
-        floatingActionButton = root.findViewById(R.id.focusLocation);
+        fButtonLocation = root.findViewById(R.id.focusLocation);
+
+        fButtonGo = root.findViewById(R.id.buttonGO);
+        /*
+        fButtonGo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO 2: Add a marker to the map
+                mapView.getMapboxMap().getStyle(new Style.OnStyleLoaded() {
+                    @Override
+                    public void onStyleLoaded(@NonNull Style style) {
+                        //TODO 3: Add a marker to the map
+
+
+                        //TODO 4: Add a line to the map
+                    }
+                });
+            }
+        });
+        */
+
+        fButtonGo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(requireContext(), "Do Something!", Toast.LENGTH_SHORT).show();
+
+                // Create and replace the current fragment with a new one
+                FragmentManager fragmentManager = getParentFragmentManager(); // Use getParentFragmentManager() within a fragment
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                // Replace AnotherFragment with the actual class name of the fragment you want to replace with
+                GoDetailsFragment newFragment = new GoDetailsFragment();
+
+                fragmentTransaction.replace(R.id.frame_layout, newFragment);
+                fragmentTransaction.addToBackStack(null); // Optional, adds the transaction to the back stack
+                fragmentTransaction.commit();
+            }
+        });
+
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             activityResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-
-        floatingActionButton.hide();
 
         //TODO 1: Modify the map style
         mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
@@ -65,13 +113,12 @@ public class GoFragment extends Fragment {
                 locationComponentPlugin.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
                 GesturesUtils.getGestures(mapView).addOnMoveListener(onMoveListener);
 
-                floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                fButtonLocation.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         locationComponentPlugin.addOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener);
                         locationComponentPlugin.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
                         GesturesUtils.getGestures(mapView).addOnMoveListener(onMoveListener);
-                        floatingActionButton.hide();
                     }
                 });
             }
@@ -79,6 +126,7 @@ public class GoFragment extends Fragment {
 
         return root;
     }
+
 
     /**
      * ActivityResultLauncher for handling the result of a permission request.
@@ -180,9 +228,6 @@ public class GoFragment extends Fragment {
             LocationComponentUtils.getLocationComponent(mapView)
                     .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
             GesturesUtils.getGestures(mapView).removeOnMoveListener(onMoveListener);
-
-            // Show the floating action button
-            floatingActionButton.show();
         }
 
         /**

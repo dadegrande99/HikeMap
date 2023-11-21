@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.fragment.GoFragment">
+    tools:context=".ui.fragment.GoFragment"
+    android:background="@color/celestial">
 
     <com.mapbox.maps.MapView
         android:id="@+id/mapView"
@@ -21,11 +22,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:layout_marginStart="295sp"
-            android:layout_marginTop="515sp"
+            android:layout_marginStart="305sp"
+            android:layout_marginTop="570sp"
 
             android:src="@drawable/baseline_my_location_24" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/buttonGO"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="80dp"/>
+
+        <TextView
+            android:id="@+id/textGo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GO"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="96dp"/>
+
     </com.mapbox.maps.MapView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
