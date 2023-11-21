@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,18 +14,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent" >
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/focusLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="60sp"
+            android:layout_marginStart="295sp"
+            android:layout_marginTop="515sp"
 
-        android:src="@drawable/baseline_my_location_24"
-        android:id="@+id/focusLocation"/>
+            android:src="@drawable/baseline_my_location_24" />
 
-</RelativeLayout>
+    </com.mapbox.maps.MapView>
 
+</androidx.constraintlayout.widget.ConstraintLayout>
