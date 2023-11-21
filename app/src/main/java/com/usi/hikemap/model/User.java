@@ -3,9 +3,9 @@ package com.usi.hikemap.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.firebase.database.Exclude;
+import androidx.annotation.NonNull;
 
-import java.util.List;
+import com.google.firebase.database.Exclude;
 
 public class User implements Parcelable {
 
@@ -107,6 +107,7 @@ public class User implements Parcelable {
         this.provider = provider;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "User{" +

@@ -1,5 +1,7 @@
 package com.usi.hikemap.model;
 
+import androidx.annotation.NonNull;
+
 public class AuthenticationResponse {
 
     private boolean success;
@@ -25,6 +27,7 @@ public class AuthenticationResponse {
         this.message = message;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "AuthenticationResponse{" +

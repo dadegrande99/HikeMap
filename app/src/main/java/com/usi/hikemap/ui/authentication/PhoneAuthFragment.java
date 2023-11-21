@@ -23,7 +23,6 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.hbb20.CountryCodePicker;
 import com.usi.hikemap.R;
 import com.usi.hikemap.databinding.FragmentPhoneAuthBinding;
-import com.usi.hikemap.databinding.FragmentRegistrationBinding;
 import com.usi.hikemap.ui.viewmodel.AuthViewModel;
 
 import java.util.concurrent.TimeUnit;
@@ -58,7 +57,7 @@ public class PhoneAuthFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         binding = FragmentPhoneAuthBinding.inflate(inflater, container, false);
@@ -84,12 +83,12 @@ public class PhoneAuthFragment extends Fragment {
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             @Override
-            public void onVerificationCompleted(PhoneAuthCredential credential) {
+            public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
                 //signInWithPhoneAuthCredential(credential);
             }
 
             @Override
-            public void onVerificationFailed(FirebaseException e) {
+            public void onVerificationFailed(@NonNull FirebaseException e) {
                 Toast.makeText(getActivity(), "onVerificationFailed" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
