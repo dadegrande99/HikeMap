@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/celestial">
+    android:background="@color/seed">
 
 
     <com.airbnb.lottie.LottieAnimationView
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/abel_regular"
         android:text="@string/Splash_Text"
-        android:textColor="@color/black"
+        android:textColor="@color/md_theme_light_onPrimaryContainer"
         android:textSize="15dp"
         app:layout_constraintBottom_toTopOf="@+id/textView11"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
         android:layout_marginBottom="16dp"
         android:fontFamily="@font/abel_regular"
         android:text="@string/Splash_Title"
-        android:textColor="@color/white"
+        android:textColor="@color/md_theme_light_onPrimary"
         android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

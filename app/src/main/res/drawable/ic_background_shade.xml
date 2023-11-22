@@ -4,7 +4,7 @@
 
     <gradient
         android:angle="135"
-        android:startColor="@color/black"
+        android:startColor="@color/md_theme_light_onPrimaryContainer"
         android:endColor="#4A576E"/>
 
 

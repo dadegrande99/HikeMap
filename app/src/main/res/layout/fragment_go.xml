@@ -3,10 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/mapFrameLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.fragment.GoFragment"
-    android:background="@color/celestial">
+    android:background="@color/seed">
 
     <com.mapbox.maps.MapView
         android:id="@+id/mapView"
@@ -27,6 +28,7 @@
 
             android:src="@drawable/baseline_my_location_24" />
 
+        <!--
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/buttonGO"
             android:layout_width="wrap_content"
@@ -43,6 +45,7 @@
             android:textSize="18dp"
             android:layout_gravity="bottom|center"
             android:layout_marginBottom="96dp"/>
+        -->
 
     </com.mapbox.maps.MapView>
 

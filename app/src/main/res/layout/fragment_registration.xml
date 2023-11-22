@@ -41,8 +41,8 @@
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/white"
-        app:helperTextTextColor="@color/red"
+        app:endIconTint="@color/md_theme_light_onPrimary"
+        app:helperTextTextColor="@color/md_theme_light_error"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.508"
@@ -61,7 +61,7 @@
             android:textColorHint="#FF635F5F"
             android:drawableStart="@drawable/name_username_logo"
             android:drawablePadding="10dp"
-            android:textColor="@color/white"
+            android:textColor="@color/md_theme_light_onPrimary"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -73,7 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/white"
+        app:endIconTint="@color/md_theme_light_onPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -90,7 +90,7 @@
             android:hint="Surname"
             android:drawableStart="@drawable/name_username_logo"
             android:drawablePadding="10dp"
-            android:textColor="@color/white"
+            android:textColor="@color/md_theme_light_onPrimary"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -103,7 +103,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/white"
+        app:endIconTint="@color/md_theme_light_onPrimary"
         android:textColorHint="#FF635F5F"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -116,8 +116,8 @@
             android:id="@+id/username_editText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColor="@color/white"
-            android:drawableStart="@drawable/ic_baseline_person_24"
+            android:textColor="@color/md_theme_light_onPrimary"
+            android:drawableStart="@drawable/icon_profile"
             android:drawablePadding="10dp"
             android:fontFamily="@font/abel_regular"
             android:hint="Username" />
@@ -132,7 +132,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/white"
+        app:endIconTint="@color/md_theme_light_onPrimary"
         android:textColorHint="#FF635F5F"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -149,7 +149,7 @@
             android:hint="Email or Phone Number"
             android:drawablePadding="10dp"
             android:drawableStart="@drawable/ic_baseline_mail"
-            android:textColor="@color/white"
+            android:textColor="@color/md_theme_light_onPrimary"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -163,7 +163,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:endIconMode="password_toggle"
-        app:endIconTint="@color/white"
+        app:endIconTint="@color/md_theme_light_onPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -172,7 +172,7 @@
         tools:ignore="MissingConstraints"
         app:counterEnabled="true"
         android:textColorHint="#FF635F5F"
-        app:counterTextColor="@color/white"
+        app:counterTextColor="@color/md_theme_light_onPrimary"
         app:counterMaxLength="32">
 
         <EditText
@@ -185,7 +185,7 @@
             android:fontFamily="@font/abel_regular"
             android:hint="Password"
             android:inputType="textPassword"
-            android:textColor="@color/white"
+            android:textColor="@color/md_theme_light_onPrimary"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -202,9 +202,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         app:endIconMode="password_toggle"
-        app:endIconTint="@color/white"
+        app:endIconTint="@color/md_theme_light_onPrimary"
         android:textColorHint="#FF635F5F"
-        app:helperTextTextColor="@color/red"
+        app:helperTextTextColor="@color/md_theme_light_error"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -212,7 +212,7 @@
         app:layout_constraintVertical_bias="0"
         tools:ignore="MissingConstraints"
         app:counterEnabled="true"
-        app:counterTextColor="@color/white"
+        app:counterTextColor="@color/md_theme_light_onPrimary"
         app:counterMaxLength="32">
 
         <EditText
@@ -224,7 +224,7 @@
             android:drawableStart="@drawable/ic_baseline_lock_24"
             android:inputType="textPassword"
             android:drawablePadding="10dp"
-            android:textColor="@color/white"
+            android:textColor="@color/md_theme_light_onPrimary"
             android:fontFamily="@font/abel_regular"
 
             app:layout_constraintEnd_toEndOf="parent"
@@ -240,7 +240,7 @@
         android:background="@drawable/ic_button_layout"
         android:fontFamily="@font/abel_regular"
         android:text="@string/Registration_SignUp"
-        android:textColor="@color/black"
+        android:textColor="@color/md_theme_light_onPrimaryContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
