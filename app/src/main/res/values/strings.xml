@@ -29,7 +29,6 @@
     <string name="Registration_Text">Registration</string>
     <string name="Registration_SignUp">Sign Up</string>
 
-
     <!-- OPT_Phone Activity -->
     <string name="Opt_Phone_Title">VERIFICATION WITH OTP CODE</string>
     <string name="Opt_Phone_Code">The code has not arrived click</string>
@@ -42,7 +41,6 @@
     <!-- Waiting Fragment -->
     <string name="Waiting_Title">Check your email address to continue</string>
 
-
     <!-- Confirm_Registration Fragment -->
     <string name="Confirm_Registration_Title">Confirm your registration</string>
     <string name="Confirm_Registration_Name">Name:</string>
@@ -51,6 +49,19 @@
     <string name="Confirm_Registration_Mail">E-mail:</string>
     <string name="Confirm_Registration_Text">Press next to confirm and enter the app</string>
     <string name="Confirm_Registration_Button">Next</string>
+    <string name="enter_the_code">Enter the code</string>
+
+    <!-- Some hint -->
+    <string name="hint_nome">Nome</string>
+    <string name="hint_cognome">Cognome</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_surname">Surname</string>
+    <string name="hint_email_or_phone_number">Email or Phone Number</string>
+    <string name="settings_menu_profile">Settings</string>
+    <string name="logout_menu_profile">Logout</string>
+    <string name="delete_account_menu_profile">Delete Account</string>
 
 
 </resources>

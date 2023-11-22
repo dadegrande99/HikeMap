@@ -2,10 +2,8 @@
 <resources>
     <color name="seed">#007381</color>
     <color name="md_theme_light_primary">#006875</color>
-    <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#9DEFFF</color>
     <color name="md_theme_light_onPrimaryContainer">#001F24</color>
-    <color name="md_theme_light_secondary">#4A6267</color>
     <color name="md_theme_light_onSecondary">#FFFFFF</color>
     <color name="md_theme_light_secondaryContainer">#CDE7ED</color>
     <color name="md_theme_light_onSecondaryContainer">#051F23</color>
@@ -61,4 +59,35 @@
     <color name="md_theme_dark_surfaceTint">#50D8ED</color>
     <color name="md_theme_dark_outlineVariant">#3F484A</color>
     <color name="md_theme_dark_scrim">#000000</color>
+
+    <!-- Dark Teal Green -->
+    <color name="colorPrimary">#006a67</color>
+    <color name="colorPrimaryDark">#004e4b</color>
+
+    <!-- Orange (for buttons and interactive elements) -->
+    <color name="colorAccent">#FF8C00</color>
+    <color name="colorAccentLight">#FFA726</color> <!-- Lighter shade of orange -->
+    <color name="colorAccentDark">#FF6F00</color>  <!-- Darker shade of orange -->
+
+    <!-- Background colors -->
+    <color name="colorBackground">#007D78</color> <!-- Lighter shade of teal for background -->
+    <color name="colorBackgroundDark">#004e4b</color> <!-- Darker shade of teal for dark background -->
+    <color name="colorBackgroundUtils">#4A576E</color>
+
+    <!-- Text colors -->
+    <color name="colorText">#FFFFFF</color> <!-- White text color -->
+    <color name="colorTextLight">#CCCCCC</color> <!-- Lighter shade of gray for secondary text -->
+    <color name="colorTextSecondary">#FF635F5F</color> <!-- Dark Gray hint text color -->
+    <color name="colorTextDark">#333333</color> <!-- Dark gray text color -->
+
+    <!-- Additional colors (optional) -->
+    <color name="colorSecondary">#FFD700</color> <!-- Gold secondary color -->
+    <color name="colorSecondaryLight">#FFECB3</color> <!-- Lighter shade of gold -->
+    <color name="colorSecondaryDark">#FFC400</color> <!-- Darker shade of gold -->
+
+    <!-- Black color -->
+    <color name="colorBlack">#000000</color>
+
+    <!-- Error color -->
+    <color name="colorError">#BA1A1A</color>
 </resources>

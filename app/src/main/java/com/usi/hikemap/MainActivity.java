@@ -1,7 +1,10 @@
 package com.usi.hikemap;
 
 import android.os.Bundle;
+
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -10,6 +13,7 @@ import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.usi.hikemap.databinding.ActivityMainBinding;
 import com.usi.hikemap.ui.fragment.GoFragment;
 import com.usi.hikemap.ui.fragment.ProfileFragment;
+import com.usi.hikemap.ui.fragment.SearchFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         bottomNavigation = findViewById(R.id.bottomNavigation);
         bottomNavigation.show(2, true); // show go fragment first
@@ -38,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setOnClickMenuListener(model -> {
             switch (model.getId()) {
                 case 1:
-                    replaceFragment(new ProfileFragment());
+                    replaceFragment(new SearchFragment());
                     break;
                 case 2:
                     replaceFragment(new GoFragment());
