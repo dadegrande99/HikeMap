@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/ss"
-        android:name="com.usi.hikemap.ui.fragment.SearchFragment"
+        android:name="com.usi.hikemap.ui.fragment.ProfileFragment"
         android:label="@string/title_search"
         tools:layout="@layout/fragment_search" />
 

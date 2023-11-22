@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -74,6 +75,11 @@ dependencies {
 
     //implementation("com.mapbox.mapboxsdk:mapbox-android-sdk:10.2.1")
 
+    // Maps SDK for Android
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+
+    implementation("com.etebarian:meow-bottom-navigation:1.2.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.61")
 
 
 

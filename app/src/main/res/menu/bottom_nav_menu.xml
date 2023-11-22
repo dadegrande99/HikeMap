@@ -5,21 +5,21 @@
 
     <item
         android:id="@+id/navigation_search"
-        android:icon="@drawable/ic_baseline_search_24"
+        android:icon="@drawable/icon_search"
         android:title="@string/title_search"/>
         <!--app:cnb_iconColor="@color/ocra"-->
 
 
     <item
         android:id="@+id/navigation_go"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/icon_go"
         android:title="@string/title_go"/>
         <!--app:cnb_iconColor="@color/celestial"-->
 
 
     <item
         android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_baseline_person_24"
+        android:icon="@drawable/icon_profile"
         android:title="@string/title_profile"/>
         <!--app:cnb_iconColor="@color/green"-->
 

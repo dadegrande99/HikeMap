@@ -5,14 +5,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.usi.hikemap.databinding.ActivityMainBinding;
 import com.usi.hikemap.ui.fragment.GoFragment;
 import com.usi.hikemap.ui.fragment.ProfileFragment;
-import com.usi.hikemap.ui.fragment.SearchFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+
+    MeowBottomNavigation bottomNavigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,38 +24,33 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        bottomNavigation = findViewById(R.id.bottomNavigation);
+        bottomNavigation.show(2, true); // show go fragment first
 
-        /*
-        BottomNavigationView navView = findViewById(R.id.nav_view);
+        bottomNavigation.add(new MeowBottomNavigation.Model(1, R.drawable.icon_search));
+        bottomNavigation.add(new MeowBottomNavigation.Model(2, R.drawable.icon_profile));
+        bottomNavigation.add(new MeowBottomNavigation.Model(3, R.drawable.icon_go));
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_search, R.id.navigation_go, R.id.navigation_profile)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+        meowBottomNavigation();
+    }
 
-         */
-        replaceFragment(new GoFragment());
-        binding.navView.setBackground(null);
-
-        binding.navView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navigation_search:
-                    replaceFragment(new SearchFragment());
+    private void meowBottomNavigation() {
+        bottomNavigation.setOnClickMenuListener(model -> {
+            switch (model.getId()) {
+                case 1:
+                    replaceFragment(new ProfileFragment());
                     break;
-                case R.id.navigation_go:
+                case 2:
                     replaceFragment(new GoFragment());
                     break;
-                case R.id.navigation_profile:
+                case 3:
                     replaceFragment(new ProfileFragment());
                     break;
             }
-            return true;
+            return null;
         });
     }
+
 
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();

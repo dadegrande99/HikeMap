@@ -10,6 +10,11 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven {
+            url = uri("https://jcenter.bintray.com")
+            maven { url = uri("https://jitpack.io") }
+        }
+        jcenter()
     }
 }
 dependencyResolutionManagement {
@@ -17,11 +22,17 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        jcenter()
+        maven {
+            url = uri("https://jcenter.bintray.com")
+            maven { url = uri("https://jitpack.io") }
+        }
         maven {
             url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
             authentication {
                 create<BasicAuthentication>("basic")
             }
+
             credentials {
                 // Do not change the username below.
                 // This should always be `mapbox` (not your username).
@@ -29,15 +40,12 @@ dependencyResolutionManagement {
                 // Use the secret token you stored in gradle.properties as the password
                 // implement a value for the token form local.properties
                 password = localProperties.getProperty("MAPBOX_DOWNLOADS_TOKEN")
-                    /*
-                    password =
-
-                    "sk.eyJ1IjoiYW5kcmV3aGlrZW1hcCIsImEiOiJjbG93NTM4cmowemxlMnFxZTF0NDVzNmR2In0.EFydrVrCOvngq-4A6dEcqg"
-
-                     */
             }
 
         }
+
+
+
     }
 }
 
