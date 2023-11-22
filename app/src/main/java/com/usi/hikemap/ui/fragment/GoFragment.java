@@ -1,295 +1,136 @@
 package com.usi.hikemap.ui.fragment;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.type.LatLng;
-import com.mapbox.android.gestures.MoveGestureDetector;
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.LineString;
-import com.mapbox.geojson.Point;
-import com.mapbox.maps.CameraOptions;
-import com.mapbox.maps.MapView;
-import com.mapbox.maps.Style;
-import com.mapbox.maps.extension.style.layers.generated.LineLayer;
-import com.mapbox.maps.extension.style.layers.generated.SymbolLayer;
-import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource;
-import com.mapbox.maps.plugin.LocationPuck2D;
-import com.mapbox.maps.plugin.gestures.GesturesUtils;
-import com.mapbox.maps.plugin.gestures.OnMoveListener;
-import com.mapbox.maps.plugin.locationcomponent.LocationComponentPlugin;
-import com.mapbox.maps.plugin.locationcomponent.LocationComponentUtils;
-import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener;
-import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener;
 import com.usi.hikemap.R;
 
-import java.util.List;
+public class GoFragment extends Fragment implements OnMapReadyCallback, LocationListener {
 
-public class GoFragment extends Fragment {
+    private GoogleMap mMap;
+    private PolylineOptions polylineOptions;
+    private Polyline polyline;
+    private Location lastLocation;
 
-    private MapView mapView; //map
-    private FloatingActionButton fButtonLocation, fButtonGo; // focus location
-
+    private FloatingActionButton fStartButtom;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        View root = inflater.inflate(R.layout.fragment_go, container, false);
+        fStartButtom = rootView.findViewById(R.id.startButtom);
+        fStartButtom.setOnClickListener(new View.OnClickListener() {
 
-        mapView = root.findViewById(R.id.mapView);
-        fButtonLocation = root.findViewById(R.id.focusLocation);
-
-        fButtonGo = root.findViewById(R.id.buttonGO);
-        /*
-        fButtonGo.setOnClickListener(new View.OnClickListener() {
+            // TODO 1: create environment for stats
             @Override
-            public void onClick(View view) {
-                //TODO 2: Add a marker to the map
-                mapView.getMapboxMap().getStyle(new Style.OnStyleLoaded() {
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
-                        //TODO 3: Add a marker to the map
-
-
-                        //TODO 4: Add a line to the map
-                    }
-                });
-            }
-        });
-        */
-
-        fButtonGo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(requireContext(), "Do Something!", Toast.LENGTH_SHORT).show();
-
-                // Create and replace the current fragment with a new one
-                FragmentManager fragmentManager = getParentFragmentManager(); // Use getParentFragmentManager() within a fragment
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                // Replace AnotherFragment with the actual class name of the fragment you want to replace with
-                GoDetailsFragment newFragment = new GoDetailsFragment();
-
-                fragmentTransaction.replace(R.id.frame_layout, newFragment);
-                fragmentTransaction.addToBackStack(null); // Optional, adds the transaction to the back stack
-                fragmentTransaction.commit();
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Start stats", Toast.LENGTH_SHORT).show();
             }
         });
 
 
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            activityResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment == null) {
+            mapFragment = SupportMapFragment.newInstance();
+            getChildFragmentManager().beginTransaction().replace(R.id.map, mapFragment).commit();
         }
 
-        //TODO 1: Modify the map style
-        mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
-            @Override
-            public void onStyleLoaded(@NonNull Style style) {
-                mapView.getMapboxMap().setCamera(new CameraOptions.Builder().zoom(17.0).build());
-                LocationComponentPlugin locationComponentPlugin = LocationComponentUtils.getLocationComponent(mapView);
-                locationComponentPlugin.setEnabled(true);
-                LocationPuck2D locationPuck2D = new LocationPuck2D();
-                locationPuck2D.setBearingImage(AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_location_on_24));
-                locationComponentPlugin.setLocationPuck(locationPuck2D);
-                locationComponentPlugin.addOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener);
-                locationComponentPlugin.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
-                GesturesUtils.getGestures(mapView).addOnMoveListener(onMoveListener);
+        mapFragment.getMapAsync(this);
 
-                fButtonLocation.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        locationComponentPlugin.addOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener);
-                        locationComponentPlugin.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
-                        GesturesUtils.getGestures(mapView).addOnMoveListener(onMoveListener);
-                    }
-                });
-            }
-        });
-
-        return root;
+        return rootView;
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
 
-    /**
-     * ActivityResultLauncher for handling the result of a permission request.
-     *
-     * This launcher is used to request a specific permission and responds to the result
-     * by displaying a toast message if the permission is granted.
-     */
-    private final ActivityResultLauncher<String> activityResultLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+        // Enable the location layer. Request permission if needed.
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+            LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+            if (locationManager != null) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, this);
+            }
+        } else {
+            // Request permission
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        }
+    }
 
-                /**
-                 * Called when the result of a permission request is received.
-                 *
-                 * - Displays a toast message if the permission is granted.
-                 *
-                 * @param result A Boolean indicating whether the permission is granted or not.
-                 */
-                @Override
-                public void onActivityResult(Boolean result) {
-                    if (result) {
-                        // Display a toast message if the permission is granted
-                        Toast.makeText(requireContext(), "Permission granted!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-    /**
-     * OnIndicatorBearingChangedListener implementation for handling changes in indicator bearing.
-     *
-     * This listener is responsible for updating the Mapbox Map camera when the indicator bearing changes.
-     *
-     * @param v The new bearing value for the indicator.
-     */
-    private final OnIndicatorBearingChangedListener onIndicatorBearingChangedListener =
-            new OnIndicatorBearingChangedListener() {
-
-                /**
-                 * Called when the bearing of the indicator changes.
-                 *
-                 * - Updates the Mapbox Map camera to the new bearing value.
-                 *
-                 * @param v The new bearing value for the indicator.
-                 */
-                @Override
-                public void onIndicatorBearingChanged(double v) {
-                    // Update the Mapbox Map camera with the new bearing value
-                    mapView.getMapboxMap().setCamera(new CameraOptions.Builder().bearing(v).build());
-                }
-            };
-
-    /**
-     * Listener for handling changes in the position of the indicator.
-     *
-     * This listener is responsible for updating the Mapbox Map camera and handling gestures
-     * when the indicator position changes.
-     *
-     * @param point The new position of the indicator on the map.
-     *              The camera is centered around this point, and the zoom level is set to 17.0.
-     */
-    private final OnIndicatorPositionChangedListener onIndicatorPositionChangedListener =
-            new OnIndicatorPositionChangedListener() {
-                @Override
-                public void onIndicatorPositionChanged(@NonNull Point point) {
-                    // Update the Mapbox Map camera
-                    mapView.getMapboxMap().setCamera(
-                            new CameraOptions.Builder().center(point).zoom(17.0).build());
-
-                    // Handle gestures by setting the focal point to the pixel coordinates of the indicator position
-                    GesturesUtils.getGestures(mapView)
-                            .setFocalPoint(mapView.getMapboxMap().pixelForCoordinate(point));
-                }
-            };
-
-    /**
-     * OnMoveListener implementation for handling move gestures on the map.
-     *
-     * This listener is responsible for responding to the beginning of move gestures,
-     * updating the UI and removing certain location-related listeners temporarily.
-     *
-     * @param moveGestureDetector The detector for move gestures on the map.
-     */
-    private final OnMoveListener onMoveListener = new OnMoveListener() {
-
-        /**
-         * Called when a move gesture begins.
-         *
-         * - Removes the indicator-bearing changed listener.
-         * - Removes the indicator-position changed listener.
-         * - Removes itself as a move listener.
-         * - Shows a floating action button.
-         *
-         * @param moveGestureDetector The detector for move gestures on the map.
-         */
-        @Override
-        public void onMoveBegin(@NonNull MoveGestureDetector moveGestureDetector) {
-            // Remove certain location-related listeners during move gesture
-            LocationComponentUtils.getLocationComponent(mapView)
-                    .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener);
-            LocationComponentUtils.getLocationComponent(mapView)
-                    .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
-            GesturesUtils.getGestures(mapView).removeOnMoveListener(onMoveListener);
+    @Override
+    public void onLocationChanged(Location location) {
+        if (lastLocation == null) {
+            // Center the camera on the user's location when the first location is received
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
         }
 
-        /**
-         * Called during an ongoing move gesture.
-         *
-         * @param moveGestureDetector The detector for move gestures on the map.
-         * @return Always returns false, indicating that the default behavior should continue.
-         */
-        @Override
-        public boolean onMove(@NonNull MoveGestureDetector moveGestureDetector) {
-            // Get the current bearing of the map
-            double currentBearing = mapView.getMapboxMap().getCameraState().getBearing();
-
-            // Calculate the bearing change based on the horizontal movement
-            double bearingChange = -moveGestureDetector.getLastDistanceX() * 0.05; // You can adjust the factor as needed
-
-            // Update the map bearing
-            mapView.getMapboxMap().setCamera(new CameraOptions.Builder().bearing(currentBearing + bearingChange).build());
-
-            // Return true to consume the gesture
-            return true;
+        // Draw polyline on the map
+        if (polylineOptions == null) {
+            polylineOptions = new PolylineOptions().color(Color.BLUE).width(10);
         }
 
+        polylineOptions.add(new LatLng(location.getLatitude(), location.getLongitude()));
 
-        /**
-         * Called when a move gesture ends.
-         *
-         * This method is currently empty, and no specific actions are taken.
-         *
-         * @param moveGestureDetector The detector for move gestures on the map.
-         */
-        @Override
-        public void onMoveEnd(@NonNull MoveGestureDetector moveGestureDetector) {
-            // This method is currently empty
+        if (polyline != null) {
+            polyline.remove();
         }
-    };
+
+        polyline = mMap.addPolyline(polylineOptions);
+
+        lastLocation = location;
+    }
+
+    // Handle permissions request result
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Permission granted, initialize the map
+            onMapReady(mMap);
+        }
+    }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+map:cameraBearing="112.5"
+    map:cameraTilt="30"
+    map:cameraZoom="13"
+    map:mapType="normal"
+    map:uiCompass="false"
+    map:uiRotateGestures="true"
+    map:uiScrollGestures="true"
+    map:uiTiltGestures="true"
+    map:uiZoomControls="false"
+    map:uiZoomGestures="true"
+ */
 
 
 
