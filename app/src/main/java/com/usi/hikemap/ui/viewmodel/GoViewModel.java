@@ -1,19 +1,34 @@
 package com.usi.hikemap.ui.viewmodel;
 
-import androidx.lifecycle.LiveData;
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.SavedStateHandle;
 
-public class GoViewModel extends ViewModel {
+import com.usi.hikemap.model.User;
+import com.usi.hikemap.repository.IManagerRepository;
+import com.usi.hikemap.repository.ManagerRepository;
 
-    private final MutableLiveData<String> mText;
 
-    public GoViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is go fragment");
+public class GoViewModel extends AndroidViewModel {
+
+    private MutableLiveData<User> mUserLiveData;
+    private final IManagerRepository mManageRepository;
+    private SavedStateHandle state;
+
+
+    public GoViewModel (SavedStateHandle savedStateHandle, @NonNull Application application){
+        super(application);
+        state = savedStateHandle;
+        this.mManageRepository = new ManagerRepository(application);
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public MutableLiveData<User> readUser(String userId) {
+        mUserLiveData = mManageRepository.readUser(userId);
+        return mUserLiveData;
     }
+
+
 }
