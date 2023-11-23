@@ -1,6 +1,7 @@
 package com.usi.hikemap.ui.viewmodel;
 
 import android.app.Application;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -22,13 +23,22 @@ public class ProfileViewModel extends AndroidViewModel {
         this.mManageRepository = new ManagerRepository(application);
     }
 
-    public MutableLiveData<AuthenticationResponse> deleteAccount(String userId) {
-        mAuthenticationResponse = mManageRepository.deleteAccount(userId);
-        return mAuthenticationResponse;
-    }
-
     public MutableLiveData<User> readUser(String userId) {
         mUserLiveData = mManageRepository.readUser(userId);
         return mUserLiveData;
+    }
+
+    public MutableLiveData<AuthenticationResponse> readImage(String userId) {
+        mAuthenticationResponse = mManageRepository.readImage(userId);
+        return mAuthenticationResponse;
+    }
+
+    public MutableLiveData<AuthenticationResponse> writeImage(Uri profileUri) {
+        mAuthenticationResponse = mManageRepository.writeImage(profileUri);
+        return mAuthenticationResponse;
+    }
+    public MutableLiveData<AuthenticationResponse> deleteAccount(String userId) {
+        mAuthenticationResponse = mManageRepository.deleteAccount(userId);
+        return mAuthenticationResponse;
     }
 }

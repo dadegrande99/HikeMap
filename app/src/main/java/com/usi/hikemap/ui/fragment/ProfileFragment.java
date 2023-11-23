@@ -2,9 +2,15 @@ package com.usi.hikemap.ui.fragment;
 
 import static com.usi.hikemap.utils.Constants.DEFAULT_WEB_CLIENT_ID;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuHost;
@@ -12,7 +18,6 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,7 +27,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -38,6 +47,8 @@ import com.usi.hikemap.model.User;
 import com.usi.hikemap.ui.authentication.AuthenticationActivity;
 import com.usi.hikemap.ui.viewmodel.ProfileViewModel;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Fragment class for displaying user profile information and handling account deletion.
  */
@@ -49,8 +60,9 @@ public class ProfileFragment extends Fragment {
     GoogleSignInClient mGoogleSignInClient;
     String TAG = "ProfileFragment";
     String userId;
-    TextView mDeleteAccount, mLogout;
+    TextView mDeleteAccount, mLogout, mName, mUsername;
     BottomSheetDialog profile_option_show;
+    CircleImageView profilePic;
 
 
     @Override
@@ -65,21 +77,92 @@ public class ProfileFragment extends Fragment {
 
         // Initialize FirebaseAuth and GoogleSignInClient
         fAuth = FirebaseAuth.getInstance();
+
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(DEFAULT_WEB_CLIENT_ID)
                 .requestEmail()
                 .build();
+
         mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), googleSignInOptions);
 
         // Initialize UI elements
         mUser = new User();
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mName = root.findViewById(R.id.name_user);
+        mUsername = root.findViewById(R.id.username_user);
+        profilePic = root.findViewById(R.id.profile_picture);
 
         // Log user's UID
         Log.d(TAG, "onCreateView: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
 
+        profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                someActivityResultLauncher.launch(intent);
+            }
+        });
+
+        if (userId != null) {
+            mProfileViewModel.readUser(userId).observe(getViewLifecycleOwner(), user -> {
+                if (user != null) {
+
+                    getActivity().setTitle(user.getName());
+
+                    mUser = user;
+                    mName.setText(mUser.getName().concat(" ").concat(mUser.getSurname()));
+                    mUsername.setText(mUser.getUsername());
+
+                    mProfileViewModel.readImage(userId).observe(getViewLifecycleOwner(), authenticationResponse-> {
+                        if (authenticationResponse != null) {
+                            if (authenticationResponse.isSuccess() && mUser.getPath() != null) {
+                                Glide.with(getContext())
+                                        .load(mUser.getPath())
+                                        //.signature(new ObjectKey(String.valueOf(System.currentTimeMillis())))
+                                        .into(profilePic);
+                            }
+                            else {
+                                Log.d(TAG, "onClick: Error don't update image");
+                            }
+                        }
+                    });
+
+                }
+            });
+        }
+
         return root;
     }
+
+
+
+    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        // There are no request codes
+                        Intent data = result.getData();
+
+                        if(data.getData() != null) {
+                            Uri profileUri = data.getData();
+                            profilePic.setImageURI(profileUri);
+
+                            mProfileViewModel.writeImage(profileUri).observe(getViewLifecycleOwner(), authenticationResponse -> {
+                                if (authenticationResponse.isSuccess()) {
+                                    Log.d(TAG, "onClick: Image update");
+                                }
+                                else {
+                                    Log.d(TAG, "onClick: Error don't update image");
+                                }
+                            });
+                        }
+                    }
+                }
+            });
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -189,5 +272,6 @@ public class ProfileFragment extends Fragment {
             }
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
+
 
 }

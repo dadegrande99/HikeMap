@@ -10,10 +10,10 @@ import com.google.firebase.database.Exclude;
 public class User implements Parcelable {
 
     private String name, surname, username, password, auth, userId, provider;
-
+    private String image, path;
 
     public User(String name, String surname, String username, String auth, String password, String userId,
-                String provider){
+                String provider, String image, String path){
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -21,6 +21,8 @@ public class User implements Parcelable {
         this.password = password;
         this.userId = userId;
         this.provider = provider;
+        this.image = image;
+        this.path = path;
     }
 
     public User() {
@@ -35,6 +37,8 @@ public class User implements Parcelable {
         password = in.readString();
         userId = in.readString();
         provider = in.readString();
+        image = in.readString();
+        path = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -107,17 +111,34 @@ public class User implements Parcelable {
         this.provider = provider;
     }
 
-    @NonNull
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", username='" + username + '\'' +
-                ", auth='" + auth + '\'' +
                 ", password='" + password + '\'' +
+                ", auth='" + auth + '\'' +
                 ", userId='" + userId + '\'' +
                 ", provider='" + provider + '\'' +
+                ", image='" + image + '\'' +
+                ", path='" + path + '\'' +
                 '}';
     }
 
@@ -135,6 +156,8 @@ public class User implements Parcelable {
         parcel.writeString(this.password);
         parcel.writeString(this.userId);
         parcel.writeString(this.provider);
+        parcel.writeString(this.image);
+        parcel.writeString(this.path);
     }
 }
 

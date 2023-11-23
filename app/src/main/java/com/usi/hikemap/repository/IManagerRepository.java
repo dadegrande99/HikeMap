@@ -13,7 +13,13 @@ import java.util.Map;
 
 public interface IManagerRepository {
 
-    MutableLiveData<AuthenticationResponse> updateData (Map<String, Object> data);
+
     MutableLiveData<User> readUser(String userId);
+    MutableLiveData<AuthenticationResponse> readImage(String userId);
     MutableLiveData<AuthenticationResponse> deleteAccount(String userId);
+
+    MutableLiveData<AuthenticationResponse> writeImage(Uri profileUri);
+
+    MutableLiveData<AuthenticationResponse> updateData (Map<String, Object> data);
+
 }
