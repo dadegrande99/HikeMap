@@ -27,8 +27,8 @@
         android:fontFamily="@font/abel_regular"
         android:text="@string/Registration_Text"
         android:textAlignment="center"
-        android:textColor="#EEE"
-        android:textSize="30dp"
+        android:textColor="@color/colorTextLight"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -41,14 +41,14 @@
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/md_theme_light_onPrimary"
-        app:helperTextTextColor="@color/md_theme_light_error"
+        app:endIconTint="@color/colorTextLight"
+        app:helperTextTextColor="@color/colorError"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textColorHint="#FF635F5F"
+        android:textColorHint="@color/colorTextSecondary"
         app:layout_constraintVertical_bias="0.109"
         tools:ignore="MissingConstraints">
 
@@ -57,12 +57,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/abel_regular"
-            android:hint="Name"
-            android:textColorHint="#FF635F5F"
+            android:hint="@string/hint_nome"
+            android:textColorHint="@color/colorTextSecondary"
             android:drawableStart="@drawable/name_username_logo"
             android:drawablePadding="10dp"
-            android:textColor="@color/md_theme_light_onPrimary"
-            />
+            android:textColor="@color/colorTextLight" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -73,13 +72,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/md_theme_light_onPrimary"
+        app:endIconTint="@color/colorTextLight"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout5"
         app:layout_constraintVertical_bias="0"
-        android:textColorHint="#FF635F5F"
+        android:textColorHint="@color/colorTextSecondary"
         tools:ignore="MissingConstraints">
 
         <EditText
@@ -87,10 +86,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fontFamily="@font/abel_regular"
-            android:hint="Surname"
+            android:hint="@string/hint_surname"
             android:drawableStart="@drawable/name_username_logo"
             android:drawablePadding="10dp"
-            android:textColor="@color/md_theme_light_onPrimary"
+            android:textColor="@color/colorTextLight"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -103,8 +102,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/md_theme_light_onPrimary"
-        android:textColorHint="#FF635F5F"
+        app:endIconTint="@color/colorTextLight"
+        android:textColorHint="@color/colorTextSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -116,11 +115,11 @@
             android:id="@+id/username_editText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColor="@color/md_theme_light_onPrimary"
+            android:textColor="@color/colorTextLight"
             android:drawableStart="@drawable/icon_profile"
             android:drawablePadding="10dp"
             android:fontFamily="@font/abel_regular"
-            android:hint="Username" />
+            android:hint="@string/hint_username" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -132,8 +131,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/md_theme_light_onPrimary"
-        android:textColorHint="#FF635F5F"
+        app:endIconTint="@color/colorTextLight"
+        android:textColorHint="@color/colorTextSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -146,10 +145,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fontFamily="@font/abel_regular"
-            android:hint="Email or Phone Number"
+            android:hint="@string/hint_email_or_phone_number"
             android:drawablePadding="10dp"
             android:drawableStart="@drawable/ic_baseline_mail"
-            android:textColor="@color/md_theme_light_onPrimary"
+            android:textColor="@color/colorTextLight"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -163,7 +162,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:endIconMode="password_toggle"
-        app:endIconTint="@color/md_theme_light_onPrimary"
+        app:endIconTint="@color/colorTextLight"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -171,8 +170,8 @@
         app:layout_constraintVertical_bias="0"
         tools:ignore="MissingConstraints"
         app:counterEnabled="true"
-        android:textColorHint="#FF635F5F"
-        app:counterTextColor="@color/md_theme_light_onPrimary"
+        android:textColorHint="@color/colorTextSecondary"
+        app:counterTextColor="@color/colorTextLight"
         app:counterMaxLength="32">
 
         <EditText
@@ -183,9 +182,9 @@
             android:drawablePadding="10dp"
             android:ems="10"
             android:fontFamily="@font/abel_regular"
-            android:hint="Password"
+            android:hint="@string/hint_password"
             android:inputType="textPassword"
-            android:textColor="@color/md_theme_light_onPrimary"
+            android:textColor="@color/colorTextLight"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -202,9 +201,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         app:endIconMode="password_toggle"
-        app:endIconTint="@color/md_theme_light_onPrimary"
-        android:textColorHint="#FF635F5F"
-        app:helperTextTextColor="@color/md_theme_light_error"
+        app:endIconTint="@color/colorTextLight"
+        android:textColorHint="@color/colorTextSecondary"
+        app:helperTextTextColor="@color/colorError"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -212,7 +211,7 @@
         app:layout_constraintVertical_bias="0"
         tools:ignore="MissingConstraints"
         app:counterEnabled="true"
-        app:counterTextColor="@color/md_theme_light_onPrimary"
+        app:counterTextColor="@color/colorTextLight"
         app:counterMaxLength="32">
 
         <EditText
@@ -220,11 +219,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Password"
+            android:hint="@string/hint_password"
             android:drawableStart="@drawable/ic_baseline_lock_24"
             android:inputType="textPassword"
             android:drawablePadding="10dp"
-            android:textColor="@color/md_theme_light_onPrimary"
+            android:textColor="@color/colorTextLight"
             android:fontFamily="@font/abel_regular"
 
             app:layout_constraintEnd_toEndOf="parent"
@@ -240,7 +239,7 @@
         android:background="@drawable/ic_button_layout"
         android:fontFamily="@font/abel_regular"
         android:text="@string/Registration_SignUp"
-        android:textColor="@color/md_theme_light_onPrimaryContainer"
+        android:textColor="@color/colorTextLight"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"

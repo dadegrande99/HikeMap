@@ -12,10 +12,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
+
         android:text="@string/Login_Title"
-        android:textSize="40dp"
+        android:textSize="40sp"
         android:fontFamily="@font/abel_regular"
-        android:textColor="#EEE"
+        android:textColor="@color/colorTextLight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -64,7 +65,7 @@
         android:layout_height="wrap_content"
         android:text="@string/Or_Title"
         android:textAlignment="center"
-        android:textColor="@color/md_theme_light_onPrimary"
+        android:textColor="@color/colorTextLight"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/imageView5"
@@ -78,8 +79,10 @@
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:background="@drawable/ic_button_layout"
+
         android:text="@string/Login_SignIn"
-        android:textColor="@color/md_theme_light_onPrimaryContainer"
+        android:textColor="@color/colorTextSecondary"
+
         app:layout_constraintBottom_toBottomOf="parent"
         android:fontFamily="@font/abel_regular"
         app:layout_constraintEnd_toEndOf="parent"
@@ -95,9 +98,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="35dp"
+
         android:text="@string/Login_ForgotPassword"
         android:fontFamily="@font/abel_regular"
-        android:textColor="#EEE"
+        android:textColor="@color/colorTextLight"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -129,11 +134,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView7"
         android:layout_marginTop="80dp"
-        android:textColorHint="#FF635F5F"
-        app:hintTextColor="@color/md_theme_light_onPrimary"
+        android:textColorHint="@color/colorTextSecondary"
+        app:hintTextColor="@color/colorTextLight"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/md_theme_light_onPrimary"
-        app:errorIconTint="@color/md_theme_light_error" >
+        app:endIconTint="@color/colorTextLight"
+        app:errorIconTint="@color/colorError" >
 
         <EditText
             android:id="@+id/email_log_editText"
@@ -142,10 +147,10 @@
             android:drawableStart="@drawable/ic_baseline_mail"
             android:drawablePadding="10dp"
             android:fontFamily="@font/abel_regular"
-            android:hint="Email"
-            android:outlineSpotShadowColor="@color/md_theme_light_onPrimary"
-            android:textColor="@color/md_theme_light_onPrimary"
-            android:textColorLink="@color/md_theme_dark_error"
+            android:hint="@string/hint_email"
+            android:outlineSpotShadowColor="@color/colorTextLight"
+            android:textColor="@color/colorTextLight"
+            android:textColorLink="@color/colorError"
             tools:ignore="TouchTargetSizeCheck" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -164,23 +169,24 @@
         app:endIconMode="password_toggle"
         app:counterEnabled="true"
         app:counterMaxLength="32"
-        android:textColorHint="#FF635F5F"
-        app:hintTextColor="@color/md_theme_light_onPrimary"
-        app:counterTextColor="@color/md_theme_light_onPrimary"
-        app:endIconTint="@color/md_theme_light_onPrimary" >
+
+        android:textColorHint="@color/colorTextSecondary"
+        app:hintTextColor="@color/colorTextLight"
+        app:counterTextColor="@color/colorTextLight"
+        app:endIconTint="@color/colorTextLight" >
 
         <EditText
             android:id="@+id/password_log_editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Password"
+            android:hint="@string/hint_password"
             android:drawableStart="@drawable/ic_baseline_lock_24"
             android:inputType="textPassword"
             android:drawablePadding="10dp"
-            android:textColor="@color/md_theme_light_onPrimary"
+            android:textColor="@color/colorTextLight"
             android:fontFamily="@font/abel_regular"
-            android:textColorHint="@color/md_theme_light_onPrimary"
+            android:textColorHint="@color/colorTextLight"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="621dp" />
