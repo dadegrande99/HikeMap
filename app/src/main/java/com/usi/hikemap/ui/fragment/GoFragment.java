@@ -50,6 +50,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
+    @SuppressLint("MissingPermission")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -74,6 +75,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
         mapFragment.getMapAsync(this);
 
+
         return rootView;
     }
 
@@ -84,31 +86,33 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
      *
      * @param googleMap The GoogleMap instance representing the map.
      */
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // Assign the GoogleMap instance to the local variable mMap
         mMap = googleMap;
 
         // Enable the location layer. Request permission if needed.
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+        /**if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {*/
             // Enable the "My Location" layer on the map
-            mMap.setMyLocationEnabled(true);
-            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
-            zoomToUserLocation();
+        mMap.setMyLocationEnabled(true);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+        zoomToUserLocation();
 
-            // Request location updates from the GPS provider
-            LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
-            if (locationManager != null) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, this);
-            }
-        } else {
+        // Request location updates from the GPS provider
+        LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, this);
+        }
+        /**} else {
             // Request permission if it's not granted
             ActivityCompat.requestPermissions(requireActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
-        }
+        }*/
     }
+
 
     private void zoomToUserLocation() {
         @SuppressLint("MissingPermission") Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
@@ -116,11 +120,13 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
             @Override
             public void onSuccess(Location location) {
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 20));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
                 //mMap.addMarker(new MarkerOptions().position(latLng));
             }
         });
     }
+
+
 
 
     /**
@@ -132,7 +138,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     @Override
     public void onLocationChanged(Location location) {
         // Center the camera on the user's location when the first location is received
-        if (lastLocation == null) {
+        //@SuppressLint("MissingPermission") Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+        if (location == null) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
         }
 
