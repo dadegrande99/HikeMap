@@ -1,6 +1,7 @@
 package com.usi.hikemap.ui.fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -19,14 +20,19 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.usi.hikemap.R;
 
@@ -41,6 +47,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     private Polyline polyline;
     private Location lastLocation;
     private FloatingActionButton fStartButton;
+
+    FusedLocationProviderClient fusedLocationProviderClient;
 
     @Nullable
     @Override
@@ -86,6 +94,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 == PackageManager.PERMISSION_GRANTED) {
             // Enable the "My Location" layer on the map
             mMap.setMyLocationEnabled(true);
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+            zoomToUserLocation();
 
             // Request location updates from the GPS provider
             LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
@@ -98,6 +108,18 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
         }
+    }
+
+    private void zoomToUserLocation() {
+        @SuppressLint("MissingPermission") Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 20));
+                //mMap.addMarker(new MarkerOptions().position(latLng));
+            }
+        });
     }
 
 

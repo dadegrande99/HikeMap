@@ -52,6 +52,7 @@ dependencies {
 
     // Google
     implementation("com.google.android.gms:play-services-auth:20.1.0")
+    implementation("com.google.android.gms:play-services-location:15.0.1")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
