@@ -18,6 +18,15 @@ public class GoViewModel extends AndroidViewModel {
     private final IManagerRepository mManageRepository;
     private SavedStateHandle state;
 
+    private boolean isFirstTime = true;
+
+    public boolean isFirstTime() {
+        return isFirstTime;
+    }
+
+    public void setFirstTime(boolean firstTime) {
+        isFirstTime = firstTime;
+    }
 
     public GoViewModel (SavedStateHandle savedStateHandle, @NonNull Application application){
         super(application);

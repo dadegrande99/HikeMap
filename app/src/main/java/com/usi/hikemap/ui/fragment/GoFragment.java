@@ -9,9 +9,13 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Chronometer;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -35,6 +40,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.usi.hikemap.R;
+import com.usi.hikemap.ui.viewmodel.GoViewModel;
+
+import android.view.animation.TranslateAnimation;
 
 
 /**
@@ -48,21 +56,56 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     private Location lastLocation;
     private FloatingActionButton fStartButton;
 
+    Chronometer chronometer;
+    ImageButton pauseButton;
+
+    //private GoViewModel viewModel;
+
+    FrameLayout infoContainer;
+
     FusedLocationProviderClient fusedLocationProviderClient;
 
     @SuppressLint("MissingPermission")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_go, container, false);
+        infoContainer = rootView.findViewById(R.id.info);
+
+        // Imposta visibilita a GONE per nascondere id/infoContainer
+        infoContainer.setVisibility(View.GONE);
+
+        /** APPLICATION CRASHES HERE
+        viewModel = new ViewModelProvider(requireActivity()).get(GoViewModel.class);
+
+        if (viewModel.isFirstTime()) {
+            infoContainer.setVisibility(View.GONE);
+            viewModel.setFirstTime(false);
+            Log.d("GoFragment", "isFirstTime become false: ");
+        }*/
+
+        chronometer = rootView.findViewById(R.id.chronometer);
+        pauseButton = rootView.findViewById(R.id.btPause);
+
 
         fStartButton = rootView.findViewById(R.id.startButton);
+        Log.d("GoFragment", "onCreateView: ");
         fStartButton.setOnClickListener(new View.OnClickListener() {
+
 
             // TODO 1: create environment for stats
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "Start stats", Toast.LENGTH_SHORT).show();
+
+                //infoContainer.getLayoutParams().height = 1200;
+                infoContainer.setVisibility(View.VISIBLE);
+                infoContainer.requestLayout();
+                fStartButton.setVisibility(View.GONE);
+                // chronometer.start();
+                // Crea un'animazione per far apparire id/infoContainer dalla parte inferiore
+
             }
         });
 
