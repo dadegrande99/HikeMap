@@ -262,7 +262,7 @@
                 android:layout_height="20dp"/>
 
             <LinearLayout
-                android:id="@+id/play"
+                android:id="@+id/play_layout"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:orientation="horizontal"
@@ -280,7 +280,7 @@
 
 
         <LinearLayout
-            android:id="@+id/pause"
+            android:id="@+id/pause_layout"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:orientation="horizontal"
