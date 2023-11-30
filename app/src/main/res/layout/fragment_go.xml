@@ -38,31 +38,238 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="left"
+            android:orientation="horizontal">
+
+            <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
+             es "timing: 00:00", devono essere separate -->
+
+            <TextView
+                android:id="@+id/timing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Timing: "
+                android:textSize="14sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"/>
+
+            <!-- Aggiumgi un cronometro -->
 
             <Chronometer
                 android:id="@+id/chronometer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:format="00:00:00"
-                android:textSize="30sp"
-                android:textColor="#000000"
-                android:layout_gravity="center"
-                android:textStyle="bold"
+                android:format="00:00"
+                android:textSize="14sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
                 />
 
-            <LinearLayout
+            <!--<TextView
+                android:id="@+id/timing_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_gravity="center">
+                android:text="00:00"
+                android:textSize="14sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"/>-->
 
-                <ImageButton
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:id="@+id/btPause"
-                    android:src="@drawable/baseline_pause_24"
-                    />
+
+        </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+
+                android:layout_gravity="right"
+                android:orientation="horizontal">
+
+                <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
+                 es "timing: 00:00", devono essere separate -->
+
+                <TextView
+                    android:id="@+id/steps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Steps: "
+                    android:textSize="14sp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"/>
+
+                <TextView
+                    android:id="@+id/steps_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="000"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"/>
+
+
             </LinearLayout>
+        </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_gravity="left"
+                    android:orientation="horizontal">
+
+                    <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
+                     es "timing: 00:00", devono essere separate -->
+
+                    <TextView
+                        android:id="@+id/km"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Kilometers: "
+                        android:textSize="14sp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"/>
+
+                    <TextView
+                        android:id="@+id/km_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="000"
+                        android:textSize="14sp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="20dp"/>
+
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+
+                    android:layout_gravity="right"
+                    android:orientation="horizontal">
+
+                    <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
+                     es "timing: 00:00", devono essere separate -->
+
+                    <TextView
+                        android:id="@+id/kal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Calories: "
+                        android:textSize="14sp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"/>
+
+                    <TextView
+                        android:id="@+id/kal_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="000"
+                        android:textSize="14sp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="20dp"/>
+
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_gravity="left"
+                    android:orientation="horizontal">
+
+                    <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
+                     es "timing: 00:00", devono essere separate -->
+
+                    <TextView
+                        android:id="@+id/up"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Uphill km: "
+                        android:textSize="14sp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"/>
+
+                    <TextView
+                        android:id="@+id/up_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="000"
+                        android:textSize="14sp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="20dp"/>
+
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+
+                    android:layout_gravity="right"
+                    android:orientation="horizontal">
+
+                    <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
+                     es "timing: 00:00", devono essere separate -->
+
+                    <TextView
+                        android:id="@+id/down"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Downhill km: "
+                        android:textSize="14sp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"/>
+
+                    <TextView
+                        android:id="@+id/down_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="000"
+                        android:textSize="14sp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="20dp"/>
+
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--Aggiungi spazio sopra al bottone -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="20dp"/>
+
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/pauseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_marginBottom="80dp"
+                android:src="@android:drawable/ic_media_play" />
+
 
         </LinearLayout>
 
@@ -77,7 +284,14 @@
 
 
     <!-- <?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/pauseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_marginBottom="80dp"
 
+                android:src="@android:drawable/ic_media_play" />
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"

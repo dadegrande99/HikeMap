@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,12 +58,22 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     private Location lastLocation;
     private FloatingActionButton fStartButton;
 
-    Chronometer chronometer;
-    ImageButton pauseButton;
-
     //private GoViewModel viewModel;
 
     FrameLayout infoContainer;
+
+    TextView steps;
+    TextView km;
+    TextView calories;
+    TextView up;
+    TextView down;
+
+    Chronometer chronometer;
+    Handler handler;
+    private boolean isResume;
+    long tmillisec, tStart, tBuff, tUpdate = 0L;
+    int sec, min, millisec;
+
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -73,21 +85,17 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         View rootView = inflater.inflate(R.layout.fragment_go, container, false);
         infoContainer = rootView.findViewById(R.id.info);
 
-        // Imposta visibilita a GONE per nascondere id/infoContainer
-        infoContainer.setVisibility(View.GONE);
-
-        /** APPLICATION CRASHES HERE
-        viewModel = new ViewModelProvider(requireActivity()).get(GoViewModel.class);
-
-        if (viewModel.isFirstTime()) {
-            infoContainer.setVisibility(View.GONE);
-            viewModel.setFirstTime(false);
-            Log.d("GoFragment", "isFirstTime become false: ");
-        }*/
-
+        steps = rootView.findViewById(R.id.steps_value);
+        km = rootView.findViewById(R.id.km_value);
+        calories = rootView.findViewById(R.id.kal_value);
+        down = rootView.findViewById(R.id.down_value);
+        up = rootView.findViewById(R.id.up_value);
         chronometer = rootView.findViewById(R.id.chronometer);
-        pauseButton = rootView.findViewById(R.id.btPause);
 
+        handler = new Handler();
+
+        // Set the visibility of the info container to GONE
+        infoContainer.setVisibility(View.GONE);
 
         fStartButton = rootView.findViewById(R.id.startButton);
         Log.d("GoFragment", "onCreateView: ");
@@ -99,16 +107,22 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
             public void onClick(View v) {
                 Toast.makeText(getContext(), "Start stats", Toast.LENGTH_SHORT).show();
 
-                //infoContainer.getLayoutParams().height = 1200;
+
                 infoContainer.setVisibility(View.VISIBLE);
                 infoContainer.requestLayout();
                 fStartButton.setVisibility(View.GONE);
-                // chronometer.start();
-                // Crea un'animazione per far apparire id/infoContainer dalla parte inferiore
 
+                steps.setText("0");
+                km.setText("0");
+                calories.setText("0");
+                down.setText("0");
+                up.setText("0");
+
+                tStart = System.currentTimeMillis();
+                handler.postDelayed(runnable, 5000);
+                chronometer.start();
             }
         });
-
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
@@ -121,6 +135,19 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
         return rootView;
     }
+
+    public Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            tmillisec = System.currentTimeMillis() - tStart;
+            tUpdate = tBuff + tmillisec;
+            sec = (int) (tUpdate / 1000);
+            min = sec / 60;
+            sec = sec % 60;
+            chronometer.setText(String.format("%02d", min) + ":" + String.format("%02d", sec));
+            handler.postDelayed(this, 60);
+        }
+    };
 
 
     /**
@@ -227,20 +254,3 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
 
 }
-
-/*
-map:cameraBearing="112.5"
-    map:cameraTilt="30"
-    map:cameraZoom="13"
-    map:mapType="normal"
-    map:uiCompass="false"
-    map:uiRotateGestures="true"
-    map:uiScrollGestures="true"
-    map:uiTiltGestures="true"
-    map:uiZoomControls="false"
-    map:uiZoomGestures="true"
- */
-
-
-
-
