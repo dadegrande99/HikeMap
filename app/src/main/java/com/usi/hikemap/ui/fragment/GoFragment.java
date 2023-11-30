@@ -80,7 +80,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     Chronometer chronometer;
     Handler handler;
     private boolean isResume;
-    long tmillisec, tStart, tBuff, tUpdate = 0L;
+    long tmillisec, tStart, tPauseDelta, tPauseStart = 0L;
     int sec, min, millisec;
 
 
@@ -136,8 +136,9 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 down.setText("0");
                 up.setText("0");
 
+
                 tStart = System.currentTimeMillis();
-                handler.postDelayed(runnable, 5000);
+                handler.postDelayed(runnable, 0);
                 chronometer.start();
             }
         });
@@ -148,8 +149,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 Toast.makeText(getContext(), "Pause stats", Toast.LENGTH_SHORT).show();
                 playLayout.setVisibility(View.GONE);
                 pauseLayout.setVisibility(View.VISIBLE);
+                tPauseStart = System.currentTimeMillis();
                 chronometer.stop();
-                tBuff += tmillisec;
                 handler.removeCallbacks(runnable);
             }
         });
@@ -160,8 +161,9 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 Toast.makeText(getContext(), "Resume stats", Toast.LENGTH_SHORT).show();
                 pauseLayout.setVisibility(View.GONE);
                 playLayout.setVisibility(View.VISIBLE);
+                tPauseDelta += System.currentTimeMillis() - tPauseStart;
                 chronometer.start();
-                handler.postDelayed(runnable, 5000);
+                handler.postDelayed(runnable, 0);
             }
         });
 
@@ -180,9 +182,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     public Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            tmillisec = System.currentTimeMillis() - tStart;
-            tUpdate = tBuff + tmillisec;
-            sec = (int) (tUpdate / 1000);
+            tmillisec = System.currentTimeMillis() - tStart - tPauseDelta;
+            sec = (int) (tmillisec / 1000);
             min = sec / 60;
             sec = sec % 60;
             chronometer.setText(String.format("%02d", min) + ":" + String.format("%02d", sec));
