@@ -265,6 +265,7 @@
                 android:id="@+id/play_layout"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
+                android:layout_marginBottom="80dp"
                 android:orientation="horizontal"
                 android:gravity="center">
 
@@ -283,6 +284,7 @@
             android:id="@+id/pause_layout"
             android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:layout_marginBottom="80dp"
             android:orientation="horizontal"
             android:visibility="gone"
             android:gravity="center">
