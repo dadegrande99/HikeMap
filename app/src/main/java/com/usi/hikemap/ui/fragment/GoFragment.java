@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,10 +58,18 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     private Polyline polyline;
     private Location lastLocation;
     private FloatingActionButton fStartButton;
+    private FloatingActionButton fPauseButton;
+    private FloatingActionButton fResumeButton;
+    private FloatingActionButton fStopButton;
 
     //private GoViewModel viewModel;
 
     FrameLayout infoContainer;
+
+    LinearLayout pauseLayout;
+    LinearLayout playLayout;
+
+
 
     TextView steps;
     TextView km;
@@ -71,7 +80,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     Chronometer chronometer;
     Handler handler;
     private boolean isResume;
-    long tmillisec, tStart, tBuff, tUpdate = 0L;
+    long tmillisec, tStart, tPauseDelta, tPauseStart = 0L;
     int sec, min, millisec;
 
 
@@ -85,6 +94,11 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         View rootView = inflater.inflate(R.layout.fragment_go, container, false);
         infoContainer = rootView.findViewById(R.id.info);
 
+        // Layouts for pause and play buttons
+        pauseLayout = rootView.findViewById(R.id.pause_layout);
+        playLayout = rootView.findViewById(R.id.play_layout);
+
+        // Values for time, steps, km, calories, up and down
         steps = rootView.findViewById(R.id.steps_value);
         km = rootView.findViewById(R.id.km_value);
         calories = rootView.findViewById(R.id.kal_value);
@@ -97,8 +111,12 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         // Set the visibility of the info container to GONE
         infoContainer.setVisibility(View.GONE);
 
+        // Buttons for pause and play
         fStartButton = rootView.findViewById(R.id.startButton);
-        Log.d("GoFragment", "onCreateView: ");
+        fPauseButton = rootView.findViewById(R.id.pauseButton);
+        fResumeButton = rootView.findViewById(R.id.resumeButton);
+        fStopButton = rootView.findViewById(R.id.stopButton);
+
         fStartButton.setOnClickListener(new View.OnClickListener() {
 
 
@@ -118,9 +136,48 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 down.setText("0");
                 up.setText("0");
 
+
                 tStart = System.currentTimeMillis();
-                handler.postDelayed(runnable, 5000);
+                handler.postDelayed(runnable, 0);
                 chronometer.start();
+            }
+        });
+
+        fPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Pause stats", Toast.LENGTH_SHORT).show();
+                playLayout.setVisibility(View.GONE);
+                pauseLayout.setVisibility(View.VISIBLE);
+                tPauseStart = System.currentTimeMillis();
+                chronometer.stop();
+                handler.removeCallbacks(runnable);
+            }
+        });
+
+        fResumeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Resume stats", Toast.LENGTH_SHORT).show();
+                pauseLayout.setVisibility(View.GONE);
+                playLayout.setVisibility(View.VISIBLE);
+                tPauseDelta += System.currentTimeMillis() - tPauseStart;
+                chronometer.start();
+                handler.postDelayed(runnable, 0);
+            }
+        });
+
+        fStopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Stop stats", Toast.LENGTH_SHORT).show();
+                playLayout.setVisibility(View.VISIBLE);
+                pauseLayout.setVisibility(View.GONE);
+                infoContainer.setVisibility(View.GONE);
+                fStartButton.setVisibility(View.VISIBLE);
+                tPauseDelta = 0L;
+                chronometer.stop();
+                handler.removeCallbacks(runnable);
             }
         });
 
@@ -139,9 +196,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     public Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            tmillisec = System.currentTimeMillis() - tStart;
-            tUpdate = tBuff + tmillisec;
-            sec = (int) (tUpdate / 1000);
+            tmillisec = System.currentTimeMillis() - tStart - tPauseDelta;
+            sec = (int) (tmillisec / 1000);
             min = sec / 60;
             sec = sec % 60;
             chronometer.setText(String.format("%02d", min) + ":" + String.format("%02d", sec));

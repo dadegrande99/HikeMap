@@ -257,20 +257,59 @@
 
             <!--Aggiungi spazio sopra al bottone -->
 
-            <LinearLayout
+            <Space
                 android:layout_width="match_parent"
                 android:layout_height="20dp"/>
+
+            <LinearLayout
+                android:id="@+id/play_layout"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginBottom="80dp"
+                android:orientation="horizontal"
+                android:gravity="center">
 
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/pauseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center"
-                android:layout_marginBottom="80dp"
+                android:layout_gravity="center"
                 android:src="@android:drawable/ic_media_play" />
 
+            </LinearLayout>
 
+
+        <LinearLayout
+            android:id="@+id/pause_layout"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginBottom="80dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:gravity="center">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/resumeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@android:drawable/ic_media_play" />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"/>
+
+
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/stopButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@android:drawable/ic_media_play" />
+
+        </LinearLayout>
         </LinearLayout>
 
     </FrameLayout>
