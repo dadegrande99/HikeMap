@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:layout_marginBottom="80dp"
-            android:src="@android:drawable/ic_media_play" />
+            android:src="@drawable/play_button" />
 
     </FrameLayout>
 
@@ -73,15 +73,6 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 />
-
-            <!--<TextView
-                android:id="@+id/timing_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="00:00"
-                android:textSize="14sp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="20dp"/>-->
 
 
         </LinearLayout>
@@ -276,7 +267,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/play_button" />
+                android:src="@drawable/pause_button" />
 
             </LinearLayout>
 
@@ -295,7 +286,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/pause_button" />
+                android:src="@drawable/play_button" />
 
             <Space
                 android:layout_width="20dp"
