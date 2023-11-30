@@ -15,12 +15,26 @@
         android:id="@+id/pp"
         android:name="com.usi.hikemap.ui.fragment.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_updateProfileFragment"
+            app:destination="@id/updateProfile" />
+    </fragment>
 
     <fragment
         android:id="@+id/ss"
         android:name="com.usi.hikemap.ui.fragment.ProfileFragment"
         android:label="@string/title_search"
         tools:layout="@layout/fragment_search" />
+
+    <fragment
+        android:id="@+id/updateProfile"
+        android:name="com.usi.hikemap.ui.fragment.UpdateProfileFragment"
+        android:label="@string/title_update"
+        tools:layout="@layout/fragment_update_profile">
+        <action
+            android:id="@+id/action_updateProfileFragment_to_ProfileFragment"
+            app:destination="@id/pp" />
+    </fragment>
 
 </navigation>

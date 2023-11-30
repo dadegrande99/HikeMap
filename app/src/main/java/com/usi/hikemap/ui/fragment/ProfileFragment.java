@@ -18,6 +18,8 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -60,7 +62,7 @@ public class ProfileFragment extends Fragment {
     GoogleSignInClient mGoogleSignInClient;
     String TAG = "ProfileFragment";
     String userId;
-    TextView mDeleteAccount, mLogout, mName, mUsername;
+    TextView mDeleteAccount, mLogout, mName, mUsername, changeSettings;
     BottomSheetDialog profile_option_show;
     CircleImageView profilePic;
 
@@ -180,7 +182,9 @@ public class ProfileFragment extends Fragment {
                         .inflate(R.layout.profile_option_menu, (LinearLayout) getView().findViewById(R.id.profile_option));
 
                 profile_option_show.setContentView(bottomSheetView);
+                changeSettings = profile_option_show.findViewById(R.id.changeSettingsTextView);
                 mLogout = profile_option_show.findViewById(R.id.logout_textView);
+
                 mDeleteAccount = profile_option_show.findViewById(R.id.delete_account_textView);
             }
 
@@ -266,6 +270,17 @@ public class ProfileFragment extends Fragment {
                             startActivity(new Intent(getActivity(), AuthenticationActivity.class));
                         }
 
+                    });
+
+                    changeSettings.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Navigate to the update profile fragment
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.frame_layout, new UpdateProfileFragment())
+                                    .commit();
+                            profile_option_show.hide();
+                        }
                     });
                 }
                 return true;

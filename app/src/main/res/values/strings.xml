@@ -6,6 +6,7 @@
     <string name="title_go">Go</string>
     <string name="title_profile">Profile</string>
     <string name="title_search">Search</string>
+    <string name="title_update">Update profile</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -62,6 +63,7 @@
     <string name="settings_menu_profile">Settings</string>
     <string name="logout_menu_profile">Logout</string>
     <string name="delete_account_menu_profile">Delete Account</string>
+    <string name="change_account_settings">Change Settings</string>
 
 
     <string name="route">Route</string>
