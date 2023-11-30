@@ -167,6 +167,20 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
             }
         });
 
+        fStopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Stop stats", Toast.LENGTH_SHORT).show();
+                playLayout.setVisibility(View.VISIBLE);
+                pauseLayout.setVisibility(View.GONE);
+                infoContainer.setVisibility(View.GONE);
+                fStartButton.setVisibility(View.VISIBLE);
+                tPauseDelta = 0L;
+                chronometer.stop();
+                handler.removeCallbacks(runnable);
+            }
+        });
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
             mapFragment = SupportMapFragment.newInstance();
