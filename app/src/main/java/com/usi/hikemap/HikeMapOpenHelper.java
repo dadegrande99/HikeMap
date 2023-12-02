@@ -24,18 +24,24 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
     public static final String TABLE_NAME = "steps";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_TIMESTAMP = "timestamp";
-    public static final String COLUMN_GPS = "gps";
     public static final String COLUMN_DAY = "day";
     public static final String COLUMN_HOUR = "hour";
     public static final String COLUMN_MINUTE = "minute";
+
+    public static final String COLUMN_LATITUDE = "latitude";
+    public static final String COLUMN_LONGITUDE = "longitude";
+
+    public static final String COLUMN_ALTITUDE = "altitude";
     private static final String CREATE_TABLE_SQL =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     COLUMN_TIMESTAMP + " INTEGER," +
-                    COLUMN_GPS + " TEXT," +
                     COLUMN_DAY + " INTEGER," +
                     COLUMN_HOUR + " INTEGER," +
-                    COLUMN_MINUTE + " INTEGER" +
+                    COLUMN_MINUTE + " INTEGER," +
+                    COLUMN_LATITUDE + " REAL," +
+                    COLUMN_LONGITUDE + " REAL," +
+                    COLUMN_ALTITUDE + " REAL" +
                     ");";
     public HikeMapOpenHelper(Context context)
     {
