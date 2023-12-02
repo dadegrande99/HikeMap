@@ -176,7 +176,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (accSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, database);
+                    sensorListener = new StepCounterListener(steps, database, lastLocation);
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 }
@@ -187,7 +187,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (stepDetectorSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps);
+                    sensorListener = new StepCounterListener(steps, lastLocation);
                     sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 }
@@ -225,7 +225,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 //sensorListener.playCounter();
                 if (accSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, database);
+                    sensorListener = new StepCounterListener(steps, database, lastLocation);
                     sensorListener.playCounter();
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
@@ -237,7 +237,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (stepDetectorSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps);
+                    sensorListener = new StepCounterListener(steps, lastLocation);
                     sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 }
@@ -417,16 +417,20 @@ class  StepCounterListener implements SensorEventListener{
     private String day;
     private String hour;
 
+    private Location location;
 
-    public StepCounterListener(TextView stepCountsView, SQLiteDatabase databse)
+
+    public StepCounterListener(TextView stepCountsView, SQLiteDatabase databse, Location location)
     {
         this.stepCountsView = stepCountsView;
         this.database = databse;
+        this.location = location;
     }
 
-    public StepCounterListener(TextView stepCountsView)
+    public StepCounterListener(TextView stepCountsView, Location location)
     {
         this.stepCountsView = stepCountsView;
+        this.location = location;
     }
 
     public void pauseCounter()
@@ -533,9 +537,12 @@ class  StepCounterListener implements SensorEventListener{
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_DAY, this.day);
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_HOUR, this.hour);
 
+                // TODO: add latitude, longitude and altitude
+                databaseEntry.put(HikeMapOpenHelper.COLUMN_LATITUDE, this.location.getLatitude());
+                databaseEntry.put(HikeMapOpenHelper.COLUMN_LONGITUDE, this.location.getLongitude());
+                databaseEntry.put(HikeMapOpenHelper.COLUMN_ALTITUDE, this.location.getAltitude());
+
                 database.insert(HikeMapOpenHelper.TABLE_NAME, null, databaseEntry);
-
-
 
             }
         }
