@@ -1,15 +1,12 @@
 package com.usi.hikemap.ui.fragment;
 
-import static com.google.common.net.HttpHeaders.FROM;
 import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_ALTITUDE;
 import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_LATITUDE;
 import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_LONGITUDE;
 import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_TIMESTAMP;
 import static com.usi.hikemap.HikeMapOpenHelper.TABLE_NAME;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -27,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,12 +37,9 @@ import android.hardware.SensorManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,7 +47,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -66,15 +58,10 @@ import com.usi.hikemap.HikeMapOpenHelper;
 import com.usi.hikemap.R;
 import com.usi.hikemap.model.Route;
 import com.usi.hikemap.ui.viewmodel.GoViewModel;
-import com.usi.hikemap.ui.viewmodel.ProfileViewModel;
-
-import android.view.animation.TranslateAnimation;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -201,7 +188,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (accSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, database, lastLocation);
+                    sensorListener = new StepCounterListener(steps, database, lastLocation, playLayout);
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 }
@@ -212,7 +199,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (stepDetectorSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, lastLocation);
+                    sensorListener = new StepCounterListener(steps, lastLocation, playLayout);
                     sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 }
@@ -232,7 +219,6 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 tPauseStart = System.currentTimeMillis();
                 chronometer.stop();
                 handler.removeCallbacks(runnable);
-                sensorListener.pauseCounter();
                 sensorManager.unregisterListener(sensorListener, accSensor);
                 sensorManager.unregisterListener(sensorListener, stepDetectorSensor);
             }
@@ -250,8 +236,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 //sensorListener.playCounter();
                 if (accSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, database, lastLocation);
-                    sensorListener.playCounter();
+                    sensorListener = new StepCounterListener(steps, database, lastLocation, playLayout);
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 }
@@ -262,7 +247,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (stepDetectorSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, lastLocation);
+                    sensorListener = new StepCounterListener(steps, lastLocation, playLayout);
                     sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 }
@@ -453,7 +438,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         polyline = mMap.addPolyline(polylineOptions);
 
         // Update the last known location
-        lastLocation = location;
+        lastLocation.set(location);
     }
 
 
@@ -492,8 +477,11 @@ class  StepCounterListener implements SensorEventListener {
     private int step = 1;
 
     TextView stepCountsView;
-
+    LinearLayout playLayout;
     private SQLiteDatabase database;
+
+    private boolean play;
+    private int subroute;
 
     private String timestamp;
     private String day;
@@ -502,25 +490,23 @@ class  StepCounterListener implements SensorEventListener {
     private Location location;
 
 
-    public StepCounterListener(TextView stepCountsView, SQLiteDatabase databse, Location location) {
+    public StepCounterListener(TextView stepCountsView, SQLiteDatabase databse, Location location, LinearLayout playLayout) {
         this.stepCountsView = stepCountsView;
+        this.playLayout = playLayout;
+        this.play = true;
+        this.subroute = 0;
         this.database = databse;
         this.location = location;
+        Log.d("Prova", "Location"+String.valueOf(this.location.toString()));
     }
 
-    public StepCounterListener(TextView stepCountsView, Location location) {
+    public StepCounterListener(TextView stepCountsView, Location location, LinearLayout playLayout) {
         this.stepCountsView = stepCountsView;
+        this.playLayout = playLayout;
+        this.play = true;
+        this.subroute = 0;
         this.location = location;
-    }
-
-    public void pauseCounter() {
-        this.step = 0;
-        Log.d("PAUSE", Integer.toString(this.step));
-
-    }
-
-    public void playCounter() {
-        this.step = 1;
+        Log.d("Prova", "Location"+String.valueOf(this.location.toString()));
     }
 
     @Override
@@ -599,14 +585,20 @@ class  StepCounterListener implements SensorEventListener {
             int forwardSlope = valuesInWindow.get(i + 1) - valuesInWindow.get(i);
             int downwardSlope = valuesInWindow.get(i) - valuesInWindow.get(i - 1);
 
-            if (forwardSlope < 0 && downwardSlope > 0 && valuesInWindow.get(i) > stepThreshold) {
-                accStepCounter += step;
+            if (forwardSlope < 0 && downwardSlope > 0 && valuesInWindow.get(i) > stepThreshold && this.playLayout.getVisibility() == View.VISIBLE) {
+                if (!this.play){
+                    this.play = true;
+                    this.subroute++;
+                }
+                accStepCounter += 1;
                 Log.d("ACC STEPS: ", String.valueOf(accStepCounter));
                 Log.d("PAUSE", Integer.toString(this.step));
+                Log.d("Prova", String.valueOf(this.subroute));
                 stepCountsView.setText(String.valueOf(accStepCounter));
 
                 ContentValues databaseEntry = new ContentValues();
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_TIMESTAMP, timePointList.get(i));
+                databaseEntry.put(HikeMapOpenHelper.COLUMN_SUBROUTE, this.subroute);
 
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_DAY, this.day);
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_HOUR, this.hour);
@@ -616,8 +608,11 @@ class  StepCounterListener implements SensorEventListener {
                 databaseEntry.put(COLUMN_LONGITUDE, this.location.getLongitude());
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_ALTITUDE, this.location.getAltitude());
 
+
                 database.insert(TABLE_NAME, null, databaseEntry);
 
+            } else if (this.playLayout.getVisibility() != View.VISIBLE && this.play) {
+                this.play = false;
             }
         }
     }
