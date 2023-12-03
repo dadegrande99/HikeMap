@@ -22,9 +22,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.usi.hikemap.model.AuthenticationResponse;
+import com.usi.hikemap.model.Route;
 import com.usi.hikemap.model.User;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ManagerRepository implements IManagerRepository {
@@ -173,5 +175,36 @@ public class ManagerRepository implements IManagerRepository {
 
         return mAuthenticationResponse;
 
+    }
+
+    @Override
+    public MutableLiveData<AuthenticationResponse> updateRoute(String userId, List<Route> route) {
+
+        fReference = fDatabase.getReference().child(USER_COLLECTION).child(userId).child("routes");
+
+        Map<String, Object> data = new HashMap();
+
+        for (Route r: route) {
+            data.put(r.getTimestamp(), route);
+        }
+
+        fReference.updateChildren(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+                authenticationResponse.setSuccess(true);
+                mAuthenticationResponse.postValue(authenticationResponse);
+                Log.d(TAG, "onCreate: Data update " + userId);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+                authenticationResponse.setSuccess(false);
+                mAuthenticationResponse.postValue(authenticationResponse);
+                Log.d(TAG, "onFailure: Data not update");
+            }
+        });
+        return mAuthenticationResponse;
     }
 }

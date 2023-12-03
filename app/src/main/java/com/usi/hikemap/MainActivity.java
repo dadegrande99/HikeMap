@@ -26,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.usi.hikemap.databinding.ActivityMainBinding;
 import com.usi.hikemap.ui.fragment.GoFragment;
 import com.usi.hikemap.ui.fragment.ProfileFragment;
@@ -39,22 +40,24 @@ public class MainActivity extends AppCompatActivity {
 
     MeowBottomNavigation bottomNavigation;
 
+    String userId;
+
     FusedLocationProviderClient fusedLocationProviderClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
-            //replaceFragment(new GoFragment());
-        //} else {
-            //If permission is already granted, replace the fragment
 
         }
+
+
         replaceFragment(new GoFragment());
 
         /**if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -80,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         meowBottomNavigation();
 
-
+        //userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         replaceFragment(new GoFragment());
         //onMapReady(mMap);
