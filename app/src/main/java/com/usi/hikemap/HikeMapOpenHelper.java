@@ -23,6 +23,7 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "HikeMap";
     public static final String TABLE_NAME = "steps";
     public static final String COLUMN_ID = "id";
+    public static final String COLUMN_SUBROUTE = "subroute";
     public static final String COLUMN_TIMESTAMP = "timestamp";
     public static final String COLUMN_DAY = "day";
     public static final String COLUMN_HOUR = "hour";
@@ -35,6 +36,7 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_SQL =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    COLUMN_SUBROUTE + " INTEGER," +
                     COLUMN_TIMESTAMP + " INTEGER," +
                     COLUMN_DAY + " INTEGER," +
                     COLUMN_HOUR + " INTEGER," +
