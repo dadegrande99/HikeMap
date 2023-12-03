@@ -1,11 +1,19 @@
 package com.usi.hikemap.ui.fragment;
 
+import static com.google.common.net.HttpHeaders.FROM;
+import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_ALTITUDE;
+import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_LATITUDE;
+import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_LONGITUDE;
+import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_TIMESTAMP;
+import static com.usi.hikemap.HikeMapOpenHelper.TABLE_NAME;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -38,6 +46,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -52,15 +61,20 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.usi.hikemap.HikeMapOpenHelper;
 import com.usi.hikemap.R;
+import com.usi.hikemap.model.Route;
 import com.usi.hikemap.ui.viewmodel.GoViewModel;
+import com.usi.hikemap.ui.viewmodel.ProfileViewModel;
 
 import android.view.animation.TranslateAnimation;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -77,10 +91,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     private FloatingActionButton fResumeButton;
     private FloatingActionButton fStopButton;
 
-    //private GoViewModel viewModel;
-
     FrameLayout infoContainer;
-
     LinearLayout pauseLayout;
     LinearLayout playLayout;
 
@@ -109,6 +120,14 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
+    // Firebase variables
+    String userId;
+    FirebaseAuth fAuth;
+
+    private static String TAG = "GoFragment";
+
+    GoViewModel mGoViewModel;
+
     @SuppressLint("MissingPermission")
     @Nullable
     @Override
@@ -116,6 +135,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
         View rootView = inflater.inflate(R.layout.fragment_go, container, false);
         infoContainer = rootView.findViewById(R.id.info);
+
+        mGoViewModel = new ViewModelProvider(requireActivity()).get(GoViewModel.class);
 
         // Step counter sensor
 
@@ -150,6 +171,10 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         fPauseButton = rootView.findViewById(R.id.pauseButton);
         fResumeButton = rootView.findViewById(R.id.resumeButton);
         fStopButton = rootView.findViewById(R.id.stopButton);
+
+
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
 
         fStartButton.setOnClickListener(new View.OnClickListener() {
 
@@ -262,6 +287,63 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 handler.removeCallbacks(runnable);
                 sensorManager.unregisterListener(sensorListener, accSensor);
                 sensorManager.unregisterListener(sensorListener, stepDetectorSensor);
+
+                // 3. Define the query to get the data
+                // Definisci la query per ottenere le colonne di latitudine e longitudine
+                String query = "SELECT " + COLUMN_LATITUDE + ", " + COLUMN_LONGITUDE + ", " + COLUMN_ALTITUDE + ", " + COLUMN_TIMESTAMP + " FROM " + TABLE_NAME;
+
+                // Esegui la query per ottenere i dati
+                Cursor cursor = database.rawQuery(query, null);
+
+                // Assicurati che il cursore sia valido
+                if (cursor != null) {
+                    // Verifica se ci sono almeno un risultato
+                    if (cursor.moveToFirst()) {
+                        do {
+                            // Estrai i valori dalle colonne
+                            @SuppressLint("Range") double latitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE));
+                            @SuppressLint("Range") double longitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE));
+                            @SuppressLint("Range") double altitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ALTITUDE));
+                            @SuppressLint("Range") String timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_TIMESTAMP));
+
+                            if (userId != null) {
+
+                                List<Route> routes;
+
+                                for (routes = new ArrayList<>(); cursor.moveToNext(); routes.add(new Route(
+                                        0,
+                                        0,
+                                        timestamp,
+                                        altitude,
+                                        longitude,
+                                        latitude
+                                     )));
+
+
+                                mGoViewModel.updateRoute(userId, routes).observe(getViewLifecycleOwner(), authenticationResponse -> {
+                                    if (authenticationResponse != null) {
+                                        if (authenticationResponse.isSuccess()) {
+                                            Log.d(TAG, "Success upload coordinate");
+                                        }
+                                        else {
+                                            Log.d(TAG, "Error don't success");
+                                        }
+                                    }
+                                });
+
+                            }
+
+
+                            // Stampa i valori sulla console usando Log
+                            Log.d("TAG", "Latitude: " + latitude + ", Longitude: " + longitude);
+                        } while (cursor.moveToNext());
+                    }
+
+                    // Chiudi il cursore dopo aver finito di utilizzarlo
+                    cursor.close();
+                } else {
+                    Log.e("TAG", "Cursor is null");
+                }
             }
         });
 
@@ -392,11 +474,11 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         }
     }
 
-
 }
 
 
-class  StepCounterListener implements SensorEventListener{
+
+class  StepCounterListener implements SensorEventListener {
 
     private long lastSensorUpdate = 0;
     public static int accStepCounter = 0;
@@ -420,35 +502,30 @@ class  StepCounterListener implements SensorEventListener{
     private Location location;
 
 
-    public StepCounterListener(TextView stepCountsView, SQLiteDatabase databse, Location location)
-    {
+    public StepCounterListener(TextView stepCountsView, SQLiteDatabase databse, Location location) {
         this.stepCountsView = stepCountsView;
         this.database = databse;
         this.location = location;
     }
 
-    public StepCounterListener(TextView stepCountsView, Location location)
-    {
+    public StepCounterListener(TextView stepCountsView, Location location) {
         this.stepCountsView = stepCountsView;
         this.location = location;
     }
 
-    public void pauseCounter()
-    {
+    public void pauseCounter() {
         this.step = 0;
         Log.d("PAUSE", Integer.toString(this.step));
 
     }
 
-    public void playCounter()
-    {
+    public void playCounter() {
         this.step = 1;
     }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        switch (sensorEvent.sensor.getType())
-        {
+        switch (sensorEvent.sensor.getType()) {
             case Sensor.TYPE_LINEAR_ACCELERATION:
 
                 float x = sensorEvent.values[0];
@@ -465,25 +542,21 @@ class  StepCounterListener implements SensorEventListener{
                 String sensorEventDate = jdf.format(timeInMillis);
 
 
-
-
-                if ((currentTimeInMilliSecond - lastSensorUpdate) > 1000)
-                {
+                if ((currentTimeInMilliSecond - lastSensorUpdate) > 1000) {
                     lastSensorUpdate = currentTimeInMilliSecond;
-                    String sensorRawValues = "  x = "+ String.valueOf(x) +"  y = "+ String.valueOf(y) +"  z = "+ String.valueOf(z);
+                    String sensorRawValues = "  x = " + String.valueOf(x) + "  y = " + String.valueOf(y) + "  z = " + String.valueOf(z);
                     Log.d("Acc. Event", "last sensor update at " + String.valueOf(sensorEventDate) + sensorRawValues);
                 }
 
-
-                accMag = Math.sqrt(x*x+y*y+z*z);
+                accMag = Math.sqrt(x * x + y * y + z * z);
 
 
                 accSeries.add((int) accMag);
 
                 // Get the date, the day and the hour
                 timestamp = sensorEventDate;
-                day = sensorEventDate.substring(0,10);
-                hour = sensorEventDate.substring(11,13);
+                day = sensorEventDate.substring(0, 10);
+                hour = sensorEventDate.substring(11, 13);
 
                 Log.d("SensorEventTimestampInMilliSecond", timestamp);
 
@@ -502,6 +575,7 @@ class  StepCounterListener implements SensorEventListener{
 
 
     }
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
@@ -517,11 +591,11 @@ class  StepCounterListener implements SensorEventListener{
             return;
         }
 
-        List<Integer> valuesInWindow = accSeries.subList(lastAddedIndex,currentSize);
-        List<String> timePointList = timestampsSeries.subList(lastAddedIndex,currentSize);
+        List<Integer> valuesInWindow = accSeries.subList(lastAddedIndex, currentSize);
+        List<String> timePointList = timestampsSeries.subList(lastAddedIndex, currentSize);
         lastAddedIndex = currentSize;
 
-        for (int i = 1; i < valuesInWindow.size()-1; i++) {
+        for (int i = 1; i < valuesInWindow.size() - 1; i++) {
             int forwardSlope = valuesInWindow.get(i + 1) - valuesInWindow.get(i);
             int downwardSlope = valuesInWindow.get(i) - valuesInWindow.get(i - 1);
 
@@ -538,23 +612,20 @@ class  StepCounterListener implements SensorEventListener{
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_HOUR, this.hour);
 
                 // TODO: add latitude, longitude and altitude
-                databaseEntry.put(HikeMapOpenHelper.COLUMN_LATITUDE, this.location.getLatitude());
-                databaseEntry.put(HikeMapOpenHelper.COLUMN_LONGITUDE, this.location.getLongitude());
+                databaseEntry.put(COLUMN_LATITUDE, this.location.getLatitude());
+                databaseEntry.put(COLUMN_LONGITUDE, this.location.getLongitude());
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_ALTITUDE, this.location.getAltitude());
 
-                database.insert(HikeMapOpenHelper.TABLE_NAME, null, databaseEntry);
+                database.insert(TABLE_NAME, null, databaseEntry);
 
             }
         }
     }
 
-    private void countSteps(float step)
-    {
+    private void countSteps(float step) {
         stepDetectorCounter += step;
 
         Log.d("STEP_DETECTOR STEPS: ", String.valueOf(stepDetectorCounter));
 
     }
-
-
 }
