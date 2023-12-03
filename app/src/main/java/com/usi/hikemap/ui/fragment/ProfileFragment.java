@@ -51,6 +51,8 @@ import com.usi.hikemap.ui.viewmodel.ProfileViewModel;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+
+
 /**
  * Fragment class for displaying user profile information and handling account deletion.
  */
@@ -62,9 +64,11 @@ public class ProfileFragment extends Fragment {
     GoogleSignInClient mGoogleSignInClient;
     String TAG = "ProfileFragment";
     String userId;
-    TextView mDeleteAccount, mLogout, mName, mUsername, changeSettings;
+    TextView mDeleteAccount, mLogout, mName, mUsername, changeSettings, mHeight, mWeight;
     BottomSheetDialog profile_option_show;
     CircleImageView profilePic;
+
+
 
 
     @Override
@@ -89,10 +93,14 @@ public class ProfileFragment extends Fragment {
 
         // Initialize UI elements
         mUser = new User();
+
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mName = root.findViewById(R.id.name_user);
         mUsername = root.findViewById(R.id.username_user);
         profilePic = root.findViewById(R.id.profile_picture);
+
+        mHeight = root.findViewById(R.id.heightValue);
+        mWeight = root.findViewById(R.id.weightValue);
 
         // Log user's UID
         Log.d(TAG, "onCreateView: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -117,6 +125,11 @@ public class ProfileFragment extends Fragment {
                     mName.setText(mUser.getName().concat(" ").concat(mUser.getSurname()));
                     mUsername.setText(mUser.getUsername());
 
+                    mHeight.setText(String.valueOf(mUser.getHeight()));
+                    mWeight.setText(String.valueOf(mUser.getWeight()));
+
+                    Log.d("ProfileFragment", "peso: " + mUser.getWeight());
+
                     mProfileViewModel.readImage(userId).observe(getViewLifecycleOwner(), authenticationResponse-> {
                         if (authenticationResponse != null) {
                             if (authenticationResponse.isSuccess() && mUser.getPath() != null) {
@@ -134,6 +147,14 @@ public class ProfileFragment extends Fragment {
                 }
             });
         }
+
+        mHeight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Height", Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
         return root;
     }

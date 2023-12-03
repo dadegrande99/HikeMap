@@ -13,6 +13,8 @@ import com.usi.hikemap.model.User;
 import com.usi.hikemap.repository.IManagerRepository;
 import com.usi.hikemap.repository.ManagerRepository;
 
+import java.util.Map;
+
 public class ProfileViewModel extends AndroidViewModel {
     private MutableLiveData<AuthenticationResponse> mAuthenticationResponse;
     private MutableLiveData<User>mUserLiveData;
@@ -32,6 +34,14 @@ public class ProfileViewModel extends AndroidViewModel {
         mAuthenticationResponse = mManageRepository.readImage(userId);
         return mAuthenticationResponse;
     }
+
+
+    //PUT MAP AL POSTO DI USER
+    public MutableLiveData<AuthenticationResponse> updateProfile(Map<String, Object> data) {
+        mAuthenticationResponse = mManageRepository.updateData(data);
+        return mAuthenticationResponse;
+    }
+    //GO BACK TO UPDATE
 
     public MutableLiveData<AuthenticationResponse> writeImage(Uri profileUri) {
         mAuthenticationResponse = mManageRepository.writeImage(profileUri);

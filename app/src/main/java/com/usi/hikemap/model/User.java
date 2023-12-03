@@ -12,8 +12,10 @@ public class User implements Parcelable {
     private String name, surname, username, password, auth, userId, provider;
     private String image, path;
 
+    private int height, weight;
+
     public User(String name, String surname, String username, String auth, String password, String userId,
-                String provider, String image, String path){
+                String provider, String image, String path, int height, int weight){
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -23,11 +25,29 @@ public class User implements Parcelable {
         this.provider = provider;
         this.image = image;
         this.path = path;
+        this.height = height;
+        this.weight = weight;
+
     }
 
     public User() {
     }
 
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
 
     protected User(Parcel in) {
         name = in.readString();

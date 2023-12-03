@@ -64,7 +64,8 @@ public class ManagerRepository implements IManagerRepository {
                             task.getResult().child("username").getValue(String.class), task.getResult().child("auth").getValue(String.class),
                             task.getResult().child("password").getValue(String.class), task.getResult().child("userId").getValue(String.class),
                             task.getResult().child("account provider").getValue(String.class), task.getResult().child("image").getValue(String.class),
-                            task.getResult().child("path").getValue(String.class));
+                            task.getResult().child("path").getValue(String.class), task.getResult().child("height").getValue(Integer.class),
+                            task.getResult().child("weight").getValue(Integer.class));
 
                     Log.d(TAG, "onComplete: readUser: " + task.getResult().getValue(User.class));
                     mUserLiveData.postValue(user);
@@ -79,6 +80,8 @@ public class ManagerRepository implements IManagerRepository {
 
         return mUserLiveData;
     }
+
+
     @Override
     public MutableLiveData<AuthenticationResponse> readImage(String uId) {
         fPhotoReference = fStore.getReference().child("profile_picture/" + uId);
@@ -148,6 +151,7 @@ public class ManagerRepository implements IManagerRepository {
         });
         return mAuthenticationResponse;
     }
+
     @Override
     public MutableLiveData<AuthenticationResponse> deleteAccount(String userId) {
 

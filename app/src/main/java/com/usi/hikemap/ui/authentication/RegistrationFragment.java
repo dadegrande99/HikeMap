@@ -94,7 +94,7 @@ public class RegistrationFragment extends Fragment {
 
                 Log.d(TAG, "onClick: email:" + auth);
 
-                user = new User(name, surname, username, auth, password, null, null, null, null);
+                user = new User(name, surname, username, auth, password, null, null, null, null, 0, 0);
 
 
                 if (TextUtils.isEmpty(password)) {
