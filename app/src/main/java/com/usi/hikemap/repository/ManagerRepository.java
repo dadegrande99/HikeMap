@@ -185,7 +185,7 @@ public class ManagerRepository implements IManagerRepository {
         Map<String, Object> data = new HashMap();
 
         for (Route r: route) {
-            data.put(r.getTimestamp(), route);
+            data.put(r.getTimestamp(), r);
         }
 
         fReference.updateChildren(data).addOnSuccessListener(new OnSuccessListener<Void>() {
