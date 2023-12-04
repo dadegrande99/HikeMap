@@ -1,15 +1,12 @@
 package com.usi.hikemap.ui.fragment;
 
-import static com.google.common.net.HttpHeaders.FROM;
 import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_ALTITUDE;
 import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_LATITUDE;
 import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_LONGITUDE;
 import static com.usi.hikemap.HikeMapOpenHelper.COLUMN_TIMESTAMP;
 import static com.usi.hikemap.HikeMapOpenHelper.TABLE_NAME;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -27,26 +24,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import android.database.sqlite.SQLiteDatabase;
-
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,10 +45,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -66,15 +55,9 @@ import com.usi.hikemap.HikeMapOpenHelper;
 import com.usi.hikemap.R;
 import com.usi.hikemap.model.Route;
 import com.usi.hikemap.ui.viewmodel.GoViewModel;
-import com.usi.hikemap.ui.viewmodel.ProfileViewModel;
-
-import android.view.animation.TranslateAnimation;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -82,18 +65,16 @@ import java.util.TimeZone;
  */
 public class GoFragment extends Fragment implements OnMapReadyCallback, LocationListener {
 
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
     private GoogleMap mMap;
     private PolylineOptions polylineOptions;
     private Polyline polyline;
     private Location lastLocation;
-    private FloatingActionButton fStartButton;
-    private FloatingActionButton fPauseButton;
-    private FloatingActionButton fResumeButton;
-    private FloatingActionButton fStopButton;
 
+
+    private FloatingActionButton fStartButton, fStopButton, fPauseButton, fResumeButton;
     FrameLayout infoContainer;
-    LinearLayout pauseLayout;
-    LinearLayout playLayout;
+    LinearLayout pauseLayout, playLayout;
 
 
     HikeMapOpenHelper databaseOpenHelper;
@@ -105,31 +86,22 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     StepCounterListener sensorListener;
 
 
-
-    TextView steps;
-    TextView km;
-    TextView calories;
-    TextView up;
-    TextView down;
-
+    TextView steps, km, calories, up, down;
     Chronometer chronometer;
-    Handler handler;
-    private boolean isResume;
     long tmillisec, tStart, tPauseDelta, tPauseStart = 0L;
-    int sec, min, millisec;
+    int sec, min;
+
+
+    Handler handler;
+
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
-    // Firebase variables
-    String userId;
-    FirebaseAuth fAuth;
 
     private static String TAG = "GoFragment";
 
     GoViewModel mGoViewModel;
 
-    @SuppressLint("MissingPermission")
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -137,6 +109,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         infoContainer = rootView.findViewById(R.id.info);
 
         mGoViewModel = new ViewModelProvider(requireActivity()).get(GoViewModel.class);
+
 
         // Step counter sensor
 
@@ -173,16 +146,10 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         fStopButton = rootView.findViewById(R.id.stopButton);
 
 
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-
         fStartButton.setOnClickListener(new View.OnClickListener() {
-
-
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "Start stats", Toast.LENGTH_SHORT).show();
-
 
                 infoContainer.setVisibility(View.VISIBLE);
                 infoContainer.requestLayout();
@@ -199,25 +166,19 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 handler.postDelayed(runnable, 0);
                 chronometer.start();
 
-                if (accSensor != null)
-                {
+                if (accSensor != null) {
                     sensorListener = new StepCounterListener(steps, database, lastLocation);
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
-                }
-                else
-                {
+                } else {
                     Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
                 }
 
-                if (stepDetectorSensor != null)
-                {
+                if (stepDetectorSensor != null) {
                     sensorListener = new StepCounterListener(steps, lastLocation);
                     sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
-                }
-                else
-                {
+                } else {
                     Toast.makeText(getContext(), R.string.step_detector_sensor_not_available, Toast.LENGTH_LONG).show();
                 }
             }
@@ -248,29 +209,22 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 chronometer.start();
                 handler.postDelayed(runnable, 0);
                 //sensorListener.playCounter();
-                if (accSensor != null)
-                {
+                if (accSensor != null) {
                     sensorListener = new StepCounterListener(steps, database, lastLocation);
                     sensorListener.playCounter();
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
-                }
-                else
-                {
+                } else {
                     Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
                 }
 
-                if (stepDetectorSensor != null)
-                {
+                if (stepDetectorSensor != null) {
                     sensorListener = new StepCounterListener(steps, lastLocation);
                     sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
-                }
-                else
-                {
+                } else {
                     Toast.makeText(getContext(), R.string.step_detector_sensor_not_available, Toast.LENGTH_LONG).show();
                 }
-                //sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
             }
         });
 
@@ -292,9 +246,49 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 // Definisci la query per ottenere le colonne di latitudine e longitudine
                 String query = "SELECT " + COLUMN_LATITUDE + ", " + COLUMN_LONGITUDE + ", " + COLUMN_ALTITUDE + ", " + COLUMN_TIMESTAMP + " FROM " + TABLE_NAME;
 
+                List<Route> routes = new ArrayList<>();
+
                 // Esegui la query per ottenere i dati
                 Cursor cursor = database.rawQuery(query, null);
+                if(cursor != null) {
+                    while (cursor.moveToNext()) {
 
+                        // Estrai i valori dalle colonne
+                        @SuppressLint("Range") double latitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE));
+                        @SuppressLint("Range") double longitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE));
+                        @SuppressLint("Range") double altitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ALTITUDE));
+                        @SuppressLint("Range") String timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_TIMESTAMP));
+
+                        Route route = new Route(
+                                0,
+                                0,
+                                timestamp,
+                                altitude,
+                                longitude,
+                                latitude
+                        );
+
+                        routes.add(route);
+                        Log.d(TAG, "Route: " + routes.toString());
+
+                    }
+
+                    // Chiudi il cursore dopo aver finito di utilizzarlo
+                    cursor.close();
+
+                    // 4. Update the route
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    mGoViewModel.updateRoute(userId, routes).observe(getViewLifecycleOwner(), authenticationResponse -> {
+                        if (authenticationResponse != null) {
+                            if (authenticationResponse.isSuccess()) {
+                                Log.d(TAG, "Success upload coordinate");
+                            } else {
+                                Log.d(TAG, "Error don't success");
+                            }
+                        }
+                    });
+                }
+                /*
                 // Assicurati che il cursore sia valido
                 if (cursor != null) {
                     // Verifica se ci sono almeno un risultato
@@ -305,10 +299,11 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                             @SuppressLint("Range") double longitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE));
                             @SuppressLint("Range") double altitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ALTITUDE));
                             @SuppressLint("Range") String timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_TIMESTAMP));
-
+                            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             if (userId != null) {
 
                                 List<Route> routes;
+
 
                                 for (routes = new ArrayList<>(); cursor.moveToNext(); routes.add(new Route(
                                         0,
@@ -317,22 +312,19 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                                         altitude,
                                         longitude,
                                         latitude
-                                     )));
-
+                                )));
 
                                 mGoViewModel.updateRoute(userId, routes).observe(getViewLifecycleOwner(), authenticationResponse -> {
                                     if (authenticationResponse != null) {
                                         if (authenticationResponse.isSuccess()) {
                                             Log.d(TAG, "Success upload coordinate");
-                                        }
-                                        else {
+                                        } else {
                                             Log.d(TAG, "Error don't success");
                                         }
                                     }
                                 });
 
                             }
-
 
                             // Stampa i valori sulla console usando Log
                             Log.d("TAG", "Latitude: " + latitude + ", Longitude: " + longitude);
@@ -344,8 +336,11 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 } else {
                     Log.e("TAG", "Cursor is null");
                 }
+
+                 */
             }
         });
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
@@ -354,7 +349,6 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         }
 
         mapFragment.getMapAsync(this);
-
 
         return rootView;
     }
@@ -371,54 +365,49 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         }
     };
 
-
-    /**
-     * Callback method invoked when the map is ready to be used.
-     * This method is called when the GoogleMap instance is available.
-     *
-     * @param googleMap The GoogleMap instance representing the map.
-     */
-    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // Assign the GoogleMap instance to the local variable mMap
         mMap = googleMap;
 
-        // Enable the location layer. Request permission if needed.
-        /**if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {*/
-            // Enable the "My Location" layer on the map
-        mMap.setMyLocationEnabled(true);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
-        zoomToUserLocation();
-
-        // Request location updates from the GPS provider
-        LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, this);
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // I permessi sono già concessi
+            enableMyLocation();
+        } else {
+            // Richiedi i permessi all'utente
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         }
-        /**} else {
-            // Request permission if it's not granted
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);
-        }*/
     }
 
+    private void enableMyLocation() {
+        // Verifica nuovamente i permessi (questo è solo un controllo aggiuntivo)
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
 
-    private void zoomToUserLocation() {
-        @SuppressLint("MissingPermission") Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
-        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
-                //mMap.addMarker(new MarkerOptions().position(latLng));
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+            Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+            locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+                        lastLocation = location;
+                    }
+                }
+            });
+
+            // Request location updates from the GPS provider
+            LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+            if (locationManager != null) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, this);
             }
-        });
+        } else {
+            // L'utente ha negato il permesso, gestisci di conseguenza
+            // Mostra un messaggio o guida l'utente verso le impostazioni dell'app per concedere i permessi manualmente
+            Toast.makeText(requireContext(), "Permission denied. Please grant location permission in app settings.", Toast.LENGTH_LONG).show();
+        }
     }
-
-
 
 
     /**
@@ -430,7 +419,6 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     @Override
     public void onLocationChanged(Location location) {
         // Center the camera on the user's location when the first location is received
-        //@SuppressLint("MissingPermission") Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
         if (location == null) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
         }
@@ -456,7 +444,6 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         lastLocation = location;
     }
 
-
     /**
      * Callback method invoked when the user responds to a permission request.
      * This method is called when the user grants or denies a requested permission.
@@ -467,13 +454,15 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        // Check if the request code matches the one used when requesting the permission
-        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Permission granted, initialize the map
-            onMapReady(mMap);
+        if (requestCode == REQUEST_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Permesso concesso, abilita la posizione
+            enableMyLocation();
+        } else {
+            // Permesso negato, gestisci di conseguenza
+            // Mostra un messaggio o guida l'utente verso le impostazioni dell'app per concedere i permessi manualmente
+            Toast.makeText(requireContext(), "Permission denied. Please grant location permission in app settings.", Toast.LENGTH_LONG).show();
         }
     }
-
 }
 
 
@@ -511,6 +500,8 @@ class  StepCounterListener implements SensorEventListener {
     public StepCounterListener(TextView stepCountsView, Location location) {
         this.stepCountsView = stepCountsView;
         this.location = location;
+
+        //Log.d("Prova", "ProvaLocation" + this.location.toString());
     }
 
     public void pauseCounter() {
@@ -614,7 +605,7 @@ class  StepCounterListener implements SensorEventListener {
                 // TODO: add latitude, longitude and altitude
                 databaseEntry.put(COLUMN_LATITUDE, this.location.getLatitude());
                 databaseEntry.put(COLUMN_LONGITUDE, this.location.getLongitude());
-                databaseEntry.put(HikeMapOpenHelper.COLUMN_ALTITUDE, this.location.getAltitude());
+                databaseEntry.put(HikeMapOpenHelper.COLUMN_ALTITUDE, location.getAltitude());
 
                 database.insert(TABLE_NAME, null, databaseEntry);
 
