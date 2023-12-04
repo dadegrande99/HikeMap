@@ -78,7 +78,5 @@ public class Route {
                 ", latitude=" + latitude +
                 '}';
     }
-
-
 }
 
