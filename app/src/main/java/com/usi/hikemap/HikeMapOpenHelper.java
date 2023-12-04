@@ -1,5 +1,6 @@
 package com.usi.hikemap;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.usi.hikemap.model.Route;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,10 +31,8 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DAY = "day";
     public static final String COLUMN_HOUR = "hour";
     public static final String COLUMN_MINUTE = "minute";
-
     public static final String COLUMN_LATITUDE = "latitude";
     public static final String COLUMN_LONGITUDE = "longitude";
-
     public static final String COLUMN_ALTITUDE = "altitude";
     private static final String CREATE_TABLE_SQL =
             "CREATE TABLE " + TABLE_NAME + " (" +
@@ -43,33 +45,85 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
                     COLUMN_LONGITUDE + " REAL," +
                     COLUMN_ALTITUDE + " REAL" +
                     ");";
-    public HikeMapOpenHelper(Context context)
-    {
+
+    private static final String TAG = "HikeMapOpenHelper";
+
+
+
+    public HikeMapOpenHelper(Context context) {
         super(context,DATABASE_NAME,null,DATABASE_VERSION);
     }
 
-    // Load all records in the database
-    public static void loadRecords(Context context){
-        List<String> dates = new LinkedList<String>();
+    @Override
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
+        sqLiteDatabase.execSQL(CREATE_TABLE_SQL);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+
+    }
+
+    /**
+     * Loads the list of routes from the database.
+     *
+     * @param context The context of the calling activity or application.
+     * @return A list of Route objects containing latitude, longitude, altitude, and timestamp.
+     */
+    public static List<Route> loadRoutes(Context context) {
+
+        // List to store Route objects
+        List<Route> data = new ArrayList<>();
+
+        // Define the query to retrieve columns of latitude, longitude, altitude, and timestamp
+        String query = "SELECT " + COLUMN_LATITUDE + ", " + COLUMN_LONGITUDE + ", "
+                + COLUMN_ALTITUDE + ", " + COLUMN_TIMESTAMP + " FROM " + TABLE_NAME;
+
+        // Create an instance of the database helper to get a readable database
         HikeMapOpenHelper databaseHelper = new HikeMapOpenHelper(context);
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
-        String [] columns = new String [] {HikeMapOpenHelper.COLUMN_TIMESTAMP};
-        Cursor cursor = database.query(HikeMapOpenHelper.TABLE_NAME, columns, null, null, HikeMapOpenHelper.COLUMN_TIMESTAMP,
-                null, null );
+        // Execute the query to retrieve data
+        Cursor cursor = database.rawQuery(query, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
 
-        // iterate over returned elements
-        cursor.moveToFirst();
-        for (int index=0; index < cursor.getCount(); index++){
-            dates.add(cursor.getString(0));
-            cursor.moveToNext();
+                // Extract values from columns
+                @SuppressLint("Range") double latitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE));
+                @SuppressLint("Range") double longitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE));
+                @SuppressLint("Range") double altitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ALTITUDE));
+                @SuppressLint("Range") String timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_TIMESTAMP));
+
+                // Create a Route object with extracted values
+                Route route = new Route(
+                        0,
+                        0,
+                        timestamp,
+                        altitude,
+                        longitude,
+                        latitude
+                );
+
+                // Add the Route object to the list
+                data.add(route);
+
+                // Log the details of the added Route
+                Log.d(TAG, "Route: " + data.toString());
+            }
+            cursor.close();
         }
+
+        // Close the database connection
         database.close();
 
-        Log.d("STORED TIMESTAMPS: ", String.valueOf(dates));
+        // Return the list of Route objects
+        return data;
     }
 
-    public static void loadRoute(Context context){
+
+    // Load all records in the database
+    public static void loadRecords(Context context){
         List<String> dates = new LinkedList<String>();
         HikeMapOpenHelper databaseHelper = new HikeMapOpenHelper(context);
         SQLiteDatabase database = databaseHelper.getReadableDatabase();
@@ -128,8 +182,6 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
 
     }
 
-
-
     public static Map<String, Integer> loadStepsByDay(Context context, String date){
         // 1. Define a map to store the hour and number of steps as key-value pairs
         Map<String, Integer>  map = new TreeMap<>();
@@ -186,7 +238,6 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
         return map;
     }
 
-
     public static Map<Integer, Integer> loadStepsByHour(Context context, String date){
         // 1. Define a map to store the hour and number of steps as key-value pairs
         Map<Integer, Integer>  map = new HashMap<>();
@@ -220,14 +271,5 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
         return map;
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        sqLiteDatabase.execSQL(CREATE_TABLE_SQL);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
-    }
 }

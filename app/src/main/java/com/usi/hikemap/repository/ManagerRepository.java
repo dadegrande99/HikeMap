@@ -180,13 +180,15 @@ public class ManagerRepository implements IManagerRepository {
     @Override
     public MutableLiveData<AuthenticationResponse> updateRoute(String userId, List<Route> route) {
 
-        fReference = fDatabase.getReference().child(USER_COLLECTION).child(userId).child("routes");
-
         Map<String, Object> data = new HashMap();
-
+        String childForFirebase = "";
+        
         for (Route r: route) {
             data.put(r.getTimestamp(), r);
+            childForFirebase = route.get(0).getTimestamp();
         }
+
+        fReference = fDatabase.getReference().child(USER_COLLECTION).child(userId).child("routes").child(childForFirebase);
 
         fReference.updateChildren(data).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

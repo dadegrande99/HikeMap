@@ -232,112 +232,35 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "Stop stats", Toast.LENGTH_SHORT).show();
+
                 playLayout.setVisibility(View.VISIBLE);
                 pauseLayout.setVisibility(View.GONE);
                 infoContainer.setVisibility(View.GONE);
                 fStartButton.setVisibility(View.VISIBLE);
+
                 tPauseDelta = 0L;
                 chronometer.stop();
                 handler.removeCallbacks(runnable);
+
                 sensorManager.unregisterListener(sensorListener, accSensor);
                 sensorManager.unregisterListener(sensorListener, stepDetectorSensor);
 
-                // 3. Define the query to get the data
-                // Definisci la query per ottenere le colonne di latitudine e longitudine
-                String query = "SELECT " + COLUMN_LATITUDE + ", " + COLUMN_LONGITUDE + ", " + COLUMN_ALTITUDE + ", " + COLUMN_TIMESTAMP + " FROM " + TABLE_NAME;
 
-                List<Route> routes = new ArrayList<>();
+                // 1. Get the data from the database
+                List<Route> routes;
+                routes = databaseOpenHelper.loadRoutes(getContext());
 
-                // Esegui la query per ottenere i dati
-                Cursor cursor = database.rawQuery(query, null);
-                if(cursor != null) {
-                    while (cursor.moveToNext()) {
-
-                        // Estrai i valori dalle colonne
-                        @SuppressLint("Range") double latitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE));
-                        @SuppressLint("Range") double longitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE));
-                        @SuppressLint("Range") double altitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ALTITUDE));
-                        @SuppressLint("Range") String timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_TIMESTAMP));
-
-                        Route route = new Route(
-                                0,
-                                0,
-                                timestamp,
-                                altitude,
-                                longitude,
-                                latitude
-                        );
-
-                        routes.add(route);
-                        Log.d(TAG, "Route: " + routes.toString());
-
-                    }
-
-                    // Chiudi il cursore dopo aver finito di utilizzarlo
-                    cursor.close();
-
-                    // 4. Update the route
-                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                    mGoViewModel.updateRoute(userId, routes).observe(getViewLifecycleOwner(), authenticationResponse -> {
-                        if (authenticationResponse != null) {
-                            if (authenticationResponse.isSuccess()) {
-                                Log.d(TAG, "Success upload coordinate");
-                            } else {
-                                Log.d(TAG, "Error don't success");
-                            }
+                // 4. Update the route
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                mGoViewModel.updateRoute(userId, routes).observe(getViewLifecycleOwner(), authenticationResponse -> {
+                    if (authenticationResponse != null) {
+                        if (authenticationResponse.isSuccess()) {
+                            Log.d(TAG, "Success upload coordinate");
+                        } else {
+                            Log.d(TAG, "Error don't success");
                         }
-                    });
-                }
-                /*
-                // Assicurati che il cursore sia valido
-                if (cursor != null) {
-                    // Verifica se ci sono almeno un risultato
-                    if (cursor.moveToFirst()) {
-                        do {
-                            // Estrai i valori dalle colonne
-                            @SuppressLint("Range") double latitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE));
-                            @SuppressLint("Range") double longitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE));
-                            @SuppressLint("Range") double altitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ALTITUDE));
-                            @SuppressLint("Range") String timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_TIMESTAMP));
-                            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            if (userId != null) {
-
-                                List<Route> routes;
-
-
-                                for (routes = new ArrayList<>(); cursor.moveToNext(); routes.add(new Route(
-                                        0,
-                                        0,
-                                        timestamp,
-                                        altitude,
-                                        longitude,
-                                        latitude
-                                )));
-
-                                mGoViewModel.updateRoute(userId, routes).observe(getViewLifecycleOwner(), authenticationResponse -> {
-                                    if (authenticationResponse != null) {
-                                        if (authenticationResponse.isSuccess()) {
-                                            Log.d(TAG, "Success upload coordinate");
-                                        } else {
-                                            Log.d(TAG, "Error don't success");
-                                        }
-                                    }
-                                });
-
-                            }
-
-                            // Stampa i valori sulla console usando Log
-                            Log.d("TAG", "Latitude: " + latitude + ", Longitude: " + longitude);
-                        } while (cursor.moveToNext());
                     }
-
-                    // Chiudi il cursore dopo aver finito di utilizzarlo
-                    cursor.close();
-                } else {
-                    Log.e("TAG", "Cursor is null");
-                }
-
-                 */
+                });
             }
         });
 
@@ -365,30 +288,47 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         }
     };
 
+
+    /**
+     * Callback method invoked when the GoogleMap instance is ready for use.
+     * This method assigns the GoogleMap instance to the local variable mMap and checks for location permissions.
+     * If the permissions are already granted, it calls enableMyLocation(); otherwise, it requests the necessary permissions.
+     *
+     * @param googleMap The GoogleMap instance that is ready for use.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // Assign the GoogleMap instance to the local variable mMap
         mMap = googleMap;
 
+        // Check if the location permissions are already granted
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // I permessi sono già concessi
+            // Permissions are already granted
             enableMyLocation();
         } else {
-            // Richiedi i permessi all'utente
+            // Request location permissions from the user
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         }
     }
 
+
+    /**
+     * Enables the user's location on the map if the necessary permissions are granted.
+     * This method checks for location permissions and sets up location-related services.
+     */
     private void enableMyLocation() {
-        // Verifica nuovamente i permessi (questo è solo un controllo aggiuntivo)
+        // Check location permissions again (this is just an additional check)
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Enable the display of the user's location on the map
             mMap.setMyLocationEnabled(true);
 
+            // Get the last known location using FusedLocationProviderClient
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
             Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
             locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
+                    // If the location is not null, move the camera to that location and update lastLocation
                     if (location != null) {
                         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
@@ -403,8 +343,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, this);
             }
         } else {
-            // L'utente ha negato il permesso, gestisci di conseguenza
-            // Mostra un messaggio o guida l'utente verso le impostazioni dell'app per concedere i permessi manualmente
+            // User denied the permission, handle accordingly
+            // Display a message or guide the user to the app settings to grant permissions manually
             Toast.makeText(requireContext(), "Permission denied. Please grant location permission in app settings.", Toast.LENGTH_LONG).show();
         }
     }
@@ -444,6 +384,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         lastLocation = location;
     }
 
+
     /**
      * Callback method invoked when the user responds to a permission request.
      * This method is called when the user grants or denies a requested permission.
@@ -454,12 +395,13 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // Check if the requested permission is location and if it has been granted
         if (requestCode == REQUEST_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Permesso concesso, abilita la posizione
+            // Permission granted, enable the user's location
             enableMyLocation();
         } else {
-            // Permesso negato, gestisci di conseguenza
-            // Mostra un messaggio o guida l'utente verso le impostazioni dell'app per concedere i permessi manualmente
+            // Permission denied, handle accordingly
+            // Display a message or guide the user to the app settings to grant permissions manually
             Toast.makeText(requireContext(), "Permission denied. Please grant location permission in app settings.", Toast.LENGTH_LONG).show();
         }
     }
