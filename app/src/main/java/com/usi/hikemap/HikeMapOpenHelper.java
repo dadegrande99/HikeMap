@@ -69,6 +69,26 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
         Log.d("STORED TIMESTAMPS: ", String.valueOf(dates));
     }
 
+    public static void loadRoute(Context context){
+        List<String> dates = new LinkedList<String>();
+        HikeMapOpenHelper databaseHelper = new HikeMapOpenHelper(context);
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+
+        String [] columns = new String [] {HikeMapOpenHelper.COLUMN_TIMESTAMP};
+        Cursor cursor = database.query(HikeMapOpenHelper.TABLE_NAME, columns, null, null, HikeMapOpenHelper.COLUMN_TIMESTAMP,
+                null, null );
+
+        // iterate over returned elements
+        cursor.moveToFirst();
+        for (int index=0; index < cursor.getCount(); index++){
+            dates.add(cursor.getString(0));
+            cursor.moveToNext();
+        }
+        database.close();
+
+        Log.d("STORED TIMESTAMPS: ", String.valueOf(dates));
+    }
+
     // load records from a single day
     public static Integer loadSingleRecord(Context context, String date){
         List<String> steps = new LinkedList<String>();
