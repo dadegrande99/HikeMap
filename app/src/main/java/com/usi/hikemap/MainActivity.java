@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -23,6 +24,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -49,25 +51,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);
-
-        }
-
-
-        replaceFragment(new GoFragment());
-
-        /**if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED){
-            // Request permission if it's not granted
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);
-        }*/
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -78,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.show(2, true); // show go fragment first
 
         bottomNavigation.add(new MeowBottomNavigation.Model(1, R.drawable.icon_search));
-        bottomNavigation.add(new MeowBottomNavigation.Model(2,R.drawable.icon_go));
+        bottomNavigation.add(new MeowBottomNavigation.Model(2, R.drawable.icon_go));
         bottomNavigation.add(new MeowBottomNavigation.Model(3, R.drawable.icon_profile));
 
         meowBottomNavigation();
@@ -88,8 +71,9 @@ public class MainActivity extends AppCompatActivity {
         replaceFragment(new GoFragment());
         //onMapReady(mMap);
 
-
     }
+
+
 
     private void meowBottomNavigation() {
         bottomNavigation.setOnClickMenuListener(model -> {
@@ -122,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
     }
+
+
 
     //@Override
     /**public void onMapReady(GoogleMap googleMap) {
