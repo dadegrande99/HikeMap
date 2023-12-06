@@ -27,6 +27,7 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "HikeMap";
     public static final String TABLE_NAME = "steps";
     public static final String COLUMN_ID = "id";
+    public static final String COLUMN_IDROUTE = "idRoute";
     public static final String COLUMN_TIMESTAMP = "timestamp";
     public static final String COLUMN_DAY = "day";
     public static final String COLUMN_HOUR = "hour";
@@ -37,6 +38,7 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_SQL =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    COLUMN_IDROUTE + " INTEGER," +
                     COLUMN_TIMESTAMP + " INTEGER," +
                     COLUMN_DAY + " INTEGER," +
                     COLUMN_HOUR + " INTEGER," +
@@ -71,14 +73,42 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
      * @param context The context of the calling activity or application.
      * @return A list of Route objects containing latitude, longitude, altitude, and timestamp.
      */
-    public static List<Route> loadRoutes(Context context) {
+    public static String loadLastRouteID(Context context) {
+
+        // Define the query to retrieve columns of latitude, longitude, altitude, and timestamp
+        String query = "SELECT " + COLUMN_IDROUTE + " FROM " + TABLE_NAME + " ORDER BY " + COLUMN_IDROUTE + " DESC LIMIT 1";
+
+        // Create an instance of the database helper to get a readable database
+        HikeMapOpenHelper databaseHelper = new HikeMapOpenHelper(context);
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
+
+        // Execute the query to retrieve data
+        Cursor cursor = database.rawQuery(query, null);
+        String lastIdRoute = null;
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+
+                // Extract values from columns
+                @SuppressLint("Range") String tmpLastIdRoute = cursor.getString(cursor.getColumnIndex(COLUMN_IDROUTE));
+                lastIdRoute = tmpLastIdRoute;
+            }
+            cursor.close();
+        }
+        // Close the database connection
+        database.close();
+
+        // Return the list of Route objects
+        return lastIdRoute;
+    }
+
+
+    public static List<Route> loadRoutes(String idRoute, Context context) {
 
         // List to store Route objects
         List<Route> data = new ArrayList<>();
 
         // Define the query to retrieve columns of latitude, longitude, altitude, and timestamp
-        String query = "SELECT " + COLUMN_LATITUDE + ", " + COLUMN_LONGITUDE + ", "
-                + COLUMN_ALTITUDE + ", " + COLUMN_TIMESTAMP + " FROM " + TABLE_NAME;
+        String query = "SELECT  * FROM " + TABLE_NAME + " WHERE " + COLUMN_IDROUTE + " = " + idRoute;
 
         // Create an instance of the database helper to get a readable database
         HikeMapOpenHelper databaseHelper = new HikeMapOpenHelper(context);
@@ -94,10 +124,12 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
                 @SuppressLint("Range") double longitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE));
                 @SuppressLint("Range") double altitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ALTITUDE));
                 @SuppressLint("Range") String timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_TIMESTAMP));
+                @SuppressLint("Range") int id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(COLUMN_ID)));
 
                 // Create a Route object with extracted values
                 Route route = new Route(
-                        0,
+                        id,
+                        idRoute,
                         0,
                         timestamp,
                         altitude,
@@ -113,13 +145,13 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
             }
             cursor.close();
         }
-
         // Close the database connection
         database.close();
 
         // Return the list of Route objects
         return data;
     }
+
 
 
     // Load all records in the database
