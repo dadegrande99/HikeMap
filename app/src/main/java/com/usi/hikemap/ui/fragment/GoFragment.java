@@ -246,9 +246,14 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 sensorManager.unregisterListener(sensorListener, stepDetectorSensor);
 
 
+                // 1. Get last idRoute
+                String idRoute = databaseOpenHelper.loadLastRouteID(getContext());
+                Log.d(TAG, "idRoute: " + idRoute);
+
                 // 1. Get the data from the database
                 List<Route> routes;
-                routes = databaseOpenHelper.loadRoutes(getContext());
+                routes = databaseOpenHelper.loadRoutes(idRoute, getContext());
+
 
                 // 4. Update the route
                 String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -426,6 +431,8 @@ class  StepCounterListener implements SensorEventListener {
 
     private SQLiteDatabase database;
 
+    private String routeId;
+
     private String timestamp;
     private String day;
     private String hour;
@@ -437,12 +444,13 @@ class  StepCounterListener implements SensorEventListener {
         this.stepCountsView = stepCountsView;
         this.database = databse;
         this.location = location;
+        this.routeId = String.valueOf(System.currentTimeMillis());
     }
 
     public StepCounterListener(TextView stepCountsView, Location location) {
         this.stepCountsView = stepCountsView;
         this.location = location;
-
+        this.routeId = String.valueOf(System.currentTimeMillis());
         //Log.d("Prova", "ProvaLocation" + this.location.toString());
     }
 
@@ -539,15 +547,16 @@ class  StepCounterListener implements SensorEventListener {
                 stepCountsView.setText(String.valueOf(accStepCounter));
 
                 ContentValues databaseEntry = new ContentValues();
+
+                databaseEntry.put(HikeMapOpenHelper.COLUMN_IDROUTE, this.routeId);
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_TIMESTAMP, timePointList.get(i));
 
-                databaseEntry.put(HikeMapOpenHelper.COLUMN_DAY, this.day);
-                databaseEntry.put(HikeMapOpenHelper.COLUMN_HOUR, this.hour);
-
-                // TODO: add latitude, longitude and altitude
                 databaseEntry.put(COLUMN_LATITUDE, this.location.getLatitude());
                 databaseEntry.put(COLUMN_LONGITUDE, this.location.getLongitude());
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_ALTITUDE, location.getAltitude());
+
+                databaseEntry.put(HikeMapOpenHelper.COLUMN_DAY, this.day);
+                databaseEntry.put(HikeMapOpenHelper.COLUMN_HOUR, this.hour);
 
                 database.insert(TABLE_NAME, null, databaseEntry);
 
