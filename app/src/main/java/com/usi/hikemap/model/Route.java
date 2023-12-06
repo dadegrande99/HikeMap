@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Route {
 
-    private int id, subRoute;
+    private int id, idRoute, subRoute;
     private String timestamp;
     private double altitude, longitude, latitude;
 
@@ -16,6 +16,14 @@ public class Route {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getIdRoute() {
+        return idRoute;
+    }
+
+    public void setIdRoute(int idRoute) {
+        this.idRoute = idRoute;
     }
 
     public int getSubRoute() {
@@ -58,8 +66,9 @@ public class Route {
         this.latitude = latitude;
     }
 
-    public Route(int id, int subRoute, String timestamp, double altitude, double longitude, double latitude) {
+    public Route(int id, int idRoute, int subRoute, String timestamp, double altitude, double longitude, double latitude) {
         this.id = id;
+        this.idRoute = idRoute;
         this.subRoute = subRoute;
         this.timestamp = timestamp;
         this.altitude = altitude;
@@ -71,6 +80,7 @@ public class Route {
     public String toString() {
         return "Route{" +
                 "id=" + id +
+                ", idRoute=" + idRoute +
                 ", subRoute=" + subRoute +
                 ", timestamp='" + timestamp + '\'' +
                 ", altitude=" + altitude +
