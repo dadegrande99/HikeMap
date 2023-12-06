@@ -18,7 +18,8 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,11 +30,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -44,10 +42,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.usi.hikemap.HikeMapOpenHelper;
 import com.usi.hikemap.R;
+import com.usi.hikemap.adapter.ProfileRecycleViewAdapter;
+import com.usi.hikemap.model.Route;
 import com.usi.hikemap.model.User;
 import com.usi.hikemap.ui.authentication.AuthenticationActivity;
 import com.usi.hikemap.ui.viewmodel.ProfileViewModel;
+
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -65,6 +68,9 @@ public class ProfileFragment extends Fragment {
     TextView mDeleteAccount, mLogout, mName, mUsername, changeSettings;
     BottomSheetDialog profile_option_show;
     CircleImageView profilePic;
+
+    private RecyclerView recyclerView;
+    private ProfileRecycleViewAdapter adapter;
 
 
     @Override
@@ -135,8 +141,28 @@ public class ProfileFragment extends Fragment {
             });
         }
 
+        recyclerView = root.findViewById(R.id.result_list_route);
+        // TODO: Sostituire con la logica per ottenere le route dal database
+
+        String idRoute = HikeMapOpenHelper.loadLastRouteID(getContext());
+
+        List<Route> routes;
+        routes = HikeMapOpenHelper.loadRoutes(idRoute, getContext());
+
+        adapter = new ProfileRecycleViewAdapter(requireContext(), routes, new ProfileRecycleViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Route route) {
+                // Azioni da eseguire quando viene cliccato un elemento della RecyclerView
+                // entrare dentro
+            }
+        });
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         return root;
     }
+
 
 
 
