@@ -6,16 +6,20 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.SavedStateHandle;
 
 import com.usi.hikemap.model.AuthenticationResponse;
+import com.usi.hikemap.model.Route;
 import com.usi.hikemap.model.User;
 import com.usi.hikemap.repository.IManagerRepository;
 import com.usi.hikemap.repository.ManagerRepository;
 
+import java.util.List;
+import java.util.Map;
+
 public class ProfileViewModel extends AndroidViewModel {
     private MutableLiveData<AuthenticationResponse> mAuthenticationResponse;
-    private MutableLiveData<User>mUserLiveData;
+    private MutableLiveData<User> mUserLiveData;
+    private MutableLiveData<List<Route>> mRouteLiveDataL;
     private final IManagerRepository mManageRepository;
 
     public ProfileViewModel (@NonNull Application application){
@@ -37,6 +41,12 @@ public class ProfileViewModel extends AndroidViewModel {
         mAuthenticationResponse = mManageRepository.writeImage(profileUri);
         return mAuthenticationResponse;
     }
+
+    public MutableLiveData<List<Route>> readRoutes(String userId) {
+        mRouteLiveDataL = mManageRepository.readRoutes(userId);
+        return mRouteLiveDataL;
+    }
+
     public MutableLiveData<AuthenticationResponse> deleteAccount(String userId) {
         mAuthenticationResponse = mManageRepository.deleteAccount(userId);
         return mAuthenticationResponse;

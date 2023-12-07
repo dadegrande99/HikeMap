@@ -47,9 +47,11 @@ import com.usi.hikemap.R;
 import com.usi.hikemap.adapter.ProfileRecycleViewAdapter;
 import com.usi.hikemap.model.Route;
 import com.usi.hikemap.model.User;
+import com.usi.hikemap.repository.ManagerRepository;
 import com.usi.hikemap.ui.authentication.AuthenticationActivity;
 import com.usi.hikemap.ui.viewmodel.ProfileViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -142,23 +144,20 @@ public class ProfileFragment extends Fragment {
         }
 
         recyclerView = root.findViewById(R.id.result_list_route);
-        // TODO: Sostituire con la logica per ottenere le route dal database
+        mProfileViewModel.readRoutes(userId).observe(getViewLifecycleOwner(), route -> {
+            if (route != null) {
+                adapter = new ProfileRecycleViewAdapter(requireContext(), route, new ProfileRecycleViewAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(Route route) {
+                        // Azioni da eseguire quando viene cliccato un elemento della RecyclerView
+                        // entrare dentro
+                    }
+                });
 
-        String idRoute = HikeMapOpenHelper.loadLastRouteID(getContext());
-
-        List<Route> routes;
-        routes = HikeMapOpenHelper.loadRoutes(idRoute, getContext());
-
-        adapter = new ProfileRecycleViewAdapter(requireContext(), routes, new ProfileRecycleViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Route route) {
-                // Azioni da eseguire quando viene cliccato un elemento della RecyclerView
-                // entrare dentro
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
             }
         });
-
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         return root;
     }
