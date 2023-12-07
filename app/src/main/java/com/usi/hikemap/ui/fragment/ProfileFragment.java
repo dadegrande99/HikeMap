@@ -145,8 +145,19 @@ public class ProfileFragment extends Fragment {
 
         recyclerView = root.findViewById(R.id.result_list_route);
         mProfileViewModel.readRoutes(userId).observe(getViewLifecycleOwner(), route -> {
-            if (route != null) {
-                adapter = new ProfileRecycleViewAdapter(requireContext(), route, new ProfileRecycleViewAdapter.OnItemClickListener() {
+            if (route != null && !route.isEmpty()) {
+                // Create a new list that contains only the first occurrence of each idRoute
+                List<Route> distinctRoutes = new ArrayList<>();
+                List<String> addedRoutes = new ArrayList<>();
+
+                for (Route r : route) {
+                    if (!addedRoutes.contains(r.getIdRoute())) {
+                        distinctRoutes.add(r);
+                        addedRoutes.add(r.getIdRoute());
+                    }
+                }
+
+                adapter = new ProfileRecycleViewAdapter(requireContext(), distinctRoutes, new ProfileRecycleViewAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(Route route) {
                         // Azioni da eseguire quando viene cliccato un elemento della RecyclerView
@@ -156,6 +167,7 @@ public class ProfileFragment extends Fragment {
 
                 recyclerView.setAdapter(adapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
             }
         });
 
