@@ -6,6 +6,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -21,16 +30,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -42,16 +41,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.usi.hikemap.HikeMapOpenHelper;
 import com.usi.hikemap.R;
 import com.usi.hikemap.adapter.ProfileRecycleViewAdapter;
+import com.usi.hikemap.utils.ParcelableRouteList;
 import com.usi.hikemap.model.Route;
 import com.usi.hikemap.model.User;
-import com.usi.hikemap.repository.ManagerRepository;
 import com.usi.hikemap.ui.authentication.AuthenticationActivity;
 import com.usi.hikemap.ui.viewmodel.ProfileViewModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -73,14 +72,14 @@ public class ProfileFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ProfileRecycleViewAdapter adapter;
-
+    View root;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_profile, container, false);
+        root = inflater.inflate(R.layout.fragment_profile, container, false);
 
         // Initialize ViewModel
         mProfileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
@@ -104,6 +103,7 @@ public class ProfileFragment extends Fragment {
 
         // Log user's UID
         Log.d(TAG, "onCreateView: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
+
 
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,8 +144,13 @@ public class ProfileFragment extends Fragment {
         }
 
         recyclerView = root.findViewById(R.id.result_list_route);
+
         mProfileViewModel.readRoutes(userId).observe(getViewLifecycleOwner(), route -> {
             if (route != null && !route.isEmpty()) {
+
+                // Sort the list of routes by date
+                Collections.sort(route, (r1, r2) -> r2.getTimestamp().compareTo(r1.getTimestamp()));
+
                 // Create a new list that contains only the first occurrence of each idRoute
                 List<Route> distinctRoutes = new ArrayList<>();
                 List<String> addedRoutes = new ArrayList<>();
@@ -160,8 +165,14 @@ public class ProfileFragment extends Fragment {
                 adapter = new ProfileRecycleViewAdapter(requireContext(), distinctRoutes, new ProfileRecycleViewAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(Route route) {
-                        // Azioni da eseguire quando viene cliccato un elemento della RecyclerView
-                        // entrare dentro
+                        Log.d(TAG, "onItemClick: Enter");
+
+                        ParcelableRouteList parcelableRouteList = new ParcelableRouteList(distinctRoutes);
+                        HikeDetailsFragment hikeDetails = HikeDetailsFragment.newInstance(parcelableRouteList);
+
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.frame_layout, hikeDetails)
+                                .commit();
                     }
                 });
 
@@ -173,8 +184,6 @@ public class ProfileFragment extends Fragment {
 
         return root;
     }
-
-
 
 
     ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
@@ -324,6 +333,4 @@ public class ProfileFragment extends Fragment {
             }
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
-
-
 }

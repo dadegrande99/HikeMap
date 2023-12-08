@@ -61,13 +61,13 @@ public class ProfileRecycleViewAdapter extends RecyclerView.Adapter<ProfileRecyc
         }
 
         public void bind(Route route){
-            //riferimento alla view e il come popolare quest view
+            // Set the values
             ((TextView)itemView.findViewById(R.id.timestamp_text)).setText(route.getIdRoute());
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemClickListener.onItemClick(route); //leghiamo al click la news associata alla cella
-                    Toast.makeText(context, "Redirect to specific route", Toast.LENGTH_SHORT).show();
+                    onItemClickListener.onItemClick(route);
+                    //Toast.makeText(context, "Redirect to specific route", Toast.LENGTH_SHORT).show();
 
                 }
             });

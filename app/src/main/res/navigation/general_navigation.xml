@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_go" />
 
     <fragment
+        android:id="@+id/ss"
+        android:name="com.usi.hikemap.ui.fragment.ProfileFragment"
+        android:label="@string/title_search"
+        tools:layout="@layout/fragment_search" />
+
+    <fragment
         android:id="@+id/pp"
         android:name="com.usi.hikemap.ui.fragment.ProfileFragment"
         android:label="@string/title_profile"
@@ -19,13 +25,11 @@
         <action
             android:id="@+id/action_profileFragment_to_updateProfileFragment"
             app:destination="@id/updateProfile" />
-    </fragment>
+        <action
+            android:id="@+id/action_profileFragment_to_GoDetailsFragment"
+            app:destination="@id/GoDetailsFragment" />
 
-    <fragment
-        android:id="@+id/ss"
-        android:name="com.usi.hikemap.ui.fragment.ProfileFragment"
-        android:label="@string/title_search"
-        tools:layout="@layout/fragment_search" />
+    </fragment>
 
     <fragment
         android:id="@+id/updateProfile"
@@ -35,6 +39,17 @@
         <action
             android:id="@+id/action_updateProfileFragment_to_ProfileFragment"
             app:destination="@id/pp" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/GoDetailsFragment"
+        android:name="com.usi.hikemap.ui.fragment.GoDetailsFragment"
+        android:label="@string/godetailsfragment">
+        <argument
+            android:name="route"
+            app:argType="com.usi.hikemap.model.Route"
+            app:nullable="true"
+            android:defaultValue="@null"/>
     </fragment>
 
 </navigation>
