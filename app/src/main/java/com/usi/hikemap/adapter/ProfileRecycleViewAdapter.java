@@ -1,6 +1,7 @@
 package com.usi.hikemap.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.usi.hikemap.R;
 import com.usi.hikemap.model.Route;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ProfileRecycleViewAdapter extends RecyclerView.Adapter<ProfileRecycleViewAdapter.ProfileViewHolder> {
@@ -61,14 +65,18 @@ public class ProfileRecycleViewAdapter extends RecyclerView.Adapter<ProfileRecyc
         }
 
         public void bind(Route route){
-            // Set the values
-            ((TextView)itemView.findViewById(R.id.timestamp_text)).setText(route.getIdRoute());
+
+            Log.d(TAG, route.getTimestamp());
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS");
+            LocalDateTime dateTime = LocalDateTime.parse(route.getTimestamp(), formatter);
+            String data = dateTime.getDayOfMonth() + ":" + dateTime.getMonthValue() + ":" + dateTime.getYear() + " : " + dateTime.getHour() + ":" + dateTime.getMinute();
+
+            ((TextView)itemView.findViewById(R.id.date_text)).setText(data);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onItemClickListener.onItemClick(route);
-                    //Toast.makeText(context, "Redirect to specific route", Toast.LENGTH_SHORT).show();
-
                 }
             });
 
