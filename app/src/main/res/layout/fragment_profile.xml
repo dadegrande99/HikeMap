@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.05" />
+        app:layout_constraintGuide_begin="0dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/text_guideline"
@@ -271,13 +271,12 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/result_list_route"
         android:layout_width="412dp"
-        android:layout_height="313dp"
+        android:layout_height="280dp"
         android:layout_marginTop="30dp"
+        android:layout_marginBottom="170dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -285,5 +284,17 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3"
         app:layout_constraintVertical_bias="1.0"
         tools:ignore="NotSibling" />
+
+    <Button
+        android:id="@+id/viewMoreButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/result_list_route"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="View More"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/result_list_route" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

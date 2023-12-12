@@ -1,10 +1,15 @@
 package com.usi.hikemap.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
-public class Route {
+public class Route implements Parcelable {
 
     private int id, subRoute;
     private String timestamp, idRoute;
@@ -87,6 +92,46 @@ public class Route {
                 ", longitude=" + longitude +
                 ", latitude=" + latitude +
                 '}';
+    }
+
+    protected Route(Parcel in) {
+        id = in.readInt();
+        idRoute = in.readString();
+        subRoute = in.readInt();
+        timestamp = in.readString();
+        altitude = in.readDouble();
+        longitude = in.readDouble();
+        latitude = in.readDouble();
+    }
+
+    public static final Creator<Route> CREATOR = new Creator<Route>() {
+        @Override
+        public Route createFromParcel(Parcel in) {
+            return new Route(in);
+        }
+
+        @Override
+        public Route[] newArray(int size) {
+            return new Route[size];
+        }
+    };
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(this.id);
+        parcel.writeString(this.idRoute);
+        parcel.writeInt(this.subRoute);
+        parcel.writeString(this.timestamp);
+        parcel.writeDouble(this.altitude);
+        parcel.writeDouble(this.longitude);
+        parcel.writeDouble(this.latitude);
+
     }
 }
 
