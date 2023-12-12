@@ -1,37 +1,41 @@
 package com.usi.hikemap.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.usi.hikemap.R;
 import com.usi.hikemap.model.Route;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileRecycleViewAdapter extends RecyclerView.Adapter<ProfileRecycleViewAdapter.ProfileViewHolder> {
 
-    public static String TAG = "ProfileRecycleViewAdapter";
+    private static final String TAG = "ProfileRecycleViewAdapter";
+    private static final int INITIAL_DISPLAY_COUNT = 3; // Adjust this based on your initial display requirements
 
-    public interface OnItemClickListener{
+    public interface OnItemClickListener {
         void onItemClick(Route route);
     }
 
-    private List<Route> routes;
+    private List<Route> displayedRoutes; // Initially displayed items
+    private List<Route> allRoutes;       // All items
     private OnItemClickListener onItemClickListener;
     private Context context;
 
-    public ProfileRecycleViewAdapter(Context context, List<Route> routes, OnItemClickListener onItemClickListener){
+    public ProfileRecycleViewAdapter(Context context, List<Route> routes, OnItemClickListener onItemClickListener) {
         this.context = context;
-        this.routes = routes;
+        this.allRoutes = routes;
+        this.displayedRoutes = new ArrayList<>(routes.subList(0, Math.min(routes.size(), INITIAL_DISPLAY_COUNT))); // Initial subset
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -44,47 +48,44 @@ public class ProfileRecycleViewAdapter extends RecyclerView.Adapter<ProfileRecyc
 
     @Override
     public void onBindViewHolder(@NonNull ProfileViewHolder holder, int position) {
-        holder.bind(routes.get(position));
-        Route route = routes.get(position);
+        holder.bind(displayedRoutes.get(position));
+        Route route = displayedRoutes.get(position);
     }
 
     @Override
     public int getItemCount() {
-        if(routes != null){
-            return routes.size();
+        if (displayedRoutes != null) {
+            return displayedRoutes.size();
         }
         return 0;
     }
 
-//-----------------------
+    public void loadAllItems() {
+        displayedRoutes.addAll(allRoutes);
+        notifyDataSetChanged();
+    }
 
-    public class ProfileViewHolder extends RecyclerView.ViewHolder{
+    public class ProfileViewHolder extends RecyclerView.ViewHolder {
 
         public ProfileViewHolder(@NonNull View itemView) {
             super(itemView);
         }
 
-        public void bind(Route route){
-
-            Log.d(TAG, route.getTimestamp());
-
+        public void bind(Route route) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS");
             LocalDateTime dateTime = LocalDateTime.parse(route.getTimestamp(), formatter);
             String data = dateTime.getDayOfMonth() + ":" + dateTime.getMonthValue() + ":" + dateTime.getYear() + " : " + dateTime.getHour() + ":" + dateTime.getMinute();
 
-            ((TextView)itemView.findViewById(R.id.date_text)).setText(data);
+            ((TextView) itemView.findViewById(R.id.timestamp_text)).setText(route.getIdRoute());
+            ((TextView) itemView.findViewById(R.id.date_text)).setText(data);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onItemClickListener.onItemClick(route);
                 }
             });
-
         }
     }
 
+
 }
-
-
-
-
