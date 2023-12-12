@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -73,7 +74,6 @@ public class ProfileFragment extends Fragment {
     private RecyclerView recyclerView;
     private ProfileRecycleViewAdapter adapter;
     View root;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -100,6 +100,8 @@ public class ProfileFragment extends Fragment {
         mName = root.findViewById(R.id.name_user);
         mUsername = root.findViewById(R.id.username_user);
         profilePic = root.findViewById(R.id.profile_picture);
+
+        Button viewMoreButton = root.findViewById(R.id.viewMoreButton);
 
         // Log user's UID
         Log.d(TAG, "onCreateView: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -155,6 +157,20 @@ public class ProfileFragment extends Fragment {
                 List<Route> distinctRoutes = new ArrayList<>();
                 List<String> addedRoutes = new ArrayList<>();
 
+                // List with the same getIdRoute
+                List<Route> singleRoute = new ArrayList<>();
+                for (Route r : route) {
+                    if (r.getIdRoute().equals(route.get(0).getIdRoute())) {
+                        singleRoute.add(r);
+                    }
+                }
+
+
+                // print the list
+                for (Route r : singleRoute) {
+                    Log.d(TAG, "onCreateView: " + r.getId());
+                }
+
                 for (Route r : route) {
                     if (!addedRoutes.contains(r.getIdRoute())) {
                         distinctRoutes.add(r);
@@ -162,12 +178,26 @@ public class ProfileFragment extends Fragment {
                     }
                 }
 
+                viewMoreButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Load all items when the button is pressed
+                        //adapter.loadAllItems();
+                        ParcelableRouteList parcelableRouteList = new ParcelableRouteList(distinctRoutes);
+                        AllHikesFragment allHikesFragment = AllHikesFragment.newInstance(parcelableRouteList);
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.frame_layout, allHikesFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                });
+
                 adapter = new ProfileRecycleViewAdapter(requireContext(), distinctRoutes, new ProfileRecycleViewAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(Route route) {
                         Log.d(TAG, "onItemClick: Enter");
 
-                        ParcelableRouteList parcelableRouteList = new ParcelableRouteList(distinctRoutes);
+                        ParcelableRouteList parcelableRouteList = new ParcelableRouteList(singleRoute);
                         HikeDetailsFragment hikeDetails = HikeDetailsFragment.newInstance(parcelableRouteList);
 
                         getActivity().getSupportFragmentManager().beginTransaction()
