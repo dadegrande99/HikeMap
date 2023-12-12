@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ import java.util.List;
 public class HikeDetailsFragment extends Fragment {
 
     private static final String ARG_ROUTE_LIST = "List<Object>";
-    private static String TAG = "GoDetailsFragment";
+    private static String TAG = "HikeDetailsFragment";
     private String userId;
     private GoDetailsViewModel mGoDetailsViewModel;
 
@@ -56,6 +57,7 @@ public class HikeDetailsFragment extends Fragment {
             if (parcelableRouteList != null) {
                 List<Route> receivedRoutes = parcelableRouteList.getRouteList();
                 // Do something with the receivedRoutes
+                Log.d(TAG, "onCreateView: " + receivedRoutes.toString());
             }
         }
 
