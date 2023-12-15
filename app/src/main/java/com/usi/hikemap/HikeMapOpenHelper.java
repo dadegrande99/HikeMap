@@ -127,12 +127,13 @@ public class HikeMapOpenHelper extends SQLiteOpenHelper {
                 @SuppressLint("Range") double altitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_ALTITUDE));
                 @SuppressLint("Range") String timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_TIMESTAMP));
                 @SuppressLint("Range") int id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(COLUMN_ID)));
+                @SuppressLint("Range") int sub = Integer.parseInt(cursor.getString(cursor.getColumnIndex(COLUMN_SUBROUTE)));
 
                 // Create a Route object with extracted values
                 Route route = new Route(
                         id,
                         idRoute,
-                        0,
+                        sub,
                         timestamp,
                         altitude,
                         longitude,

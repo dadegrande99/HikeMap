@@ -34,6 +34,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.gms.location.FusedLocationProviderClient;
