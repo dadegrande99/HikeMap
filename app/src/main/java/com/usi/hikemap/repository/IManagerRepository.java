@@ -24,4 +24,7 @@ public interface IManagerRepository {
     MutableLiveData<AuthenticationResponse> updateData (Map<String, Object> data);
 
     MutableLiveData<AuthenticationResponse> updateRoute(String userId, List<Route> route);
+
+    MutableLiveData<List<Route>> readRoutes(String userId);
+
 }

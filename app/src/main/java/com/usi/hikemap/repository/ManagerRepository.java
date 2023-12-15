@@ -16,8 +16,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -25,6 +27,7 @@ import com.usi.hikemap.model.AuthenticationResponse;
 import com.usi.hikemap.model.Route;
 import com.usi.hikemap.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +42,8 @@ public class ManagerRepository implements IManagerRepository {
 
     private final MutableLiveData<AuthenticationResponse> mAuthenticationResponse;
     private final MutableLiveData<User> mUserLiveData;
+    private final MutableLiveData<Route> mRouteLiveData;
+    private final MutableLiveData<List<Route>> mRouteLiveDataL;
     private String userId, path;
 
     private static final String TAG = "ManageRepository";
@@ -46,12 +51,12 @@ public class ManagerRepository implements IManagerRepository {
     public ManagerRepository(Application application) {
         fAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance(FIREBASE_DATABASE_URL);
-
         fStore = FirebaseStorage.getInstance();
-        //fStorageRe = FirebaseStorage.getInstance().getReference();
 
         mAuthenticationResponse = new MutableLiveData<>();
         mUserLiveData = new MutableLiveData<>();
+        mRouteLiveData = new MutableLiveData<>();
+        mRouteLiveDataL = new MutableLiveData<>();
     }
 
 
@@ -81,6 +86,7 @@ public class ManagerRepository implements IManagerRepository {
 
         return mUserLiveData;
     }
+
     @Override
     public MutableLiveData<AuthenticationResponse> readImage(String uId) {
         fPhotoReference = fStore.getReference().child("profile_picture/" + uId);
@@ -180,13 +186,10 @@ public class ManagerRepository implements IManagerRepository {
     @Override
     public MutableLiveData<AuthenticationResponse> updateRoute(String userId, List<Route> route) {
 
-        fReference = fDatabase.getReference().child(USER_COLLECTION).child(userId).child("routes");
-
         Map<String, Object> data = new HashMap();
-
-        for (Route r: route) {
-            data.put(r.getTimestamp(), route);
-        }
+        data.put(route.get(0).getIdRoute(), route);
+        
+        fReference = fDatabase.getReference().child(USER_COLLECTION).child(userId).child("routes");
 
         fReference.updateChildren(data).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -207,4 +210,57 @@ public class ManagerRepository implements IManagerRepository {
         });
         return mAuthenticationResponse;
     }
+
+    @Override
+    public MutableLiveData<List<Route>> readRoutes(String userId) {
+        fReference = fDatabase.getReference();
+
+        // Assuming that "routes" is a child node under the user's ID
+        DatabaseReference routesReference = fReference.child(USER_COLLECTION).child(userId).child("routes");
+
+        routesReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Route> routes = new ArrayList<>();
+
+                for (DataSnapshot routeSnapshot : dataSnapshot.getChildren()) {
+                    // Iterate through the children of "routes"
+                    for (DataSnapshot subRouteSnapshot : routeSnapshot.getChildren()) {
+                        Integer id = subRouteSnapshot.child("id").getValue(Integer.class);
+                        String idRoute = subRouteSnapshot.child("idRoute").getValue(String.class);
+                        Integer subRoute = subRouteSnapshot.child("subRoute").getValue(Integer.class);
+                        String timestamp = subRouteSnapshot.child("timestamp").getValue(String.class);
+                        Double altitude = subRouteSnapshot.child("altitude").getValue(Double.class);
+                        Double latitude = subRouteSnapshot.child("latitude").getValue(Double.class);
+                        Double longitude = subRouteSnapshot.child("longitude").getValue(Double.class);
+
+                        // Check for null values before invoking methods
+                        if (id != null && idRoute != null && subRoute != null && timestamp != null
+                                && altitude != null && latitude != null && longitude != null) {
+
+                            Route route = new Route(id, idRoute, subRoute, timestamp, altitude, latitude, longitude);
+                            routes.add(route);
+                            Log.d(TAG, "onDataChange: Route added: " + route.toString());
+                        } else {
+                            // Handle the case when any value is null
+                            Log.d(TAG, "One or more values are null");
+                        }
+                    }
+                }
+
+                Log.d(TAG, "onDataChange: readRoutes: " + routes);
+                // Post the list of routes to the LiveData
+                mRouteLiveDataL.postValue(routes);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "Error getting data", databaseError.toException());
+                mRouteLiveDataL.postValue(null);
+            }
+        });
+
+        return mRouteLiveDataL;
+    }
+
 }
