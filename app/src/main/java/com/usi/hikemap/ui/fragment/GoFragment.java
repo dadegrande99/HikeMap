@@ -195,8 +195,6 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 tPauseStart = System.currentTimeMillis();
                 chronometer.stop();
                 handler.removeCallbacks(runnable);
-                sensorManager.unregisterListener(sensorListener, accSensor);
-                sensorManager.unregisterListener(sensorListener, stepDetectorSensor);
             }
         });
 
@@ -209,26 +207,6 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 tPauseDelta += System.currentTimeMillis() - tPauseStart;
                 chronometer.start();
                 handler.postDelayed(runnable, 0);
-                //sensorListener.playCounter();
-                if (accSensor != null)
-                {
-                    sensorListener = new StepCounterListener(steps, database, lastLocation, playLayout);
-
-                    sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
-                    Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
-                }
-
-                if (stepDetectorSensor != null)
-                {
-                    sensorListener = new StepCounterListener(steps, lastLocation, playLayout);
-
-                    sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
-                    Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(), R.string.step_detector_sensor_not_available, Toast.LENGTH_LONG).show();
-                }
             }
         });
 
@@ -249,7 +227,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 sensorManager.unregisterListener(sensorListener, accSensor);
                 sensorManager.unregisterListener(sensorListener, stepDetectorSensor);
 
-
+                
                 // 1. Get last idRoute
                 String idRoute = databaseOpenHelper.loadLastRouteID(getContext());
                 Log.d(TAG, "idRoute: " + idRoute);
