@@ -110,13 +110,9 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
         mGoViewModel = new ViewModelProvider(requireActivity()).get(GoViewModel.class);
 
-
-        // Step counter sensor
-
         sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
-        accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
-        stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+
 
         // call database
         databaseOpenHelper = new HikeMapOpenHelper(this.getContext());
@@ -161,6 +157,9 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 down.setText("0");
                 up.setText("0");
 
+                // Step counter sensor
+                accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+                stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
                 tStart = System.currentTimeMillis();
                 handler.postDelayed(runnable, 0);
@@ -224,10 +223,12 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 chronometer.stop();
                 handler.removeCallbacks(runnable);
 
+                // Step counter sensor
                 sensorManager.unregisterListener(sensorListener, accSensor);
                 sensorManager.unregisterListener(sensorListener, stepDetectorSensor);
+                accSensor = null;
+                stepDetectorSensor = null;
 
-                
                 // 1. Get last idRoute
                 String idRoute = databaseOpenHelper.loadLastRouteID(getContext());
                 Log.d(TAG, "idRoute: " + idRoute);
@@ -547,8 +548,7 @@ class  StepCounterListener implements SensorEventListener {
                 stepCountsView.setText(String.valueOf(accStepCounter));
 
                 ContentValues databaseEntry = new ContentValues();
-              
-              
+
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_SUBROUTE, this.subroute);
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_IDROUTE, this.routeId);
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_TIMESTAMP, timePointList.get(i));
