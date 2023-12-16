@@ -172,14 +172,14 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (accSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, database, lastLocation, playLayout, routeId, subRoute);
+                    sensorListener = new StepCounterListener(steps, database, lastLocation, routeId, subRoute);
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
                     if (stepDetectorSensor != null)
                     {
-                        sensorListener = new StepCounterListener(steps, lastLocation, playLayout, routeId, subRoute);
+                        sensorListener = new StepCounterListener(steps, lastLocation, routeId, subRoute);
                         sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                         Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                     } else {
@@ -217,14 +217,14 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (accSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, database, lastLocation, playLayout, routeId, subRoute);
+                    sensorListener = new StepCounterListener(steps, database, lastLocation, routeId, subRoute);
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
                     if (stepDetectorSensor != null)
                     {
-                        sensorListener = new StepCounterListener(steps, lastLocation, playLayout, routeId, subRoute);
+                        sensorListener = new StepCounterListener(steps, lastLocation, routeId, subRoute);
                         sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                         Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                     } else {
@@ -435,13 +435,9 @@ class  StepCounterListener implements SensorEventListener {
     private int step = 1;
 
     TextView stepCountsView;
-    LinearLayout playLayout;
     private SQLiteDatabase database;
 
-
-    private boolean play;
     private int subroute;
-
     private String routeId;
 
 
@@ -452,10 +448,8 @@ class  StepCounterListener implements SensorEventListener {
     private Location location;
 
 
-    public StepCounterListener(TextView stepCountsView, SQLiteDatabase databse, Location location, LinearLayout playLayout, String routeId, int subroute) {
+    public StepCounterListener(TextView stepCountsView, SQLiteDatabase databse, Location location, String routeId, int subroute) {
         this.stepCountsView = stepCountsView;
-        this.playLayout = playLayout;
-        this.play = true;
         this.subroute = subroute;
         this.database = databse;
         this.location = location;
@@ -463,10 +457,8 @@ class  StepCounterListener implements SensorEventListener {
         this.routeId = routeId;
     }
 
-    public StepCounterListener(TextView stepCountsView, Location location, LinearLayout playLayout, String routeId, int subroute) {
+    public StepCounterListener(TextView stepCountsView, Location location, String routeId, int subroute) {
         this.stepCountsView = stepCountsView;
-        this.playLayout = playLayout;
-        this.play = true;
         this.subroute = subroute;
         this.location = location;
         this.accStepCounter = Integer.parseInt(stepCountsView.getText().toString());
@@ -551,10 +543,6 @@ class  StepCounterListener implements SensorEventListener {
 
             if (forwardSlope < 0 && downwardSlope > 0 && valuesInWindow.get(i) > stepThreshold) {
                 accStepCounter += 1;
-                Log.d("ACC STEPS: ", String.valueOf(accStepCounter));
-                Log.d("PAUSE", Integer.toString(this.step));
-                //Log.d("Prova", String.valueOf(this.subroute));
-                Log.d("Prova", String.valueOf(this.routeId));
                 stepCountsView.setText(String.valueOf(accStepCounter));
 
                 ContentValues databaseEntry = new ContentValues();
