@@ -27,7 +27,7 @@
             app:destination="@id/updateProfile" />
         <action
             android:id="@+id/action_profileFragment_to_GoDetailsFragment"
-            app:destination="@id/GoDetailsFragment" />
+            app:destination="@id/HikeDetailsFragment" />
 
     </fragment>
 
@@ -42,9 +42,9 @@
     </fragment>
 
     <fragment
-        android:id="@+id/GoDetailsFragment"
-        android:name="com.usi.hikemap.ui.fragment.GoDetailsFragment"
-        android:label="@string/godetailsfragment">
+        android:id="@+id/HikeDetailsFragment"
+        android:name="com.usi.hikemap.ui.fragment.HikeDetailsFragment"
+        android:label="@string/HikeDetailsFragment">
         <argument
             android:name="route"
             app:argType="com.usi.hikemap.model.Route"
