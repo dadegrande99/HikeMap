@@ -105,7 +105,7 @@ public class ProfileFragment extends Fragment {
         // Log user's UID
         Log.d(TAG, "onCreateView: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-        profilePic.setOnClickListener(new View.OnClickListener() {
+        /*profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
@@ -113,12 +113,16 @@ public class ProfileFragment extends Fragment {
                 intent.setType("image/*");
                 someActivityResultLauncher.launch(intent);
             }
-        });
+        });*/
+
 
         if (userId != null) {
-            mProfileViewModel.readUser(userId).observe(getViewLifecycleOwner(), user -> {
-                if (user != null) {
+            Log.d("ProfileFragment", "in first if");
 
+            mProfileViewModel.readUser(userId).observe(getViewLifecycleOwner(), user -> {
+                Log.d("ProfileFragment", "in profile view model");
+                if (user != null) {
+                    Log.d("ProfileFragment", "in second if");
                     getActivity().setTitle(user.getName());
 
                     mUser = user;
@@ -137,6 +141,8 @@ public class ProfileFragment extends Fragment {
                                         .load(mUser.getPath())
                                         //.signature(new ObjectKey(String.valueOf(System.currentTimeMillis())))
                                         .into(profilePic);
+                                //UPDATE PROFILE PIC VIEW IN UPDATE FRAGMENT
+
                             }
                             else {
                                 Log.d(TAG, "onClick: Error don't update image");
@@ -144,24 +150,21 @@ public class ProfileFragment extends Fragment {
                         }
                     });
 
+                }else{
+                    Log.d(TAG, "non trova l'user");
                 }
             });
         }
 
-        mHeight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "Height", Toast.LENGTH_SHORT).show();
 
-            }
-        });
+        //USELESS
+
 
         return root;
     }
 
 
-
-    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+    /*ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -173,7 +176,7 @@ public class ProfileFragment extends Fragment {
                         if(data.getData() != null) {
                             Uri profileUri = data.getData();
                             profilePic.setImageURI(profileUri);
-
+                            Log.d(TAG, "onClick: UPDATE");
                             mProfileViewModel.writeImage(profileUri).observe(getViewLifecycleOwner(), authenticationResponse -> {
                                 if (authenticationResponse.isSuccess()) {
                                     Log.d(TAG, "onClick: Image update");
@@ -185,7 +188,7 @@ public class ProfileFragment extends Fragment {
                         }
                     }
                 }
-            });
+            });*/
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

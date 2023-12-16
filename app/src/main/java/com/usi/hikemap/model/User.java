@@ -9,13 +9,16 @@ import com.google.firebase.database.Exclude;
 
 public class User implements Parcelable {
 
+    private String birthdate;
+
+    private String sex;
     private String name, surname, username, password, auth, userId, provider;
     private String image, path;
 
-    private int height, weight;
+    private String height, weight;
 
     public User(String name, String surname, String username, String auth, String password, String userId,
-                String provider, String image, String path, int height, int weight){
+                String provider, String image, String path, String height, String weight, String birthdate, String sex){
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -27,25 +30,26 @@ public class User implements Parcelable {
         this.path = path;
         this.height = height;
         this.weight = weight;
-
+        this.birthdate = birthdate;
+        this.sex = sex;
     }
 
     public User() {
     }
 
-    public int getHeight() {
+    public String getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(String height) {
         this.height = height;
     }
 
-    public int getWeight() {
+    public String getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(String weight) {
         this.weight = weight;
     }
 
@@ -59,6 +63,10 @@ public class User implements Parcelable {
         provider = in.readString();
         image = in.readString();
         path = in.readString();
+        height = in.readString();
+        weight = in.readString();
+        birthdate = in.readString();
+        sex = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -79,6 +87,14 @@ public class User implements Parcelable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(String birthdate) {
+        this.birthdate = birthdate;
     }
 
     public String getSurname() {
@@ -147,6 +163,14 @@ public class User implements Parcelable {
         this.path = path;
     }
 
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -159,6 +183,9 @@ public class User implements Parcelable {
                 ", provider='" + provider + '\'' +
                 ", image='" + image + '\'' +
                 ", path='" + path + '\'' +
+                ", path='" + height + '\'' +
+                ", path='" + weight + '\'' +
+                ", path='" + birthdate + '\'' +
                 '}';
     }
 
@@ -178,6 +205,11 @@ public class User implements Parcelable {
         parcel.writeString(this.provider);
         parcel.writeString(this.image);
         parcel.writeString(this.path);
+
+        parcel.writeString(this.height);
+        parcel.writeString(this.weight);
+        parcel.writeString(this.birthdate);
+
     }
 }
 
