@@ -2,9 +2,281 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
 
-    <!-- TODO: Update blank fragment layout -->
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            >
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.12" />
+
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_pic"
+                    android:layout_width="155dp"
+                    android:layout_height="155dp"
+
+                    android:layout_marginBottom="64dp"
+                    app:layout_constraintBottom_toTopOf="@+id/editTextHeight"
+                    app:layout_constraintTop_toBottomOf="@id/guideline"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:srcCompat="@drawable/icon_profile" />
+
+                <EditText
+                    android:id="@+id/editTextHeight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="40dp"
+                    android:layout_marginTop="80dp"
+                    android:hint="Height"
+                    android:textColorHint="#8e9094"
+                    android:textCursorDrawable="@null"
+                    android:inputType="text"
+                    android:drawablePadding="5dp"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    app:layout_constraintTop_toBottomOf="@+id/profile_pic"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <EditText
+                    android:id="@+id/editTextWeight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:hint="Weight"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="40dp"
+                    android:textColorHint="#8e9094"
+                    android:drawablePadding="5dp"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    app:layout_constraintTop_toBottomOf="@+id/editTextHeight"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <TextView
+                    android:id="@+id/birthdate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:hint="Birthdate"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="40dp"
+                    android:textColorHint="#8e9094"
+                    android:drawablePadding="5dp"
+                    android:textSize="16sp"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    app:layout_constraintTop_toBottomOf="@+id/editTextWeight"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+
+                />
+
+                <Button
+                    android:id="@+id/date_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    app:layout_constraintEnd_toEndOf="@+id/birthdate"
+                    app:layout_constraintTop_toTopOf="@+id/birthdate"
+                    app:layout_constraintBottom_toBottomOf="@+id/birthdate"
+                    tools:layout_editor_absoluteX="292dp"
+                    tools:layout_editor_absoluteY="440dp"
+                    tools:ignore="MissingConstraints" />
+
+                <TextView
+                    android:id="@+id/sex"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:hint="Sex"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="40dp"
+                    android:textColorHint="#8e9094"
+                    android:drawablePadding="5dp"
+                    android:textSize="16sp"
+                    android:layout_below="@id/genderSpinner"
+                    android:layout_centerHorizontal="true"
+
+                    app:layout_constraintTop_toBottomOf="@+id/birthdate"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+
+                <Spinner
+                    android:id="@+id/genderSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:entries="@array/gender_options"
+                    app:layout_constraintBottom_toBottomOf="@+id/sex"
+                    app:layout_constraintEnd_toEndOf="@+id/sex"
+                    app:layout_constraintTop_toTopOf="@+id/sex" />
+
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <!-- <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_picture"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:layout_marginLeft="80dp"
+            android:layout_marginRight="80dp"
+            app:layout_constraintStart_toStartOf="@id/guideline"
+
+            app:srcCompat="@drawable/icon_profile" />
+
+        <EditText
+            android:id="@+id/editTextHeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="40dp"
+            android:hint="Height"
+            android:textColorHint="#8e9094"
+            android:textCursorDrawable="@null"
+            android:inputType="text"
+            android:drawablePadding="5dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="250dp"
+            android:gravity="start"/>
+
+
+        <EditText
+            android:id="@+id/editTextWeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Weight"
+            android:textCursorDrawable="@null"
+            android:textColorHint="#8e9094"
+            android:drawablePadding="5dp"
+            android:inputType="textEmailAddress"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="320dp"
+
+            android:gravity="start" />
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Birthdate"
+            android:textCursorDrawable="@null"
+            android:textColorHint="#8e9094"
+
+            android:drawablePadding="5dp"
+            android:inputType="text"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="390dp"
+            android:id="@+id/fname"
+            android:gravity="start" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Sex"
+            android:textCursorDrawable="@null"
+            android:textColorHint="#8e9094"
+
+            android:drawablePadding="5dp"
+            android:inputType="text"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="460dp"
+            android:id="@+id/lname"
+            android:gravity="start" />
+
+
+
+         android:layout_width="168dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="200dp"
+        android:layout_marginTop="260dp"
+        android:hint="Height"
+        android:text="Height:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextWeight"
+
+        android:drawableStart="@drawable/account"
+
+        />
+
+    <TextView
+        android:id="@+id/textViewLabelHeight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="200dp"
+        android:layout_marginTop="200dp"
+        android:text="La tua altezza qui: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+        ADDED EDIT TEXT
+
+        <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="email"
+        android:textCursorDrawable="@null"
+        android:drawableStart="@drawable/email"
+        android:textColorHint="#8e9094"
+        android:drawablePadding="5dp"
+        android:inputType="textEmailAddress"
+        android:layout_marginRight="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="320dp"
+        android:id="@+id/email1"
+        android:gravity="start" />
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="First name"
+        android:textCursorDrawable="@null"
+        android:textColorHint="#8e9094"
+        android:drawableStart="@drawable/pencil"
+        android:drawablePadding="5dp"
+        android:inputType="text"
+        android:layout_marginRight="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="390dp"
+        android:id="@+id/fname"
+        android:gravity="start" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Last name"
+        android:textCursorDrawable="@null"
+        android:textColorHint="#8e9094"
+        android:drawableStart="@drawable/pencil"
+        android:drawablePadding="5dp"
+        android:inputType="text"
+        android:layout_marginRight="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="460dp"
+        android:id="@+id/lname"
+        android:gravity="start" />
+
+        -->
 
 </FrameLayout>
