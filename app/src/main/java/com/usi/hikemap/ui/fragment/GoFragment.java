@@ -172,16 +172,16 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
+                    if (stepDetectorSensor != null)
+                    {
+                        sensorListener = new StepCounterListener(steps, lastLocation, playLayout);
+                        sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                        Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getContext(), R.string.step_detector_sensor_not_available, Toast.LENGTH_LONG).show();
+                    }
                 }
 
-                if (stepDetectorSensor != null)
-                {
-                    sensorListener = new StepCounterListener(steps, lastLocation, playLayout);
-                    sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
-                    Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(), R.string.step_detector_sensor_not_available, Toast.LENGTH_LONG).show();
-                }
             }
         });
 
@@ -224,10 +224,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 handler.removeCallbacks(runnable);
 
                 // Step counter sensor
-                sensorManager.unregisterListener(sensorListener, accSensor);
-                sensorManager.unregisterListener(sensorListener, stepDetectorSensor);
-                accSensor = null;
-                stepDetectorSensor = null;
+                sensorManager.unregisterListener(sensorListener);
+                sensorListener = null;
 
                 // 1. Get last idRoute
                 String idRoute = databaseOpenHelper.loadLastRouteID(getContext());
@@ -435,7 +433,7 @@ class  StepCounterListener implements SensorEventListener {
         this.subroute = 0;
         this.database = databse;
         this.location = location;
-        Log.d("Prova", "Location"+String.valueOf(this.location.toString()));
+        this.accStepCounter = 0;
         this.routeId = String.valueOf(System.currentTimeMillis());
     }
 
@@ -445,19 +443,8 @@ class  StepCounterListener implements SensorEventListener {
         this.play = true;
         this.subroute = 0;
         this.location = location;
-        Log.d("Prova", "Location"+String.valueOf(this.location.toString()));
+        this.accStepCounter = 0;
         this.routeId = String.valueOf(System.currentTimeMillis());
-        //Log.d("Prova", "ProvaLocation" + this.location.toString());
-    }
-
-    public void pauseCounter() {
-        this.step = 0;
-        Log.d("PAUSE", Integer.toString(this.step));
-
-    }
-
-    public void playCounter() {
-        this.step = 1;
     }
 
     @Override
@@ -544,7 +531,8 @@ class  StepCounterListener implements SensorEventListener {
                 accStepCounter += 1;
                 Log.d("ACC STEPS: ", String.valueOf(accStepCounter));
                 Log.d("PAUSE", Integer.toString(this.step));
-                Log.d("Prova", String.valueOf(this.subroute));
+                //Log.d("Prova", String.valueOf(this.subroute));
+                Log.d("Prova", String.valueOf(this.routeId));
                 stepCountsView.setText(String.valueOf(accStepCounter));
 
                 ContentValues databaseEntry = new ContentValues();
