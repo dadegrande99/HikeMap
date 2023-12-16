@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.05" />
+        app:layout_constraintGuide_begin="0dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/text_guideline"
@@ -28,17 +28,6 @@
         app:layout_constraintStart_toStartOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icon_profile" />
-        <!--
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5" -->
-
-    <!--android:text="@string/hint_nome" -->
-
-
-    <!-- android:layout_marginTop="112dp"
-    app:layout_constraintBottom_toTopOf="@+id/profile_picture"
-    app:layout_constraintHorizontal_bias="0.824"
-    -->
 
     <TextView
         android:id="@+id/name_user"
@@ -66,86 +55,6 @@
         app:layout_constraintHorizontal_bias="0.322"
         app:layout_constraintStart_toStartOf="@+id/text_guideline"
         app:layout_constraintTop_toBottomOf="@+id/name_user" />
-
-    <!-- generate a linear layout with 2 textview -->
-
-
-    <!--<LinearLayout
-        android:id="@+id/linear_layout_AW"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout">
-
-
-
-
-        <LinearLayout
-            android:id="@+id/linear_layout_age"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-
-            android:layout_gravity="right"
-            android:orientation="horizontal">
-
-
-            <TextView
-                android:id="@+id/ageLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Age: "
-                android:textColor="#000000"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/ageValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#000000"
-                android:textSize="18sp"/>
-
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/linear_layout_weight"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_gravity="right"
-            android:orientation="horizontal"
-            android:layout_marginStart="15dp">
-
-            <TextView
-                android:id="@+id/weight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Weight: "
-                android:textColor="#000000"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/weightValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#000000"
-                android:textSize="18sp"/>
-
-        </LinearLayout>
-
-
-
-
-    </LinearLayout> -->
-
 
     <LinearLayout
         android:id="@+id/linear_layout_GH"
@@ -268,9 +177,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/result_list_route"
-        android:layout_width="404dp"
-        android:layout_height="455dp"
+        android:layout_width="412dp"
+        android:layout_height="280dp"
         android:layout_marginTop="30dp"
+        android:layout_marginBottom="170dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -278,5 +188,17 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3"
         app:layout_constraintVertical_bias="1.0"
         tools:ignore="NotSibling" />
+
+    <Button
+        android:id="@+id/viewMoreButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/result_list_route"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="View More"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/result_list_route" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

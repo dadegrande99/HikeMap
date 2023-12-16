@@ -17,7 +17,7 @@
 
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/music_image"
+            android:id="@+id/go_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentStart="true"
@@ -32,28 +32,28 @@
 
 
         <TextView
-            android:id="@+id/username_text"
+            android:id="@+id/timestamp_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:fontFamily="@font/abel_regular"
-            android:text="Username"
+            android:text="@string/timestamp"
             android:textColor="#999999"
             android:textSize="12sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/music_text"
+            app:layout_constraintBottom_toTopOf="@+id/date_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/music_text"
+            app:layout_constraintStart_toStartOf="@+id/date_text"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
 
         <TextView
-            android:id="@+id/music_text"
+            android:id="@+id/date_text"
             android:layout_width="252dp"
             android:layout_height="30dp"
             android:fontFamily="@font/abel_regular"
-            android:text="Elton"
+            android:text="DATE"
             android:textColor="@color/colorText"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"

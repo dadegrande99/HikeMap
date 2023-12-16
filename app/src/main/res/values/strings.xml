@@ -76,6 +76,9 @@
 
 
     <string name="route">Route</string>
+    <string name="timestamp">Timestamp</string>
+    <string name="godetailsfragment">GoDetailsFragment</string>
+    <string name="HikeDetailsFragment">HikeDetailsFragment</string>
 
 
 </resources>

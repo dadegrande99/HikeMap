@@ -7,16 +7,21 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 
+import com.usi.hikemap.model.AuthenticationResponse;
+import com.usi.hikemap.model.Route;
 import com.usi.hikemap.model.User;
 import com.usi.hikemap.repository.IManagerRepository;
 import com.usi.hikemap.repository.ManagerRepository;
+
+import java.util.List;
+import java.util.Map;
 
 
 public class GoViewModel extends AndroidViewModel {
 
     private MutableLiveData<User> mUserLiveData;
     private final IManagerRepository mManageRepository;
-    private SavedStateHandle state;
+    private MutableLiveData<AuthenticationResponse> mAuthenticationResponse;
 
     private boolean isFirstTime = true;
 
@@ -28,9 +33,8 @@ public class GoViewModel extends AndroidViewModel {
         isFirstTime = firstTime;
     }
 
-    public GoViewModel (SavedStateHandle savedStateHandle, @NonNull Application application){
+    public GoViewModel (Application application){
         super(application);
-        state = savedStateHandle;
         this.mManageRepository = new ManagerRepository(application);
     }
 
@@ -38,6 +42,17 @@ public class GoViewModel extends AndroidViewModel {
         mUserLiveData = mManageRepository.readUser(userId);
         return mUserLiveData;
     }
+
+    public MutableLiveData<AuthenticationResponse> updateData(Map<String, Object> data) {
+        mAuthenticationResponse = mManageRepository.updateData(data);
+        return mAuthenticationResponse;
+    }
+
+    public MutableLiveData<AuthenticationResponse> updateRoute(String userId, List<Route> route) {
+        mAuthenticationResponse = mManageRepository.updateRoute(userId, route);
+        return mAuthenticationResponse;
+    }
+
 
 
 }
