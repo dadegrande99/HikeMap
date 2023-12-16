@@ -110,13 +110,9 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
         mGoViewModel = new ViewModelProvider(requireActivity()).get(GoViewModel.class);
 
-
-        // Step counter sensor
-
         sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
-        accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
-        stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+
 
         // call database
         databaseOpenHelper = new HikeMapOpenHelper(this.getContext());
@@ -161,6 +157,9 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 down.setText("0");
                 up.setText("0");
 
+                // Step counter sensor
+                accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+                stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
                 tStart = System.currentTimeMillis();
                 handler.postDelayed(runnable, 0);
@@ -173,16 +172,16 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
+                    if (stepDetectorSensor != null)
+                    {
+                        sensorListener = new StepCounterListener(steps, lastLocation, playLayout);
+                        sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                        Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getContext(), R.string.step_detector_sensor_not_available, Toast.LENGTH_LONG).show();
+                    }
                 }
 
-                if (stepDetectorSensor != null)
-                {
-                    sensorListener = new StepCounterListener(steps, lastLocation, playLayout);
-                    sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
-                    Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(), R.string.step_detector_sensor_not_available, Toast.LENGTH_LONG).show();
-                }
             }
         });
 
@@ -224,10 +223,10 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 chronometer.stop();
                 handler.removeCallbacks(runnable);
 
-                sensorManager.unregisterListener(sensorListener, accSensor);
-                sensorManager.unregisterListener(sensorListener, stepDetectorSensor);
+                // Step counter sensor
+                sensorManager.unregisterListener(sensorListener);
+                sensorListener = null;
 
-                
                 // 1. Get last idRoute
                 String idRoute = databaseOpenHelper.loadLastRouteID(getContext());
                 Log.d(TAG, "idRoute: " + idRoute);
@@ -434,7 +433,7 @@ class  StepCounterListener implements SensorEventListener {
         this.subroute = 0;
         this.database = databse;
         this.location = location;
-        Log.d("Prova", "Location"+String.valueOf(this.location.toString()));
+        this.accStepCounter = 0;
         this.routeId = String.valueOf(System.currentTimeMillis());
     }
 
@@ -444,19 +443,8 @@ class  StepCounterListener implements SensorEventListener {
         this.play = true;
         this.subroute = 0;
         this.location = location;
-        Log.d("Prova", "Location"+String.valueOf(this.location.toString()));
+        this.accStepCounter = 0;
         this.routeId = String.valueOf(System.currentTimeMillis());
-        //Log.d("Prova", "ProvaLocation" + this.location.toString());
-    }
-
-    public void pauseCounter() {
-        this.step = 0;
-        Log.d("PAUSE", Integer.toString(this.step));
-
-    }
-
-    public void playCounter() {
-        this.step = 1;
     }
 
     @Override
@@ -543,12 +531,12 @@ class  StepCounterListener implements SensorEventListener {
                 accStepCounter += 1;
                 Log.d("ACC STEPS: ", String.valueOf(accStepCounter));
                 Log.d("PAUSE", Integer.toString(this.step));
-                Log.d("Prova", String.valueOf(this.subroute));
+                //Log.d("Prova", String.valueOf(this.subroute));
+                Log.d("Prova", String.valueOf(this.routeId));
                 stepCountsView.setText(String.valueOf(accStepCounter));
 
                 ContentValues databaseEntry = new ContentValues();
-              
-              
+
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_SUBROUTE, this.subroute);
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_IDROUTE, this.routeId);
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_TIMESTAMP, timePointList.get(i));
