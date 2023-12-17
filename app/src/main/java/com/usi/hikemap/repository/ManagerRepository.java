@@ -71,7 +71,8 @@ public class ManagerRepository implements IManagerRepository {
                             task.getResult().child("username").getValue(String.class), task.getResult().child("auth").getValue(String.class),
                             task.getResult().child("password").getValue(String.class), task.getResult().child("userId").getValue(String.class),
                             task.getResult().child("account provider").getValue(String.class), task.getResult().child("image").getValue(String.class),
-                            task.getResult().child("path").getValue(String.class));
+                            task.getResult().child("path").getValue(String.class), task.getResult().child("height").getValue(String.class),
+                            task.getResult().child("weight").getValue(String.class), task.getResult().child("birthdate").getValue(String.class), task.getResult().child("gendre").getValue(String.class));
 
                     Log.d(TAG, "onComplete: readUser: " + task.getResult().getValue(User.class));
                     mUserLiveData.postValue(user);
@@ -156,6 +157,7 @@ public class ManagerRepository implements IManagerRepository {
         });
         return mAuthenticationResponse;
     }
+
     @Override
     public MutableLiveData<AuthenticationResponse> deleteAccount(String userId) {
 
@@ -228,7 +230,7 @@ public class ManagerRepository implements IManagerRepository {
                     for (DataSnapshot subRouteSnapshot : routeSnapshot.getChildren()) {
                         Integer id = subRouteSnapshot.child("id").getValue(Integer.class);
                         String idRoute = subRouteSnapshot.child("idRoute").getValue(String.class);
-                        Integer subRoute = subRouteSnapshot.child("subroute").getValue(Integer.class);
+                        Integer subRoute = subRouteSnapshot.child("subRoute").getValue(Integer.class);
                         String timestamp = subRouteSnapshot.child("timestamp").getValue(String.class);
                         Double altitude = subRouteSnapshot.child("altitude").getValue(Double.class);
                         Double latitude = subRouteSnapshot.child("latitude").getValue(Double.class);

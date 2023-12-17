@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -51,6 +52,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.usi.hikemap.HikeMapOpenHelper;
 import com.usi.hikemap.R;
 import com.usi.hikemap.model.Route;
@@ -71,6 +73,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     private Polyline polyline;
     private Location lastLocation;
 
+    private String routeId;
+    private int subRoute;
 
     private FloatingActionButton fStartButton, fStopButton, fPauseButton, fResumeButton;
     FrameLayout infoContainer;
@@ -101,6 +105,16 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     private static String TAG = "GoFragment";
 
     GoViewModel mGoViewModel;
+    FirebaseUser currentUser;
+    FirebaseAuth fAuth;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mGoViewModel = new ViewModelProvider(requireActivity()).get(GoViewModel.class);
+        fAuth = FirebaseAuth.getInstance();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -108,11 +122,12 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         View rootView = inflater.inflate(R.layout.fragment_go, container, false);
         infoContainer = rootView.findViewById(R.id.info);
 
-        mGoViewModel = new ViewModelProvider(requireActivity()).get(GoViewModel.class);
+
 
         sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
 
-
+        //fAuth = FirebaseAuth.getInstance();
+        //currentUser = fAuth.getCurrentUser();
 
         // call database
         databaseOpenHelper = new HikeMapOpenHelper(this.getContext());
@@ -147,6 +162,9 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
             public void onClick(View v) {
                 Toast.makeText(getContext(), "Start stats", Toast.LENGTH_SHORT).show();
 
+                routeId = String.valueOf(System.currentTimeMillis());
+                subRoute = 0;
+
                 infoContainer.setVisibility(View.VISIBLE);
                 infoContainer.requestLayout();
                 fStartButton.setVisibility(View.GONE);
@@ -167,14 +185,14 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (accSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, km, up, down, database, lastLocation, playLayout);
+                    sensorListener = new StepCounterListener(steps, km, up, down, database, lastLocation, routeId, subRoute);
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
                     if (stepDetectorSensor != null)
                     {
-                        sensorListener = new StepCounterListener(steps, km, up, down, lastLocation, playLayout);
+                        sensorListener = new StepCounterListener(steps, km, up, down, lastLocation, routeId, subRoute);
                         sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                         Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                     } else {
@@ -194,6 +212,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 tPauseStart = System.currentTimeMillis();
                 chronometer.stop();
                 handler.removeCallbacks(runnable);
+                sensorManager.unregisterListener(sensorListener);
+                sensorListener = null;
             }
         });
 
@@ -206,6 +226,24 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 tPauseDelta += System.currentTimeMillis() - tPauseStart;
                 chronometer.start();
                 handler.postDelayed(runnable, 0);
+                subRoute++;
+
+                if (accSensor != null)
+                {
+                    sensorListener = new StepCounterListener(steps, km, up, down, database, lastLocation, routeId, subRoute);
+                    sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                    Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
+                    if (stepDetectorSensor != null)
+                    {
+                        sensorListener = new StepCounterListener(steps, km, up, down, lastLocation, routeId, subRoute);
+                        sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                        Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getContext(), R.string.step_detector_sensor_not_available, Toast.LENGTH_LONG).show();
+                    }
+                }
             }
         });
 
@@ -226,6 +264,7 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 // Step counter sensor
                 sensorManager.unregisterListener(sensorListener);
                 sensorListener = null;
+                steps.setText("0");
 
                 // 1. Get last idRoute
                 String idRoute = databaseOpenHelper.loadLastRouteID(getContext());
@@ -412,13 +451,10 @@ class  StepCounterListener implements SensorEventListener {
     TextView kms;
     TextView up;
     TextView down;
-    LinearLayout playLayout;
+
     private SQLiteDatabase database;
 
-
-    private boolean play;
     private int subroute;
-
     private String routeId;
 
 
@@ -429,36 +465,31 @@ class  StepCounterListener implements SensorEventListener {
     private Location location;
     private Location lastLocation;
 
-
-    public StepCounterListener(TextView stepCountsView, TextView kms, TextView up, TextView down, SQLiteDatabase databse, Location location, LinearLayout playLayout) {
+    public StepCounterListener(TextView stepCountsView, TextView kms, TextView up, TextView down, SQLiteDatabase databse, Location location, String routeId, int subroute) {
         this.stepCountsView = stepCountsView;
         this.kms = kms;
         this.up = up;
         this.down = down;
-        this.playLayout = playLayout;
-        this.play = true;
-        this.subroute = 0;
+        this.subroute = subroute;
         this.database = databse;
         this.location = location;
         this.lastLocation = new Location("lastLocation");
         this.lastLocation.set(location);
-        this.accStepCounter = 0;
-        this.routeId = String.valueOf(System.currentTimeMillis());
+        this.accStepCounter = Integer.parseInt(stepCountsView.getText().toString());
+        this.routeId = routeId;
     }
 
-    public StepCounterListener(TextView stepCountsView, TextView kms, TextView up, TextView down, Location location, LinearLayout playLayout) {
+    public StepCounterListener(TextView stepCountsView, TextView kms, TextView up, TextView down, Location location, String routeId, int subroute) {
         this.stepCountsView = stepCountsView;
         this.kms = kms;
         this.up = up;
         this.down = down;
-        this.playLayout = playLayout;
-        this.play = true;
-        this.subroute = 0;
+        this.subroute = subroute;
         this.location = location;
         this.lastLocation = new Location("lastLocation");
         this.lastLocation.set(location);
-        this.accStepCounter = 0;
-        this.routeId = String.valueOf(System.currentTimeMillis());
+        this.accStepCounter = Integer.parseInt(stepCountsView.getText().toString());
+        this.routeId = routeId;
     }
 
     @Override
@@ -537,16 +568,8 @@ class  StepCounterListener implements SensorEventListener {
             int forwardSlope = valuesInWindow.get(i + 1) - valuesInWindow.get(i);
             int downwardSlope = valuesInWindow.get(i) - valuesInWindow.get(i - 1);
 
-            if (forwardSlope < 0 && downwardSlope > 0 && valuesInWindow.get(i) > stepThreshold && this.playLayout.getVisibility() == View.VISIBLE) {
-                if (!this.play){
-                    this.play = true;
-                    this.subroute++;
-                }
+            if (forwardSlope < 0 && downwardSlope > 0 && valuesInWindow.get(i) > stepThreshold) {
                 accStepCounter += 1;
-                Log.d("ACC STEPS: ", String.valueOf(accStepCounter));
-                Log.d("PAUSE", Integer.toString(this.step));
-                //Log.d("Prova", String.valueOf(this.subroute));
-                Log.d("Prova", String.valueOf(this.routeId));
                 stepCountsView.setText(String.valueOf(accStepCounter));
 
                 ContentValues databaseEntry = new ContentValues();
@@ -587,8 +610,6 @@ class  StepCounterListener implements SensorEventListener {
 
                 database.insert(TABLE_NAME, null, databaseEntry);
 
-            } else if (this.playLayout.getVisibility() != View.VISIBLE && this.play) {
-                this.play = false;
             }
         }
     }

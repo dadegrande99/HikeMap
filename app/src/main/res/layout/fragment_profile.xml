@@ -22,37 +22,24 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_picture"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="109dp"
+        android:layout_height="101dp"
         android:layout_marginTop="80dp"
         app:layout_constraintStart_toStartOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:srcCompat="@drawable/icon_profile"
-        />
-        <!--
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5" -->
-
-    <!--android:text="@string/hint_nome" -->
-
-
-    <!-- android:layout_marginTop="112dp"
-    app:layout_constraintBottom_toTopOf="@+id/profile_picture"
-    app:layout_constraintHorizontal_bias="0.824"
-    -->
+        app:srcCompat="@drawable/icon_profile" />
 
     <TextView
         android:id="@+id/name_user"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:text="@string/hint_nome"
         android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.535"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/text_guideline"
         app:layout_constraintTop_toTopOf="@+id/profile_picture" />
 
@@ -69,61 +56,30 @@
         app:layout_constraintStart_toStartOf="@+id/text_guideline"
         app:layout_constraintTop_toBottomOf="@+id/name_user" />
 
-    <!-- generate a linear layout with 2 textview -->
-
-
     <LinearLayout
         android:id="@+id/linear_layout_GH"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="00dp"
+        android:gravity="left"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/linear_layout_AW">
-
-
-
-
-        <LinearLayout
-            android:id="@+id/linear_layout_gender"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-
-            android:layout_gravity="right"
-            android:orientation="horizontal">
-
-
-            <TextView
-                android:id="@+id/genderLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Gender: "
-                android:textColor="#000000"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/genderValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#000000"
-                android:textSize="18sp"/>
-
-
-        </LinearLayout>
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintStart_toStartOf="@+id/text_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/username_user">
 
 
         <LinearLayout
             android:id="@+id/linear_layout_height"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_gravity="right"
-            android:orientation="horizontal"
-            android:layout_marginStart="15dp">
+            android:layout_marginStart="0dp"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="@+id/linear_layout_GH">
 
             <TextView
                 android:id="@+id/height"
@@ -139,69 +95,19 @@
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textColor="#000000"
-                android:textSize="18sp"/>
-
-        </LinearLayout>
-
-
-
-
-    </LinearLayout>
-
-
-
-    <LinearLayout
-        android:id="@+id/linear_layout_AW"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout">
-
-
-
-
-        <LinearLayout
-            android:id="@+id/linear_layout_age"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-
-            android:layout_gravity="right"
-            android:orientation="horizontal">
-
-
-            <TextView
-                android:id="@+id/ageLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Age: "
-                android:textColor="#000000"
                 android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/ageValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#000000"
-                android:textSize="18sp"/>
-
-
         </LinearLayout>
-
 
         <LinearLayout
             android:id="@+id/linear_layout_weight"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_gravity="right"
-            android:orientation="horizontal"
-            android:layout_marginStart="15dp">
+            android:layout_marginStart="15dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout">
 
             <TextView
                 android:id="@+id/weight"
@@ -217,15 +123,12 @@
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textColor="#000000"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
         </LinearLayout>
 
 
-
-
     </LinearLayout>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -234,6 +137,7 @@
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linear_layout_GH"
         app:layout_constraintBottom_toTopOf="@+id/result_list_route">
 
         <ImageView

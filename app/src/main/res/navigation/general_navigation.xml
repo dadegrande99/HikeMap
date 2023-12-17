@@ -14,8 +14,8 @@
     <fragment
         android:id="@+id/ss"
         android:name="com.usi.hikemap.ui.fragment.ProfileFragment"
-        android:label="@string/title_search"
-        tools:layout="@layout/fragment_search" />
+        android:label="@string/title_statistics"
+        tools:layout="@layout/fragment_statistics" />
 
     <fragment
         android:id="@+id/pp"
@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_profileFragment_to_GoDetailsFragment"
             app:destination="@id/HikeDetailsFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_searchFragment"
+            app:destination="@id/ss" />
 
     </fragment>
 

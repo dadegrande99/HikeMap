@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -44,6 +45,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.usi.hikemap.R;
 import com.usi.hikemap.adapter.ProfileRecycleViewAdapter;
+import com.usi.hikemap.ui.viewmodel.GoViewModel;
 import com.usi.hikemap.utils.ParcelableRouteList;
 import com.usi.hikemap.model.Route;
 import com.usi.hikemap.model.User;
@@ -56,6 +58,8 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+
+
 /**
  * Fragment class for displaying user profile information and handling account deletion.
  */
@@ -67,13 +71,20 @@ public class ProfileFragment extends Fragment {
     GoogleSignInClient mGoogleSignInClient;
     String TAG = "ProfileFragment";
     String userId;
-    TextView mDeleteAccount, mLogout, mName, mUsername, changeSettings;
+    TextView mDeleteAccount, mLogout, mName, mUsername, changeSettings, mHeight, mWeight;
     BottomSheetDialog profile_option_show;
     CircleImageView profilePic;
-
     private RecyclerView recyclerView;
     private ProfileRecycleViewAdapter adapter;
     View root;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mProfileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+        fAuth = FirebaseAuth.getInstance();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,7 +93,6 @@ public class ProfileFragment extends Fragment {
         root = inflater.inflate(R.layout.fragment_profile, container, false);
 
         // Initialize ViewModel
-        mProfileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
         // Initialize FirebaseAuth and GoogleSignInClient
         fAuth = FirebaseAuth.getInstance();
@@ -96,36 +106,37 @@ public class ProfileFragment extends Fragment {
 
         // Initialize UI elements
         mUser = new User();
+
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mName = root.findViewById(R.id.name_user);
         mUsername = root.findViewById(R.id.username_user);
         profilePic = root.findViewById(R.id.profile_picture);
+
+        mHeight = root.findViewById(R.id.heightValue);
+        mWeight = root.findViewById(R.id.weightValue);
 
         Button viewMoreButton = root.findViewById(R.id.viewMoreButton);
 
         // Log user's UID
         Log.d(TAG, "onCreateView: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-
-        profilePic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                someActivityResultLauncher.launch(intent);
-            }
-        });
-
         if (userId != null) {
-            mProfileViewModel.readUser(userId).observe(getViewLifecycleOwner(), user -> {
-                if (user != null) {
+            Log.d("ProfileFragment", "in first if");
 
+            mProfileViewModel.readUser(userId).observe(getViewLifecycleOwner(), user -> {
+                Log.d("ProfileFragment", "in profile view model");
+                if (user != null) {
+                    Log.d("ProfileFragment", "in second if");
                     getActivity().setTitle(user.getName());
 
                     mUser = user;
                     mName.setText(mUser.getName().concat(" ").concat(mUser.getSurname()));
                     mUsername.setText(mUser.getUsername());
+
+                    mHeight.setText(String.valueOf(mUser.getHeight()));
+                    mWeight.setText(String.valueOf(mUser.getWeight()));
+
+                    Log.d("ProfileFragment", "peso: " + mUser.getWeight());
 
                     mProfileViewModel.readImage(userId).observe(getViewLifecycleOwner(), authenticationResponse-> {
                         if (authenticationResponse != null) {
@@ -134,6 +145,8 @@ public class ProfileFragment extends Fragment {
                                         .load(mUser.getPath())
                                         //.signature(new ObjectKey(String.valueOf(System.currentTimeMillis())))
                                         .into(profilePic);
+                                //UPDATE PROFILE PIC VIEW IN UPDATE FRAGMENT
+
                             }
                             else {
                                 Log.d(TAG, "onClick: Error don't update image");
@@ -141,13 +154,16 @@ public class ProfileFragment extends Fragment {
                         }
                     });
 
+                }else{
+                    Log.d(TAG, "non trova l'user");
                 }
             });
         }
 
         recyclerView = root.findViewById(R.id.result_list_route);
-
+        Log.d(TAG, "onCreateView: " + userId);
         mProfileViewModel.readRoutes(userId).observe(getViewLifecycleOwner(), route -> {
+            Log.d(TAG, "onCreateView: " + route.toString());
             if (route != null && !route.isEmpty()) {
 
                 // Sort the list of routes by date
@@ -184,11 +200,15 @@ public class ProfileFragment extends Fragment {
                         // Load all items when the button is pressed
                         //adapter.loadAllItems();
                         ParcelableRouteList parcelableRouteList = new ParcelableRouteList(distinctRoutes);
-                        AllHikesFragment allHikesFragment = AllHikesFragment.newInstance(parcelableRouteList);
+                        StatisticsFragment statisticsFragment = StatisticsFragment.newInstance(parcelableRouteList);
                         getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.frame_layout, allHikesFragment)
+                                .replace(R.id.frame_layout, statisticsFragment)
                                 .addToBackStack(null)
                                 .commit();
+
+                        MeowBottomNavigation bottomNavigation = getActivity().findViewById(R.id.bottomNavigation);
+                        bottomNavigation.show(1, true);
+
                     }
                 });
 
@@ -211,36 +231,8 @@ public class ProfileFragment extends Fragment {
 
             }
         });
-
         return root;
     }
-
-
-    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        // There are no request codes
-                        Intent data = result.getData();
-
-                        if(data.getData() != null) {
-                            Uri profileUri = data.getData();
-                            profilePic.setImageURI(profileUri);
-
-                            mProfileViewModel.writeImage(profileUri).observe(getViewLifecycleOwner(), authenticationResponse -> {
-                                if (authenticationResponse.isSuccess()) {
-                                    Log.d(TAG, "onClick: Image update");
-                                }
-                                else {
-                                    Log.d(TAG, "onClick: Error don't update image");
-                                }
-                            });
-                        }
-                    }
-                }
-            });
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
