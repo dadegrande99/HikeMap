@@ -37,6 +37,14 @@ public class ProfileViewModel extends AndroidViewModel {
         return mAuthenticationResponse;
     }
 
+
+    //PUT MAP AL POSTO DI USER
+    public MutableLiveData<AuthenticationResponse> updateProfile(Map<String, Object> data) {
+        mAuthenticationResponse = mManageRepository.updateData(data);
+        return mAuthenticationResponse;
+    }
+    //GO BACK TO UPDATE
+
     public MutableLiveData<AuthenticationResponse> writeImage(Uri profileUri) {
         mAuthenticationResponse = mManageRepository.writeImage(profileUri);
         return mAuthenticationResponse;

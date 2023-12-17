@@ -129,6 +129,7 @@ public class AuthenticationRepository implements IAuthenticationRepository{
                 if (task.isSuccessful()) {
 
                     Log.d(TAG, "onComplete: Connect for Authentication with phone");
+
                     userId = fAuth.getCurrentUser().getUid();
                     authenticationResponse.setSuccess(true);
 
@@ -176,6 +177,7 @@ public class AuthenticationRepository implements IAuthenticationRepository{
                         Log.d(TAG, "onComplete: Connect for Authentication with google");
                         FirebaseUser userGoogle = fAuth.getCurrentUser();
 
+                        //User userC = new User();
                         userId = userGoogle.getUid();
                         authenticationResponse.setSuccess(true);
 
@@ -189,6 +191,9 @@ public class AuthenticationRepository implements IAuthenticationRepository{
                         user.put("auth", account.getEmail());
                         user.put("account provider", GoogleAuthProvider.PROVIDER_ID);
                         user.put("userId", userId);
+                        user.put("", userId);
+
+
 
 
                         fReference.setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() {
