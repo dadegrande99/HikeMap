@@ -228,7 +228,7 @@ public class ManagerRepository implements IManagerRepository {
                     for (DataSnapshot subRouteSnapshot : routeSnapshot.getChildren()) {
                         Integer id = subRouteSnapshot.child("id").getValue(Integer.class);
                         String idRoute = subRouteSnapshot.child("idRoute").getValue(String.class);
-                        Integer subRoute = subRouteSnapshot.child("subroute").getValue(Integer.class);
+                        Integer subRoute = subRouteSnapshot.child("subRoute").getValue(Integer.class);
                         String timestamp = subRouteSnapshot.child("timestamp").getValue(String.class);
                         Double altitude = subRouteSnapshot.child("altitude").getValue(Double.class);
                         Double latitude = subRouteSnapshot.child("latitude").getValue(Double.class);
