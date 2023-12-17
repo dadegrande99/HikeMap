@@ -591,11 +591,11 @@ class  StepCounterListener implements SensorEventListener {
                 if (elevation > 0) {
                     double tmpUp = Double.parseDouble(this.up.getText().toString());
                     tmpUp += elevation;
-                    this.up.setText(String.valueOf(tmpUp));
+                    this.up.setText(String.valueOf(Math.round(tmpUp * 10.0)/10.0));
                 } else if (elevation < 0){
                     double tmpDown = Double.parseDouble(this.down.getText().toString());
                     tmpDown -= elevation;
-                    this.down.setText(String.valueOf(tmpDown));
+                    this.down.setText(String.valueOf(Math.round(tmpDown * 10.0)/10.0));
                 }
 
                 this.lastLocation.set(tmp);
