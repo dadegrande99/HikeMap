@@ -185,14 +185,14 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (accSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, database, lastLocation, routeId, subRoute);
+                    sensorListener = new StepCounterListener(steps, km, up, down, database, lastLocation, routeId, subRoute);
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
                     if (stepDetectorSensor != null)
                     {
-                        sensorListener = new StepCounterListener(steps, lastLocation, routeId, subRoute);
+                        sensorListener = new StepCounterListener(steps, km, up, down, lastLocation, routeId, subRoute);
                         sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                         Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                     } else {
@@ -230,14 +230,14 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
 
                 if (accSensor != null)
                 {
-                    sensorListener = new StepCounterListener(steps, database, lastLocation, routeId, subRoute);
+                    sensorListener = new StepCounterListener(steps, km, up, down, database, lastLocation, routeId, subRoute);
                     sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                     Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getContext(), R.string.acc_sensor_not_available, Toast.LENGTH_LONG).show();
                     if (stepDetectorSensor != null)
                     {
-                        sensorListener = new StepCounterListener(steps, lastLocation, routeId, subRoute);
+                        sensorListener = new StepCounterListener(steps, km, up, down, lastLocation, routeId, subRoute);
                         sensorManager.registerListener(sensorListener, stepDetectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
                         Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
                     } else {
@@ -448,6 +448,10 @@ class  StepCounterListener implements SensorEventListener {
     private int step = 1;
 
     TextView stepCountsView;
+    TextView kms;
+    TextView up;
+    TextView down;
+
     private SQLiteDatabase database;
 
     private int subroute;
@@ -459,21 +463,31 @@ class  StepCounterListener implements SensorEventListener {
     private String hour;
 
     private Location location;
+    private Location lastLocation;
 
-
-    public StepCounterListener(TextView stepCountsView, SQLiteDatabase databse, Location location, String routeId, int subroute) {
+    public StepCounterListener(TextView stepCountsView, TextView kms, TextView up, TextView down, SQLiteDatabase databse, Location location, String routeId, int subroute) {
         this.stepCountsView = stepCountsView;
+        this.kms = kms;
+        this.up = up;
+        this.down = down;
         this.subroute = subroute;
         this.database = databse;
         this.location = location;
+        this.lastLocation = new Location("lastLocation");
+        this.lastLocation.set(location);
         this.accStepCounter = Integer.parseInt(stepCountsView.getText().toString());
         this.routeId = routeId;
     }
 
-    public StepCounterListener(TextView stepCountsView, Location location, String routeId, int subroute) {
+    public StepCounterListener(TextView stepCountsView, TextView kms, TextView up, TextView down, Location location, String routeId, int subroute) {
         this.stepCountsView = stepCountsView;
+        this.kms = kms;
+        this.up = up;
+        this.down = down;
         this.subroute = subroute;
         this.location = location;
+        this.lastLocation = new Location("lastLocation");
+        this.lastLocation.set(location);
         this.accStepCounter = Integer.parseInt(stepCountsView.getText().toString());
         this.routeId = routeId;
     }
@@ -564,9 +578,31 @@ class  StepCounterListener implements SensorEventListener {
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_IDROUTE, this.routeId);
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_TIMESTAMP, timePointList.get(i));
 
-                databaseEntry.put(COLUMN_LATITUDE, this.location.getLatitude());
-                databaseEntry.put(COLUMN_LONGITUDE, this.location.getLongitude());
-                databaseEntry.put(HikeMapOpenHelper.COLUMN_ALTITUDE, location.getAltitude());
+                Location tmp = new Location("tmp");
+                tmp.set(this.location);
+
+                double distance = tmp.distanceTo(this.lastLocation);
+                distance /= 1000;
+                distance += Double.parseDouble(this.kms.getText().toString());
+                this.kms.setText(String.valueOf(Math.round(distance * 1000.0)/1000.0));
+
+
+                double elevation = tmp.getAltitude() - this.lastLocation.getAltitude();
+                if (elevation > 0) {
+                    double tmpUp = Double.parseDouble(this.up.getText().toString());
+                    tmpUp += elevation;
+                    this.up.setText(String.valueOf(tmpUp));
+                } else if (elevation < 0){
+                    double tmpDown = Double.parseDouble(this.down.getText().toString());
+                    tmpDown -= elevation;
+                    this.down.setText(String.valueOf(tmpDown));
+                }
+
+                this.lastLocation.set(tmp);
+
+                databaseEntry.put(COLUMN_LATITUDE, this.lastLocation.getLatitude());
+                databaseEntry.put(COLUMN_LONGITUDE, this.lastLocation.getLongitude());
+                databaseEntry.put(HikeMapOpenHelper.COLUMN_ALTITUDE, lastLocation.getAltitude());
 
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_DAY, this.day);
                 databaseEntry.put(HikeMapOpenHelper.COLUMN_HOUR, this.hour);
