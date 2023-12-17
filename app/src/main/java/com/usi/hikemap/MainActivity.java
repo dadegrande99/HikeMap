@@ -1,38 +1,23 @@
 package com.usi.hikemap;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.usi.hikemap.databinding.ActivityMainBinding;
 import com.usi.hikemap.ui.fragment.GoFragment;
 import com.usi.hikemap.ui.fragment.ProfileFragment;
-import com.usi.hikemap.ui.fragment.SearchFragment;
+import com.usi.hikemap.ui.fragment.StatisticsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,11 +30,14 @@ public class MainActivity extends AppCompatActivity {
     String userId;
 
     FusedLocationProviderClient fusedLocationProviderClient;
+    FirebaseAuth fAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //fAuth = FirebaseAuth.getInstance();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -60,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation = findViewById(R.id.bottomNavigation);
         bottomNavigation.show(2, true); // show go fragment first
 
-        bottomNavigation.add(new MeowBottomNavigation.Model(1, R.drawable.icon_search));
+        bottomNavigation.add(new MeowBottomNavigation.Model(1, R.drawable.chart));
         bottomNavigation.add(new MeowBottomNavigation.Model(2, R.drawable.icon_go));
         bottomNavigation.add(new MeowBottomNavigation.Model(3, R.drawable.icon_profile));
 
@@ -79,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setOnClickMenuListener(model -> {
             switch (model.getId()) {
                 case 1:
-                    replaceFragment(new SearchFragment());
+                    replaceFragment(new StatisticsFragment());
                     break;
                 case 2:
                     replaceFragment(new GoFragment());
