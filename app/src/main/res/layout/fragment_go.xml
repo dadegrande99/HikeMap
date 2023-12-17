@@ -50,9 +50,6 @@
             android:layout_gravity="left"
             android:orientation="horizontal">
 
-            <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
-             es "timing: 00:00", devono essere separate -->
-
             <TextView
                 android:id="@+id/timing"
                 android:layout_width="wrap_content"
@@ -61,8 +58,6 @@
                 android:textSize="14sp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"/>
-
-            <!-- Aggiumgi un cronometro -->
 
             <Chronometer
                 android:id="@+id/chronometer"
@@ -80,12 +75,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-
                 android:layout_gravity="right"
                 android:orientation="horizontal">
-
-                <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
-                 es "timing: 00:00", devono essere separate -->
 
                 <TextView
                     android:id="@+id/steps"
@@ -121,9 +112,6 @@
                     android:layout_gravity="left"
                     android:orientation="horizontal">
 
-                    <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
-                     es "timing: 00:00", devono essere separate -->
-
                     <TextView
                         android:id="@+id/km"
                         android:layout_width="wrap_content"
@@ -148,12 +136,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-
                     android:layout_gravity="right"
                     android:orientation="horizontal">
-
-                    <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
-                     es "timing: 00:00", devono essere separate -->
 
                     <TextView
                         android:id="@+id/kal"
@@ -177,22 +161,17 @@
                 </LinearLayout>
             </LinearLayout>
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_gravity="left"
                     android:orientation="horizontal">
-
-                    <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
-                     es "timing: 00:00", devono essere separate -->
 
                     <TextView
                         android:id="@+id/up"
@@ -222,9 +201,6 @@
                     android:layout_gravity="right"
                     android:orientation="horizontal">
 
-                    <!-- Aggiungi una text view che mi stampi "timing"  e subito alla sua destra una che posso modificare nel fragment, devono essere in alto a sinistra
-                     es "timing: 00:00", devono essere separate -->
-
                     <TextView
                         android:id="@+id/down"
                         android:layout_width="wrap_content"
@@ -246,8 +222,6 @@
 
                 </LinearLayout>
             </LinearLayout>
-
-            <!--Aggiungi spazio sopra al bottone -->
 
             <Space
                 android:layout_width="match_parent"
