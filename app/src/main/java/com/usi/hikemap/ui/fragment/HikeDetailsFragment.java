@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.usi.hikemap.R;
 import com.usi.hikemap.utils.ParcelableRouteList;
 import com.usi.hikemap.model.Route;
-import com.usi.hikemap.ui.viewmodel.GoDetailsViewModel;
+import com.usi.hikemap.ui.viewmodel.HikeDetailsViewModel;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class HikeDetailsFragment extends Fragment {
     private static final String ARG_ROUTE_LIST = "List<Object>";
     private static String TAG = "HikeDetailsFragment";
     private String userId;
-    private GoDetailsViewModel mGoDetailsViewModel;
+    private HikeDetailsViewModel mGoDetailsViewModel;
 
 
 
@@ -42,7 +42,7 @@ public class HikeDetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        mGoDetailsViewModel = new ViewModelProvider(requireActivity()).get(GoDetailsViewModel.class);
+        mGoDetailsViewModel = new ViewModelProvider(requireActivity()).get(HikeDetailsViewModel.class);
     }
 
     @Override
@@ -60,6 +60,8 @@ public class HikeDetailsFragment extends Fragment {
                 Log.d(TAG, "onCreateView: " + receivedRoutes.toString());
             }
         }
+
+
 
 
 

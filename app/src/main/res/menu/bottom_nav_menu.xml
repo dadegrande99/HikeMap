@@ -4,9 +4,9 @@
 
 
     <item
-        android:id="@+id/navigation_search"
-        android:icon="@drawable/icon_search"
-        android:title="@string/title_search"/>
+        android:id="@+id/navigation_statistics"
+        android:icon="@drawable/chart"
+        android:title="@string/title_statistics"/>
         <!--app:cnb_iconColor="@color/ocra"-->
 
 

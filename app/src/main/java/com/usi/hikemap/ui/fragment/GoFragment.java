@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -51,6 +52,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.usi.hikemap.HikeMapOpenHelper;
 import com.usi.hikemap.R;
 import com.usi.hikemap.model.Route;
@@ -103,6 +105,16 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     private static String TAG = "GoFragment";
 
     GoViewModel mGoViewModel;
+    FirebaseUser currentUser;
+    FirebaseAuth fAuth;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mGoViewModel = new ViewModelProvider(requireActivity()).get(GoViewModel.class);
+        fAuth = FirebaseAuth.getInstance();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -110,11 +122,12 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         View rootView = inflater.inflate(R.layout.fragment_go, container, false);
         infoContainer = rootView.findViewById(R.id.info);
 
-        mGoViewModel = new ViewModelProvider(requireActivity()).get(GoViewModel.class);
+
 
         sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
 
-
+        //fAuth = FirebaseAuth.getInstance();
+        //currentUser = fAuth.getCurrentUser();
 
         // call database
         databaseOpenHelper = new HikeMapOpenHelper(this.getContext());
