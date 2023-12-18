@@ -27,4 +27,6 @@ public interface IManagerRepository {
 
     MutableLiveData<List<Route>> readRoutes(String userId);
 
+    MutableLiveData<List<Route>> readRoute(String routeId);
+
 }

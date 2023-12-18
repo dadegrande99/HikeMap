@@ -66,6 +66,7 @@ public class StatisticsFragment extends Fragment {
 
                 // Sort the list of routes by date
                 Collections.sort(route, (r1, r2) -> r2.getTimestamp().compareTo(r1.getTimestamp()));
+                Log.d("ProvaHikeDetails", "onCreateView RouteId: " + route.toString());
 
                 // Create a new list that contains only the first occurrence of each idRoute
                 List<Route> distinctRoutes = new ArrayList<>();
@@ -85,6 +86,7 @@ public class StatisticsFragment extends Fragment {
                         addedRoutes.add(r.getIdRoute());
                     }
                 }
+                Log.d("ProvaHikeDetails", "onCreateView Distinct: " + distinctRoutes.toString());
 
                 // Do something with the receivedRoutes
                 adapter = new StatisticsRecycleViewAdapter(requireContext(), distinctRoutes, new StatisticsRecycleViewAdapter.OnItemClickListener() {
@@ -92,9 +94,10 @@ public class StatisticsFragment extends Fragment {
                     public void onItemClick(Route route) {
 
                         Log.d(TAG, "onItemClick: Enter");
+                        Log.d("ProvaHikeDetails", "onCreateView Single: " + route.getIdRoute().toString());
 
-                        ParcelableRouteList parcelableRouteList = new ParcelableRouteList(singleRoute);
-                        HikeDetailsFragment hikeDetails = HikeDetailsFragment.newInstance(parcelableRouteList);
+                        //ParcelableRouteList parcelableRouteList = new ParcelableRouteList(singleRoute);
+                        HikeDetailsFragment hikeDetails = HikeDetailsFragment.newInstance(route.getIdRoute().toString());
 
                         getActivity().getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.frame_layout, hikeDetails)
