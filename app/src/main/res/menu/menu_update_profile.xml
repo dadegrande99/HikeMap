@@ -4,13 +4,13 @@
 
     <item
         android:id="@+id/cross"
-        android:icon="@drawable/baseline_clear_24"
+        android:icon="@drawable/outline_undo_24"
         android:title="Item"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/spunta"
-        android:icon="@drawable/ic_baseline_check_24"
+        android:icon="@drawable/baseline_check_24"
         android:title="Item"
         app:showAsAction="ifRoom"/>
 

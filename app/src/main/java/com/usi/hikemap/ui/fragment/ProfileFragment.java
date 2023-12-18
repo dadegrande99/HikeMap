@@ -126,10 +126,25 @@ public class ProfileFragment extends Fragment {
                     mName.setText(mUser.getName().concat(" ").concat(mUser.getSurname()));
                     mUsername.setText(mUser.getUsername());
 
-                    mHeight.setText(String.valueOf(mUser.getHeight()));
-                    mWeight.setText(String.valueOf(mUser.getWeight()));
 
-                    Log.d("ProfileFragment", "peso: " + mUser.getWeight());
+                    if (String.valueOf(mUser.getHeight()).equals(null) | String.valueOf(mUser.getHeight()).equals("") | String.valueOf(mUser.getHeight()).equals(" ")| String.valueOf(mUser.getHeight()).isEmpty()) {
+                        mHeight.setText("-");
+                        Log.d("ProfileFragment", "check hight null " );
+                    }else{
+                        mHeight.setText(String.valueOf(mUser.getHeight() + " cm"));
+                    }
+
+
+                    if (String.valueOf(mUser.getWeight()).equals(null) | String.valueOf(mUser.getWeight()).equals("") | String.valueOf(mUser.getWeight()).equals(" ")| String.valueOf(mUser.getWeight()).isEmpty()) {
+                        mWeight.setText("-");
+                        Log.d("ProfileFragment", "check hight null " );
+                    }else{
+                        mWeight.setText(String.valueOf(mUser.getWeight() + " kg"));
+                    }
+
+
+
+
 
                     mProfileViewModel.readImage(userId).observe(getViewLifecycleOwner(), authenticationResponse-> {
                         if (authenticationResponse != null) {
