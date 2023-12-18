@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         //fAuth = FirebaseAuth.getInstance();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
