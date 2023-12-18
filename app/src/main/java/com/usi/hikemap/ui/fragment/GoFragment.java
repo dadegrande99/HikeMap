@@ -39,6 +39,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -108,6 +110,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
     FirebaseUser currentUser;
     FirebaseAuth fAuth;
 
+    MeowBottomNavigation bottomNavigation;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,11 +160,15 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
         fResumeButton = rootView.findViewById(R.id.resumeButton);
         fStopButton = rootView.findViewById(R.id.stopButton);
 
+        bottomNavigation = getActivity().findViewById(R.id.bottomNavigation);
+
 
         fStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "Start stats", Toast.LENGTH_SHORT).show();
+
+                bottomNavigation.setVisibility(View.GONE);
 
                 routeId = String.valueOf(System.currentTimeMillis());
                 subRoute = 0;
@@ -256,6 +264,8 @@ public class GoFragment extends Fragment implements OnMapReadyCallback, Location
                 pauseLayout.setVisibility(View.GONE);
                 infoContainer.setVisibility(View.GONE);
                 fStartButton.setVisibility(View.VISIBLE);
+
+                bottomNavigation.setVisibility(View.VISIBLE);
 
                 tPauseDelta = 0L;
                 chronometer.stop();
