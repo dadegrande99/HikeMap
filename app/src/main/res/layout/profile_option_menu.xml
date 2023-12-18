@@ -54,9 +54,9 @@
 
         <ImageView
             android:id="@+id/changeSettingsImageView"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/baseline_settings_24"
+            android:layout_width="25dp"
+            android:layout_height="23dp"
+            android:src="@drawable/baseline_person_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/changeSettingsTextView"
             app:layout_constraintHorizontal_bias="0.666"

@@ -85,7 +85,7 @@
                 android:id="@+id/height"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Height: "
+                android:text="Height "
                 android:textColor="#000000"
                 android:textSize="18sp" />
 
@@ -113,7 +113,7 @@
                 android:id="@+id/weight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Weight: "
+                android:text="Weight "
                 android:textColor="#000000"
                 android:textSize="18sp" />
 

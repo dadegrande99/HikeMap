@@ -172,12 +172,15 @@ public class UpdateProfileFragment extends Fragment {
                     getActivity().setTitle(user.getName());
                     User = user;
                     Height.setText(String.valueOf(User.getHeight()));
-                    if (String.valueOf(User.getHeight()) == null){
+                    if (String.valueOf(User.getHeight()).equals(null)){
                         Height.setText("Height");
                     }
                     Weight.setText(String.valueOf(User.getWeight()));
                     birthdate.setText(String.valueOf(User.getBirthdate()));
+
+                    //if(String.valueOf(User.getSex()).equals(null)){
                     Sex.setText(String.valueOf(User.getSex()));
+
 
                     ProfileViewModel.readImage(userId).observe(getViewLifecycleOwner(), authenticationResponse-> {
                         if (authenticationResponse != null) {
@@ -186,7 +189,7 @@ public class UpdateProfileFragment extends Fragment {
                                         .load(User.getPath())
                                         //.signature(new ObjectKey(String.valueOf(System.currentTimeMillis())))
                                         .into(profilePic);
-                                Log.d("Update Profile", "onClick: Updated image");
+                                //Log.d("Update Profile", "onClick: Updated image");
                             }
                             else {
                                 Log.d("Update Profile", "onClick: Error don't update image");

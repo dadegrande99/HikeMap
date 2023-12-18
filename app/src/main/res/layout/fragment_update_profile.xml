@@ -122,6 +122,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:entries="@array/gender_options"
+                    android:autofillHints="select"
                     app:layout_constraintBottom_toBottomOf="@+id/sex"
                     app:layout_constraintEnd_toEndOf="@+id/sex"
                     app:layout_constraintTop_toTopOf="@+id/sex" />
