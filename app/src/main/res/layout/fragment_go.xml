@@ -177,7 +177,7 @@
                         android:id="@+id/up"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Uphill km: "
+                        android:text="Uphill m: "
                         android:textSize="14sp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="20dp"/>
@@ -205,7 +205,7 @@
                         android:id="@+id/down"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Downhill km: "
+                        android:text="Downhill m: "
                         android:textSize="14sp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="20dp"/>

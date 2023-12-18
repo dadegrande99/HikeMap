@@ -24,10 +24,11 @@
         android:id="@+id/profile_picture"
         android:layout_width="109dp"
         android:layout_height="101dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="80dp"
         app:layout_constraintStart_toStartOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/icon_profile" />
+        android:src="@drawable/default_user" />
 
     <TextView
         android:id="@+id/name_user"

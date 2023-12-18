@@ -2,9 +2,7 @@ package com.usi.hikemap.ui.fragment;
 
 import static com.usi.hikemap.utils.Constants.DEFAULT_WEB_CLIENT_ID;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,10 +15,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuHost;
@@ -45,7 +39,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.usi.hikemap.R;
 import com.usi.hikemap.adapter.ProfileRecycleViewAdapter;
-import com.usi.hikemap.ui.viewmodel.GoViewModel;
 import com.usi.hikemap.utils.ParcelableRouteList;
 import com.usi.hikemap.model.Route;
 import com.usi.hikemap.model.User;
