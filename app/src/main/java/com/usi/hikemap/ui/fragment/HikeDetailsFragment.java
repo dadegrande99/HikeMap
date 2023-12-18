@@ -1,16 +1,27 @@
 package com.usi.hikemap.ui.fragment;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuHost;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.ActionBar;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
@@ -61,6 +72,19 @@ public class HikeDetailsFragment extends Fragment implements OnMapReadyCallback 
         super.onCreate(savedInstanceState);
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mGoDetailsViewModel = new ViewModelProvider(requireActivity()).get(HikeDetailsViewModel.class);
+
+
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.arrow_left);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Perform the redirection to the main fragment here
+                getActivity().onBackPressed();
+            }
+        });
+
     }
 
     @Override
@@ -70,6 +94,7 @@ public class HikeDetailsFragment extends Fragment implements OnMapReadyCallback 
 
         bottomNavigation = getActivity().findViewById(R.id.bottomNavigation);
         bottomNavigation.setVisibility(View.GONE);
+
 
         kms = root.findViewById(R.id.km_value_hikeDetails);
         down = root.findViewById(R.id.down_value_hikeDetails);
@@ -133,18 +158,18 @@ public class HikeDetailsFragment extends Fragment implements OnMapReadyCallback 
 
                     double distance = currentLocation.distanceTo(nextLocation) / 1000;
                     distance += Double.parseDouble(this.kms.getText().toString());
-                    this.kms.setText(String.valueOf(Math.round(distance * 1000.0)/1000.0));
+                    this.kms.setText(String.valueOf(Math.round(distance * 1000.0) / 1000.0));
 
 
                     double elevation = nextLocation.getAltitude() - currentLocation.getAltitude();
                     if (elevation > 0) {
                         double tmpUp = Double.parseDouble(this.up.getText().toString());
                         tmpUp += elevation;
-                        this.up.setText(String.valueOf(Math.round(tmpUp * 10.0)/10.0));
-                    } else if (elevation < 0){
+                        this.up.setText(String.valueOf(Math.round(tmpUp * 10.0) / 10.0));
+                    } else if (elevation < 0) {
                         double tmpDown = Double.parseDouble(this.down.getText().toString());
                         tmpDown -= elevation;
-                        this.down.setText(String.valueOf(Math.round(tmpDown * 10.0)/10.0));
+                        this.down.setText(String.valueOf(Math.round(tmpDown * 10.0) / 10.0));
                     }
 
                     int steps = receivedRoutes.size();

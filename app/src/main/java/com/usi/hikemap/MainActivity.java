@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         bottomNavigation = findViewById(R.id.bottomNavigation);
         bottomNavigation.show(2, true); // show go fragment first
 
