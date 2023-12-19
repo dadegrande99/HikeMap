@@ -1,5 +1,7 @@
 package com.usi.hikemap.ui.fragment;
 
+import static com.usi.hikemap.utils.Constants.DEFAULT_WEB_CLIENT_ID;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -43,6 +45,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -68,34 +73,34 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UpdateProfileFragment extends Fragment {
 
-    //TODO2: ADD 2 buttons, save
 
     MeowBottomNavigation bottomNavigation;
-
-    TextView Height, Weight, Sex;
+    TextView Height, Weight, Sex, birthdate, mLogout, mDeleteAccount;
     String userId;
-
-    TextView birthdate;
-
     Button date_button;
-
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-
     private Calendar myCalendar;
-
     private Spinner genderSpinner;
-
+    GoogleSignInClient mGoogleSignInClient;
     CircleImageView profilePic;
-
     Date dataDiNascita = null;
-
     private ProfileViewModel ProfileViewModel;
     public User User;
+    private ProfileViewModel mProfileViewModel;
+    private FirebaseAuth fAuth;
+
+    private String TAG = "UpdateProfileFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+
+        mProfileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+        fAuth = FirebaseAuth.getInstance();
+
+        setHasOptionsMenu(true);
 
         Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
@@ -104,10 +109,8 @@ public class UpdateProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Perform the redirection to the main fragment here
-                //getActivity().onBackPressed();
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.frame_layout, new ProfileFragment())
-                        .commit();
+                getActivity().onBackPressed();
+                bottomNavigation.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -117,14 +120,27 @@ public class UpdateProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_update_profile, container, false);
+
         bottomNavigation = getActivity().findViewById(R.id.bottomNavigation);
         bottomNavigation.setVisibility(View.GONE);
+
         ProfileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(DEFAULT_WEB_CLIENT_ID)
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), googleSignInOptions);
+
+        mLogout = root.findViewById(R.id.logout_textView);
+        mDeleteAccount = root.findViewById(R.id.delete_textView);
 
         Height = root.findViewById(R.id.editTextHeight);
         Weight = root.findViewById(R.id.editTextWeight);
         profilePic = root.findViewById(R.id.profile_pic);
+
 
         birthdate = root.findViewById(R.id.birthdate);
         myCalendar = Calendar.getInstance();
@@ -135,6 +151,7 @@ public class UpdateProfileFragment extends Fragment {
 
         Sex = root.findViewById(R.id.sex);
         genderSpinner = root.findViewById(R.id.genderSpinner);
+
 
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +172,7 @@ public class UpdateProfileFragment extends Fragment {
 
         });
 
-        //
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 getContext(), R.array.gender_options, android.R.layout.simple_spinner_item);
 
@@ -166,7 +183,8 @@ public class UpdateProfileFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 String selectedGender = parentView.getItemAtPosition(position).toString();
-                Sex.setText("Result: " + selectedGender);
+                Log.d(TAG, selectedGender.toString());
+                Sex.setText(selectedGender);
             }
 
             @Override
@@ -174,7 +192,7 @@ public class UpdateProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Sex not provided", Toast.LENGTH_SHORT);
             }
         });
-        //
+
 
         getActivity().setTitle("Update Profile");
 
@@ -213,6 +231,82 @@ public class UpdateProfileFragment extends Fragment {
                 }
             });
         }
+
+        mLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mProfileViewModel.readUser(userId).observe(getViewLifecycleOwner(), user -> {
+
+                    if (user != null) {
+                        User = user;
+                        if (User.getProvider().equals(GoogleAuthProvider.PROVIDER_ID)) {
+                            Log.d(TAG, "onOptionsItemSelected: " + GoogleAuthProvider.PROVIDER_ID);
+                            mGoogleSignInClient.signOut();
+                        } else if (User.getProvider().equals(FirebaseAuthProvider.PROVIDER_ID)) {
+                            Log.d(TAG, "onOptionsItemSelected: " + FirebaseAuthProvider.PROVIDER_ID);
+                            FirebaseAuth.getInstance().signOut();
+                        } else if (User.getProvider().equals(PhoneAuthProvider.PROVIDER_ID)) {
+                            Log.d(TAG, "onOptionsItemSelected: " + PhoneAuthProvider.PROVIDER_ID);
+                            FirebaseAuth.getInstance().signOut();
+                        } else {
+                            Log.d(TAG, "onComplete: Fatal");
+                            return;
+                        }
+                    }
+                });
+
+                startActivity(new Intent(getActivity(), AuthenticationActivity.class));
+            }
+
+        });
+        mDeleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Observe user data changes using ViewModel
+                mProfileViewModel.readUser(userId).observe(getViewLifecycleOwner(), user -> {
+                    if (user != null) {
+                        User = user;
+                        if (User.getProvider().equals(GoogleAuthProvider.PROVIDER_ID)) {
+                            // If the user is signed in with Google, revoke access
+                            mGoogleSignInClient.revokeAccess().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    // Delete the account in the database
+                                    mProfileViewModel.deleteAccount(userId).observe(getViewLifecycleOwner(), authenticationResponse -> {
+                                        if (authenticationResponse != null) {
+                                            if (authenticationResponse.isSuccess()) {
+                                                Log.d(TAG, "Delete account");
+                                            } else {
+                                                Log.d(TAG, "Error: Account not deleted");
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        } else if (User.getProvider().equals(FirebaseAuthProvider.PROVIDER_ID) || User.getProvider().equals(PhoneAuthProvider.PROVIDER_ID)) {
+                            // If the user is signed in with Firebase or Phone, delete the account
+                            fAuth.getCurrentUser().delete();
+                            // Delete the account in the database
+                            mProfileViewModel.deleteAccount(userId).observe(getViewLifecycleOwner(), authenticationResponse -> {
+                                if (authenticationResponse != null) {
+                                    if (authenticationResponse.isSuccess()) {
+                                        Log.d(TAG, "Delete account");
+                                    } else {
+                                        Log.d(TAG, "Error: Account not deleted");
+                                    }
+                                }
+                            });
+                        } else {
+                            Log.d(TAG, "onComplete: Fatal");
+                        }
+                    }
+                });
+
+                // Navigate to the authentication activity after account deletion
+                startActivity(new Intent(getActivity(), AuthenticationActivity.class));
+            }
+        });
+
 
         return root;
     }
@@ -258,103 +352,84 @@ public class UpdateProfileFragment extends Fragment {
                 }
             });
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_update_profile, menu);
+    }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.comeback){
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame_layout, new ProfileFragment())
+                    .commit();
 
-        MenuHost menuHost = requireActivity();
+            User.setHeight(Height.getText().toString());
+            User.setWeight(Weight.getText().toString());
 
-        menuHost.addMenuProvider(new MenuProvider() {
-            @Override
-            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.menu_update_profile, menu);
+            User.setSex(Sex.getText().toString());
+            User.setBirthdate(birthdate.getText().toString());
+
+            Log.d(TAG, "Prova height: " + User.getHeight());
+
+            String bd = birthdate.getText().toString();
+
+
+            try {
+                dataDiNascita = sdf.parse(bd);
+            } catch (ParseException e) {
+                Toast.makeText(getContext(), "Birthdate not provided", Toast.LENGTH_SHORT);
             }
 
-            @Override
-            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+            Log.d("Update Profile", "after try catch");
+            int age = 0;
+            if (dataDiNascita != null) {
+                Calendar calNascita = Calendar.getInstance();
+                calNascita.setTime(dataDiNascita);
 
-                if (menuItem.getItemId() == R.id.spunta) {
+                Calendar calCorrente = Calendar.getInstance();
 
-                    //set new values to user
-                    User.setHeight(Height.getText().toString());
-                    User.setWeight(Weight.getText().toString());
-                    User.setSex(Sex.getText().toString());
-                    User.setBirthdate(birthdate.getText().toString());
+                age = calCorrente.get(Calendar.YEAR) - calNascita.get(Calendar.YEAR);
 
-                    String bd = birthdate.getText().toString();
+                // Verifica se il compleanno è già passato quest'anno
+                if (calCorrente.get(Calendar.DAY_OF_YEAR) < calNascita.get(Calendar.DAY_OF_YEAR)) {
+                    age--;
+                }
 
+                // 'anni' contiene ora l'età dell'utente
 
-                    try {
-                        dataDiNascita = sdf.parse(bd);
-                    } catch (ParseException e) {
-                        Toast.makeText(getContext(), "Birthdate not provided", Toast.LENGTH_SHORT);
-                    }
+            } else {
+                Log.e("Errore", "Impossibile convertire la data di nascita.");
+            }
 
-                    Log.d("Update Profile", "after try catch");
-                    int age = 0;
-                    if (dataDiNascita != null) {
-                        Calendar calNascita = Calendar.getInstance();
-                        calNascita.setTime(dataDiNascita);
+            User.setSex(Sex.getText().toString());
 
-                        Calendar calCorrente = Calendar.getInstance();
+            Map<String, Object> data = new HashMap<>();
+            data.put("height", User.getHeight());
+            data.put("weight", User.getWeight());
+            data.put("birthdate", User.getBirthdate());
+            data.put("age", age);
+            data.put("gendre", User.getSex());
+            //Map<String, Object> dataWeight = new HashMap<>();
 
-                        age = calCorrente.get(Calendar.YEAR) - calNascita.get(Calendar.YEAR);
-
-                        // Verifica se il compleanno è già passato quest'anno
-                        if (calCorrente.get(Calendar.DAY_OF_YEAR) < calNascita.get(Calendar.DAY_OF_YEAR)) {
-                            age--;
-                        }
-
-                        // 'anni' contiene ora l'età dell'utente
-
+            //update image
+            //update birthdate
+            ProfileViewModel.updateProfile(data).observe(getViewLifecycleOwner(), authenticationResponse -> {
+                if (authenticationResponse != null) {
+                    if (authenticationResponse.isSuccess()) {
+                        Toast.makeText(getActivity(), "Saved", Toast.LENGTH_SHORT).show();
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.frame_layout, new ProfileFragment())
+                                .commit();
+                        bottomNavigation.setVisibility(View.VISIBLE);
                     } else {
-                        Log.e("Errore", "Impossibile convertire la data di nascita.");
+                        //Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
                     }
-
-                    User.setSex(Sex.getText().toString());
-
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("height", User.getHeight());
-                    data.put("weight", User.getWeight());
-                    data.put("birthdate", User.getBirthdate());
-                    data.put("age", age);
-                    data.put("gendre", User.getSex());
-                    //Map<String, Object> dataWeight = new HashMap<>();
-
-                    //update image
-                    //update birthdate
-                    ProfileViewModel.updateProfile(data).observe(getViewLifecycleOwner(), authenticationResponse -> {
-                        if (authenticationResponse != null) {
-                            if (authenticationResponse.isSuccess()) {
-                                Toast.makeText(getActivity(), "Saved", Toast.LENGTH_SHORT).show();
-                                getActivity().getSupportFragmentManager().beginTransaction()
-                                        .replace(R.id.frame_layout, new ProfileFragment())
-                                        .commit();
-                                bottomNavigation.setVisibility(View.VISIBLE);
-                            } else {
-                                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-                    Toast.makeText(getActivity(), "Saved", Toast.LENGTH_SHORT).show();
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.frame_layout, new ProfileFragment())
-                            .commit();
-                    bottomNavigation.setVisibility(View.VISIBLE);
                 }
+            });
 
-                if (menuItem.getItemId() == R.id.cross) {
-                    Toast.makeText(getActivity(), "Abort change", Toast.LENGTH_SHORT).show();
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.frame_layout, new ProfileFragment())
-                            .commit();
-                    bottomNavigation.setVisibility(View.VISIBLE);
-                }
-
-                return true;
-            }
-        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -82,6 +82,7 @@ public class HikeDetailsFragment extends Fragment implements OnMapReadyCallback 
             public void onClick(View v) {
                 // Perform the redirection to the main fragment here
                 getActivity().onBackPressed();
+                bottomNavigation.setVisibility(View.VISIBLE);
             }
         });
 
@@ -139,6 +140,8 @@ public class HikeDetailsFragment extends Fragment implements OnMapReadyCallback 
             ParcelableRouteList parcelableRouteList = args.getParcelable(ARG_ROUTE_LIST);
             if (parcelableRouteList != null) {
                 List<Route> receivedRoutes = parcelableRouteList.getRouteList();
+
+                Log.d(TAG, "onMapReady: " + receivedRoutes.toString());
 
                 // Loop through the receivedRoutes
                 for (int i = 0; i < receivedRoutes.size() - 1; i++) {

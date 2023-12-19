@@ -191,7 +191,7 @@ public class AuthenticationRepository implements IAuthenticationRepository{
                         user.put("auth", account.getEmail());
                         user.put("account provider", GoogleAuthProvider.PROVIDER_ID);
                         user.put("userId", userId);
-                        user.put("", userId);
+                        //user.put("", userId);
 
 
 
@@ -199,7 +199,7 @@ public class AuthenticationRepository implements IAuthenticationRepository{
                         fReference.setValue(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {
-                                Log.d(TAG, "onSuccess: User profile is created for " + userId);
+                                //Log.d(TAG, "onSuccess: User profile is created for " + userId);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
