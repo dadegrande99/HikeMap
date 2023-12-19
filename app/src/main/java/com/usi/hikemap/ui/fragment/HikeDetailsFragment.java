@@ -38,7 +38,11 @@ import com.usi.hikemap.utils.ParcelableRouteList;
 import com.usi.hikemap.model.Route;
 import com.usi.hikemap.ui.viewmodel.HikeDetailsViewModel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class HikeDetailsFragment extends Fragment {
 
@@ -129,6 +133,48 @@ public class HikeDetailsFragment extends Fragment {
                     // Do something with the receivedRoutes
                     Log.d("ProvaHikeDetails", "onCreateView RouteId: " + route.toString());
 
+                    int subroute = route.get(0).getSubRoute();
+                    int subrouteCount = 0;
+                    SimpleDateFormat sdf  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS", Locale.getDefault());
+                    Date date1 = null;
+                    try {
+                        date1 = sdf.parse(route.get(0).getTimestamp());
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    int totaltime = 0;
+                    Route previousRoute = route.get(0);
+
+                    for (int i = 1; i < route.size() - 1; i++){
+                        Route currentRoute = route.get(i);
+
+
+                        if (subroute != currentRoute.getSubRoute()){
+                            subroute = currentRoute.getSubRoute();
+                            subrouteCount++;
+                            Date date2 = null;
+                            try {
+                                date2 = sdf.parse(previousRoute.getTimestamp());
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                            totaltime += date2.getTime() - date1.getTime();
+                            date1 = date2;
+                        }
+                        previousRoute = currentRoute;
+                    }
+                    Date date2 = null;
+                    try {
+                        date2 = sdf.parse(previousRoute.getTimestamp());
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    totaltime += date2.getTime() - date1.getTime();
+
+                    int seconds = (int) (totaltime / 1000) % 60 ;
+                    int minutes = (int) ((totaltime / (1000*60)));
+                    this.time.setText(String.format("%02d:%02d", minutes, seconds));
+
                     // Loop through the receivedRoutes
                     for (int i = 0; i < route.size() - 1; i++) {
 
@@ -168,7 +214,6 @@ public class HikeDetailsFragment extends Fragment {
 
 
                     }
-
 
 
 
