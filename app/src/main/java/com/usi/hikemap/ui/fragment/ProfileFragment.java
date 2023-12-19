@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,9 +46,13 @@ import com.usi.hikemap.model.User;
 import com.usi.hikemap.ui.authentication.AuthenticationActivity;
 import com.usi.hikemap.ui.viewmodel.ProfileViewModel;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -64,7 +69,7 @@ public class ProfileFragment extends Fragment {
     GoogleSignInClient mGoogleSignInClient;
     String TAG = "ProfileFragment";
     String userId;
-    TextView mDeleteAccount, mLogout, mName, mUsername, changeSettings, mHeight, mWeight;
+    TextView mDeleteAccount, mLogout, mName, mUsername, updateProfile, mHeight, mWeight;
     BottomSheetDialog profile_option_show;
     CircleImageView profilePic;
     private RecyclerView recyclerView;
@@ -76,6 +81,9 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mProfileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
         fAuth = FirebaseAuth.getInstance();
+
+        setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -89,13 +97,6 @@ public class ProfileFragment extends Fragment {
 
         // Initialize FirebaseAuth and GoogleSignInClient
         fAuth = FirebaseAuth.getInstance();
-
-        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(DEFAULT_WEB_CLIENT_ID)
-                .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), googleSignInOptions);
 
         // Initialize UI elements
         mUser = new User();
@@ -127,26 +128,23 @@ public class ProfileFragment extends Fragment {
                     mUsername.setText(mUser.getUsername());
 
 
-                    if (String.valueOf(mUser.getHeight()).equals(null) | String.valueOf(mUser.getHeight()).equals("") | String.valueOf(mUser.getHeight()).equals(" ")| String.valueOf(mUser.getHeight()).isEmpty()) {
+                    if (mUser.getHeight() == null || String.valueOf(mUser.getHeight()).equals("") || String.valueOf(mUser.getHeight()).equals(" ") || String.valueOf(mUser.getHeight()).isEmpty()) {
                         mHeight.setText("-");
-                        Log.d("ProfileFragment", "check hight null " );
-                    }else{
+                        Log.d("ProfileFragment", "check hight null ");
+                    } else {
                         mHeight.setText(String.valueOf(mUser.getHeight() + " cm"));
                     }
 
 
-                    if (String.valueOf(mUser.getWeight()).equals(null) | String.valueOf(mUser.getWeight()).equals("") | String.valueOf(mUser.getWeight()).equals(" ")| String.valueOf(mUser.getWeight()).isEmpty()) {
+                    if (mUser.getWeight() == null || String.valueOf(mUser.getWeight()).equals("") || String.valueOf(mUser.getWeight()).equals(" ") || String.valueOf(mUser.getWeight()).isEmpty()) {
                         mWeight.setText("-");
-                        Log.d("ProfileFragment", "check hight null " );
-                    }else{
+                        Log.d("ProfileFragment", "check hight null ");
+                    } else {
                         mWeight.setText(String.valueOf(mUser.getWeight() + " kg"));
                     }
 
 
-
-
-
-                    mProfileViewModel.readImage(userId).observe(getViewLifecycleOwner(), authenticationResponse-> {
+                    mProfileViewModel.readImage(userId).observe(getViewLifecycleOwner(), authenticationResponse -> {
                         if (authenticationResponse != null) {
                             if (authenticationResponse.isSuccess() && mUser.getPath() != null) {
                                 Glide.with(getContext())
@@ -155,14 +153,13 @@ public class ProfileFragment extends Fragment {
                                         .into(profilePic);
                                 //UPDATE PROFILE PIC VIEW IN UPDATE FRAGMENT
 
-                            }
-                            else {
+                            } else {
                                 Log.d(TAG, "onClick: Error don't update image");
                             }
                         }
                     });
 
-                }else{
+                } else {
                     Log.d(TAG, "non trova l'user");
                 }
             });
@@ -243,124 +240,19 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.profile_menu, menu);
+    }
 
-        MenuHost menuHost = requireActivity();
-        menuHost.addMenuProvider(new MenuProvider() {
-            @Override
-            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                // Add menu items here
-                menuInflater.inflate(R.menu.profile_menu, menu);
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.profile_button){
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame_layout, new UpdateProfileFragment())
+                    .commit();
 
-                profile_option_show = new BottomSheetDialog(getActivity(), R.style.BottomSheetDialogTheme);
-
-                View bottomSheetView = LayoutInflater.from(getActivity())
-                        .inflate(R.layout.profile_option_menu, (LinearLayout) getView().findViewById(R.id.profile_option));
-
-                profile_option_show.setContentView(bottomSheetView);
-                changeSettings = profile_option_show.findViewById(R.id.changeSettingsTextView);
-                mLogout = profile_option_show.findViewById(R.id.logout_textView);
-
-                mDeleteAccount = profile_option_show.findViewById(R.id.delete_account_textView);
-            }
-
-            @Override
-            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                if (menuItem.getItemId() == R.id.profile_button) {
-
-                    profile_option_show.show();
-
-                    // Do something for Menu Item 1
-                    mDeleteAccount.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Observe user data changes using ViewModel
-                            mProfileViewModel.readUser(userId).observe(getViewLifecycleOwner(), user -> {
-                                if (user != null) {
-                                    mUser = user;
-                                    if (mUser.getProvider().equals(GoogleAuthProvider.PROVIDER_ID)) {
-                                        // If the user is signed in with Google, revoke access
-                                        mGoogleSignInClient.revokeAccess().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                // Delete the account in the database
-                                                mProfileViewModel.deleteAccount(userId).observe(getViewLifecycleOwner(), authenticationResponse -> {
-                                                    if (authenticationResponse != null) {
-                                                        if (authenticationResponse.isSuccess()) {
-                                                            Log.d(TAG, "Delete account");
-                                                        } else {
-                                                            Log.d(TAG, "Error: Account not deleted");
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    } else if (mUser.getProvider().equals(FirebaseAuthProvider.PROVIDER_ID) || mUser.getProvider().equals(PhoneAuthProvider.PROVIDER_ID)) {
-                                        // If the user is signed in with Firebase or Phone, delete the account
-                                        fAuth.getCurrentUser().delete();
-                                        // Delete the account in the database
-                                        mProfileViewModel.deleteAccount(userId).observe(getViewLifecycleOwner(), authenticationResponse -> {
-                                            if (authenticationResponse != null) {
-                                                if (authenticationResponse.isSuccess()) {
-                                                    Log.d(TAG, "Delete account");
-                                                } else {
-                                                    Log.d(TAG, "Error: Account not deleted");
-                                                }
-                                            }
-                                        });
-                                    } else {
-                                        Log.d(TAG, "onComplete: Fatal");
-                                    }
-                                }
-                            });
-
-                            // Navigate to the authentication activity after account deletion
-                            startActivity(new Intent(getActivity(), AuthenticationActivity.class));
-                        }
-                    });
-
-
-                    mLogout.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            mProfileViewModel.readUser(userId).observe(getViewLifecycleOwner(), user -> {
-
-                                if (user != null) {
-                                    mUser = user;
-                                    if (mUser.getProvider().equals(GoogleAuthProvider.PROVIDER_ID)) {
-                                        Log.d(TAG, "onOptionsItemSelected: " + GoogleAuthProvider.PROVIDER_ID);
-                                        mGoogleSignInClient.signOut();
-                                    } else if (mUser.getProvider().equals(FirebaseAuthProvider.PROVIDER_ID)) {
-                                        Log.d(TAG, "onOptionsItemSelected: " + FirebaseAuthProvider.PROVIDER_ID);
-                                        FirebaseAuth.getInstance().signOut();
-                                    } else if (mUser.getProvider().equals(PhoneAuthProvider.PROVIDER_ID)) {
-                                        Log.d(TAG, "onOptionsItemSelected: " + PhoneAuthProvider.PROVIDER_ID);
-                                        FirebaseAuth.getInstance().signOut();
-                                    } else {
-                                        Log.d(TAG, "onComplete: Fatal");
-                                        return;
-                                    }
-                                }
-                            });
-
-                            startActivity(new Intent(getActivity(), AuthenticationActivity.class));
-                        }
-
-                    });
-
-                    changeSettings.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Navigate to the update profile fragment
-                            getActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.frame_layout, new UpdateProfileFragment())
-                                    .commit();
-                            profile_option_show.hide();
-                        }
-                    });
-                }
-                return true;
-            }
-        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

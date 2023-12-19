@@ -79,6 +79,10 @@
     <string name="timestamp">Timestamp</string>
     <string name="godetailsfragment">GoDetailsFragment</string>
     <string name="HikeDetailsFragment">HikeDetailsFragment</string>
+    <string name="height">Height</string>
+    <string name="weight">Weight</string>
+    <string name="sex">Sex</string>
+    <string name="birthdate">Birthdate</string>
 
 
 </resources>

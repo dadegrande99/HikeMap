@@ -106,6 +106,7 @@ public class HikeDetailsFragment extends Fragment {
             public void onClick(View v) {
                 // Perform the redirection to the main fragment here
                 getActivity().onBackPressed();
+                bottomNavigation.setVisibility(View.VISIBLE);
             }
         });
 
@@ -247,14 +248,9 @@ public class HikeDetailsFragment extends Fragment {
                     anyChartView.setBackgroundColor("#00000000");
                     anyChartView.setChart(cartesian);
 
-
-
                 }
             });
-
-
         }
-
         return root;
     }
 
