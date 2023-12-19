@@ -265,4 +265,55 @@ public class ManagerRepository implements IManagerRepository {
         return mRouteLiveDataL;
     }
 
+    @Override
+    public MutableLiveData<List<Route>> readRoute(String routeId) {
+        fReference = fDatabase.getReference();
+        userId = fAuth.getCurrentUser().getUid();
+
+        // Assuming that "routes" is a child node under the user's ID
+        Log.d("ProvaHikeDetails", "userId: " + userId);
+        DatabaseReference routesReference = fReference.child(USER_COLLECTION).child(userId).child("routes").child(routeId);
+
+        routesReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Route> routes = new ArrayList<>();
+
+                for (DataSnapshot subRouteSnapshot : dataSnapshot.getChildren()) {
+                    Integer id = subRouteSnapshot.child("id").getValue(Integer.class);
+                    String idRoute = subRouteSnapshot.child("idRoute").getValue(String.class);
+                    Integer subRoute = subRouteSnapshot.child("subRoute").getValue(Integer.class);
+                    String timestamp = subRouteSnapshot.child("timestamp").getValue(String.class);
+                    Double altitude = subRouteSnapshot.child("altitude").getValue(Double.class);
+                    Double latitude = subRouteSnapshot.child("latitude").getValue(Double.class);
+                    Double longitude = subRouteSnapshot.child("longitude").getValue(Double.class);
+
+                    // Check for null values before invoking methods
+                    if (id != null && idRoute != null && subRoute != null && timestamp != null
+                            && altitude != null && latitude != null && longitude != null) {
+
+                        Route route = new Route(id, idRoute, subRoute, timestamp, altitude, latitude, longitude);
+                        routes.add(route);
+                        Log.d(TAG, "onDataChange: Route added: " + route.toString());
+                    } else {
+                        // Handle the case when any value is null
+                        Log.d(TAG, "One or more values are null");
+                    }
+                }
+
+                Log.d(TAG, "onDataChange: readRoutes: " + routes);
+                // Post the list of routes to the LiveData
+                mRouteLiveDataL.postValue(routes);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "Error getting data", databaseError.toException());
+                mRouteLiveDataL.postValue(null);
+            }
+        });
+
+        return mRouteLiveDataL;
+    }
+
 }

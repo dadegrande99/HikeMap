@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.graphics.Color;
 import android.location.Location;
@@ -24,6 +25,16 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.anychart.AnyChart;
+import com.anychart.AnyChartView;
+import com.anychart.chart.common.dataentry.DataEntry;
+import com.anychart.chart.common.dataentry.ValueDataEntry;
+import com.anychart.charts.Cartesian;
+import com.anychart.core.cartesian.series.Column;
+import com.anychart.enums.Anchor;
+import com.anychart.enums.HoverMode;
+import com.anychart.enums.Position;
+import com.anychart.enums.TooltipPositionMode;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,45 +49,58 @@ import com.usi.hikemap.utils.ParcelableRouteList;
 import com.usi.hikemap.model.Route;
 import com.usi.hikemap.ui.viewmodel.HikeDetailsViewModel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
-public class HikeDetailsFragment extends Fragment implements OnMapReadyCallback {
+public class HikeDetailsFragment extends Fragment {
 
     private static final String ARG_ROUTE_LIST = "List<Object>";
     private static String TAG = "HikeDetailsFragment";
     private String userId;
-    private HikeDetailsViewModel mGoDetailsViewModel;
+    private String routeId;
+    private HikeDetailsViewModel mHikeDetailsViewModel;
     MeowBottomNavigation bottomNavigation;
+    AnyChartView anyChartView;
 
-    private GoogleMap mMap;
-    private PolylineOptions polylineOptions;
-    private Polyline polyline;
-
-    TextView kms, up, down, time, calories, steps;
+    TextView kms, up, down, time, calories, steps, speed, intervals;
 
 
     public HikeDetailsFragment() {
         // Required empty public constructor
     }
 
-    public static HikeDetailsFragment newInstance(ParcelableRouteList parcelableRouteList) {
+    public static HikeDetailsFragment newInstance(String routeId) {
         HikeDetailsFragment fragment = new HikeDetailsFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_ROUTE_LIST, parcelableRouteList);
+        //args.putParcelable(ARG_ROUTE_LIST, parcelableRouteList);
+        args.putString("routeId", routeId);
+        //this.routeId = routeId;
+        Log.d("ProvaHikeDetails", "Args: " + args.toString());
         fragment.setArguments(args);
+        Log.d("ProvaHikeDetails", "onCreateView4: ");
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        mGoDetailsViewModel = new ViewModelProvider(requireActivity()).get(HikeDetailsViewModel.class);
+        Log.d("ProvaHikeDetails", "onCreateView1: ");
+        mHikeDetailsViewModel = new ViewModelProvider(requireActivity()).get(HikeDetailsViewModel.class);
 
-
+        Log.d("ProvaHikeDetails", "onCreateView2: ");
         Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.arrow_left);
+        Log.d("ProvaHikeDetails", "onCreateView3: ");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,13 +112,20 @@ public class HikeDetailsFragment extends Fragment implements OnMapReadyCallback 
 
     }
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_hike_details, container, false);
 
         bottomNavigation = getActivity().findViewById(R.id.bottomNavigation);
         bottomNavigation.setVisibility(View.GONE);
+
+        // Create column chart
+        anyChartView = root.findViewById(R.id.stepByMinuteBarChart);
+
+
 
 
         kms = root.findViewById(R.id.km_value_hikeDetails);
@@ -103,6 +134,8 @@ public class HikeDetailsFragment extends Fragment implements OnMapReadyCallback 
         time = root.findViewById(R.id.chronometer_hikeDetails);
         calories = root.findViewById(R.id.kal_value_hikeDetails);
         steps = root.findViewById(R.id.steps_value_hikeDetails);
+        speed = root.findViewById(R.id.speedValue);
+        intervals = root.findViewById(R.id.intervalsValue);
 
         steps.setText("0");
         kms.setText("0");
@@ -110,87 +143,160 @@ public class HikeDetailsFragment extends Fragment implements OnMapReadyCallback 
         calories.setText("0");
         down.setText("0");
         up.setText("0");
+        speed.setText("0");
+        intervals.setText("0");
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapHike);
-        if (mapFragment == null) {
-            mapFragment = SupportMapFragment.newInstance();
-            getChildFragmentManager().beginTransaction().replace(R.id.mapHike, mapFragment).commit();
+
+        Bundle args = getArguments();
+
+        Log.d("ProvaHikeDetails", "Args2: " + args.toString());
+        if (args != null) {
+            routeId = args.getString("routeId");
+            Log.d("ProvaHikeDetails", "onMapReady: " + routeId);
+            // recupera i dati della route dal db remoto
+            mHikeDetailsViewModel.readRoute(routeId).observe(getViewLifecycleOwner(), route -> {
+                //Log.d(TAG, "onCreateView: " + route.toString());
+                if (route != null) {
+                    // Do something with the receivedRoutes
+                    Log.d("ProvaHikeDetails", "onCreateView RouteId: " + route.toString());
+
+                    Map<Integer, Integer> subStep = new TreeMap<>();
+
+                    int subroute = route.get(0).getSubRoute();
+                    int subrouteCount = 0;
+                    int step = 1;
+                    double distance = 0.0;
+                    double uphill = 0.0;
+                    double downhill = 0.0;
+                    SimpleDateFormat sdf  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS", Locale.getDefault());
+                    Date date1 = null;
+                    try {
+                        date1 = sdf.parse(route.get(0).getTimestamp());
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    int totaltime = 0;
+                    Route previousRoute = route.get(0);
+
+                    for (int i = 1; i < route.size() - 1; i++){
+                        Route currentRoute = route.get(i);
+
+
+                        if (subroute != currentRoute.getSubRoute()){
+                            subStep.put(subroute, step);
+                            step = 1;
+                            subroute = currentRoute.getSubRoute();
+                            subrouteCount++;
+                            Date date2 = null;
+                            try {
+                                date2 = sdf.parse(previousRoute.getTimestamp());
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                            totaltime += date2.getTime() - date1.getTime();
+                            date1 = date2;
+                        }else{
+                            step++;
+                            Location currentLocation = new Location("currentLocation");
+                            currentLocation.setLatitude(currentRoute.getLatitude());
+                            currentLocation.setLongitude(currentRoute.getLongitude());
+                            currentLocation.setAltitude(currentRoute.getAltitude());
+
+                            Location previousLocation = new Location("previousLocation");
+                            previousLocation.setLatitude(previousRoute.getLatitude());
+                            previousLocation.setLongitude(previousRoute.getLongitude());
+                            previousLocation.setAltitude(previousRoute.getAltitude());
+
+                            distance += previousLocation.distanceTo(currentLocation);
+
+                            if (currentRoute.getAltitude() > previousRoute.getAltitude()){
+                                uphill += currentRoute.getAltitude() - previousRoute.getAltitude();
+                            } else if (currentRoute.getAltitude() < previousRoute.getAltitude()) {
+                                downhill += previousRoute.getAltitude() - currentRoute.getAltitude();
+                            }
+                        }
+                        previousRoute = currentRoute;
+                    }
+                    subStep.put(subroute, step);
+                    Date date2 = null;
+                    try {
+                        date2 = sdf.parse(previousRoute.getTimestamp());
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    totaltime += date2.getTime() - date1.getTime();
+
+                    int seconds = (int) (totaltime / 1000) % 60 ;
+                    int minutes = (int) ((totaltime / (1000*60)));
+
+                    this.time.setText(String.format("%02d:%02d", minutes, seconds));
+                    this.intervals.setText(String.valueOf(subrouteCount));
+                    this.kms.setText(String.valueOf(Math.round(distance) / 1000.0));
+                    this.speed.setText(String.valueOf(Math.round(((distance) / (totaltime/(1000))) * 10.0*3.6) / 10.0));
+                    this.up.setText(String.valueOf(Math.round(uphill * 10.0) / 10.0));
+                    this.down.setText(String.valueOf(Math.round(downhill * 10.0) / 10.0));
+                    this.steps.setText(String.valueOf(route.size()));
+
+                    // calories computation
+                    this.calories.setText(String.valueOf(Math.round(50.0 * (distance/1000) * 10.0) / 10.0));
+
+                    // Create column chart
+                    Log.d("ProvaHikeDetails", "stepsByMinutes: " + subStep.toString());
+                    Cartesian cartesian = stepsByMinutes(subStep);
+
+                    anyChartView.setProgressBar(root.findViewById(R.id.loadingBar));
+                    anyChartView.setBackgroundColor("#00000000");
+                    anyChartView.setChart(cartesian);
+
+                }
+            });
         }
-
-
-        mapFragment.getMapAsync(this);
-
         return root;
     }
 
 
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
+    public Cartesian stepsByMinutes(Map<Integer, Integer> graph_map){
 
-        mMap.getUiSettings().setAllGesturesEnabled(false);
+        //***** Create column chart using AnyChart library *********/
+        Cartesian cartesian = AnyChart.column();
 
-        // Initialize PolylineOptions
-        polylineOptions = new PolylineOptions();
-        polylineOptions.color(Color.RED);
-
-        // Get the receivedRoutes from the arguments
-        Bundle args = getArguments();
-        if (args != null) {
-            ParcelableRouteList parcelableRouteList = args.getParcelable(ARG_ROUTE_LIST);
-            if (parcelableRouteList != null) {
-                List<Route> receivedRoutes = parcelableRouteList.getRouteList();
-
-                Log.d(TAG, "onMapReady: " + receivedRoutes.toString());
-
-                // Loop through the receivedRoutes
-                for (int i = 0; i < receivedRoutes.size() - 1; i++) {
-
-                    Route currentRoute = receivedRoutes.get(i);
-                    Route nextRoute = receivedRoutes.get(i + 1);
-
-                    Location currentLocation = new Location("currentLocation");
-                    currentLocation.setLatitude(currentRoute.getLatitude());
-                    currentLocation.setLongitude(currentRoute.getLongitude());
-                    currentLocation.setAltitude(currentRoute.getAltitude());
-
-                    Location nextLocation = new Location("nextLocation");
-                    nextLocation.setLatitude(nextRoute.getLatitude());
-                    nextLocation.setLongitude(nextRoute.getLongitude());
-                    nextLocation.setAltitude(nextRoute.getAltitude());
-
-                    double distance = currentLocation.distanceTo(nextLocation) / 1000;
-                    distance += Double.parseDouble(this.kms.getText().toString());
-                    this.kms.setText(String.valueOf(Math.round(distance * 1000.0) / 1000.0));
+        List<DataEntry> data = new ArrayList<>();
 
 
-                    double elevation = nextLocation.getAltitude() - currentLocation.getAltitude();
-                    if (elevation > 0) {
-                        double tmpUp = Double.parseDouble(this.up.getText().toString());
-                        tmpUp += elevation;
-                        this.up.setText(String.valueOf(Math.round(tmpUp * 10.0) / 10.0));
-                    } else if (elevation < 0) {
-                        double tmpDown = Double.parseDouble(this.down.getText().toString());
-                        tmpDown -= elevation;
-                        this.down.setText(String.valueOf(Math.round(tmpDown * 10.0) / 10.0));
-                    }
+        for (Map.Entry<Integer,Integer> entry : graph_map.entrySet())
+            data.add(new ValueDataEntry(entry.getKey(), entry.getValue()));
 
-                    int steps = receivedRoutes.size();
-                    this.steps.setText(String.valueOf(steps));
+        Log.d("ProvaHikeDetails", "stepsByMinutes: " + data.toString());
 
-                    // Add a new point to the PolylineOptions
-                    polylineOptions.add(new LatLng(receivedRoutes.get(i).getLongitude(), receivedRoutes.get(i).getLatitude()));
-                }
-            }
-        }
+        Column column = cartesian.column(data);
 
-        // Add the PolylineOptions to the GoogleMap
-        polyline = mMap.addPolyline(polylineOptions);
+        //***** Modify the UI of the chart *********/
+        column.fill("#006a67");
+        column.stroke("#006a67");
 
-        // Move the camera to the first point of the PolylineOptions
-        if (polylineOptions.getPoints().size() > 0) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(polylineOptions.getPoints().get(0), 18));
-        }
+
+        column.tooltip()
+                .titleFormat("At hour: {%X}")
+                .format("{%Value} Steps")
+                .anchor(Anchor.RIGHT_BOTTOM);
+
+        column.tooltip()
+                .position(Position.RIGHT_TOP)
+                .offsetX(0d)
+                .offsetY(5);
+
+        // Modifying properties of cartesian
+        cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
+        cartesian.interactivity().hoverMode(HoverMode.BY_X);
+        cartesian.yScale().minimum(0);
+
+
+        cartesian.yAxis(0).title("Number of steps");
+        cartesian.xAxis(0).title("subroute");
+        cartesian.background().fill("#00000000");
+        cartesian.animation(true);
+
+        return cartesian;
     }
 
 }

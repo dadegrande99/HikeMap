@@ -223,7 +223,7 @@ public class ProfileFragment extends Fragment {
                         Log.d(TAG, "onItemClick: Enter");
 
                         ParcelableRouteList parcelableRouteList = new ParcelableRouteList(singleRoute);
-                        HikeDetailsFragment hikeDetails = HikeDetailsFragment.newInstance(parcelableRouteList);
+                        HikeDetailsFragment hikeDetails = HikeDetailsFragment.newInstance(route.getIdRoute().toString());
 
                         getActivity().getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.frame_layout, hikeDetails)
