@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.graphics.Color;
 import android.location.Location;
@@ -24,6 +25,16 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.anychart.AnyChart;
+import com.anychart.AnyChartView;
+import com.anychart.chart.common.dataentry.DataEntry;
+import com.anychart.chart.common.dataentry.ValueDataEntry;
+import com.anychart.charts.Cartesian;
+import com.anychart.core.cartesian.series.Column;
+import com.anychart.enums.Anchor;
+import com.anychart.enums.HoverMode;
+import com.anychart.enums.Position;
+import com.anychart.enums.TooltipPositionMode;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,9 +51,12 @@ import com.usi.hikemap.ui.viewmodel.HikeDetailsViewModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class HikeDetailsFragment extends Fragment {
 
@@ -52,6 +66,7 @@ public class HikeDetailsFragment extends Fragment {
     private String routeId;
     private HikeDetailsViewModel mHikeDetailsViewModel;
     MeowBottomNavigation bottomNavigation;
+    AnyChartView anyChartView;
 
     TextView kms, up, down, time, calories, steps, speed, intervals;
 
@@ -96,6 +111,7 @@ public class HikeDetailsFragment extends Fragment {
 
     }
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -104,6 +120,11 @@ public class HikeDetailsFragment extends Fragment {
 
         bottomNavigation = getActivity().findViewById(R.id.bottomNavigation);
         bottomNavigation.setVisibility(View.GONE);
+
+        // Create column chart
+        anyChartView = root.findViewById(R.id.stepByMinuteBarChart);
+
+
 
 
         kms = root.findViewById(R.id.km_value_hikeDetails);
@@ -138,8 +159,11 @@ public class HikeDetailsFragment extends Fragment {
                     // Do something with the receivedRoutes
                     Log.d("ProvaHikeDetails", "onCreateView RouteId: " + route.toString());
 
+                    Map<Integer, Integer> subStep = new TreeMap<>();
+
                     int subroute = route.get(0).getSubRoute();
                     int subrouteCount = 0;
+                    int step = 1;
                     double distance = 0.0;
                     double uphill = 0.0;
                     double downhill = 0.0;
@@ -158,6 +182,8 @@ public class HikeDetailsFragment extends Fragment {
 
 
                         if (subroute != currentRoute.getSubRoute()){
+                            subStep.put(subroute, step);
+                            step = 1;
                             subroute = currentRoute.getSubRoute();
                             subrouteCount++;
                             Date date2 = null;
@@ -169,6 +195,7 @@ public class HikeDetailsFragment extends Fragment {
                             totaltime += date2.getTime() - date1.getTime();
                             date1 = date2;
                         }else{
+                            step++;
                             Location currentLocation = new Location("currentLocation");
                             currentLocation.setLatitude(currentRoute.getLatitude());
                             currentLocation.setLongitude(currentRoute.getLongitude());
@@ -189,6 +216,7 @@ public class HikeDetailsFragment extends Fragment {
                         }
                         previousRoute = currentRoute;
                     }
+                    subStep.put(subroute, step);
                     Date date2 = null;
                     try {
                         date2 = sdf.parse(previousRoute.getTimestamp());
@@ -211,6 +239,14 @@ public class HikeDetailsFragment extends Fragment {
                     // calories computation
                     this.calories.setText(String.valueOf(Math.round(50.0 * (distance/1000) * 10.0) / 10.0));
 
+                    // Create column chart
+                    Log.d("ProvaHikeDetails", "stepsByMinutes: " + subStep.toString());
+                    Cartesian cartesian = stepsByMinutes(subStep);
+
+                    anyChartView.setProgressBar(root.findViewById(R.id.loadingBar));
+                    anyChartView.setBackgroundColor("#00000000");
+                    anyChartView.setChart(cartesian);
+
 
 
                 }
@@ -222,5 +258,49 @@ public class HikeDetailsFragment extends Fragment {
         return root;
     }
 
+
+    public Cartesian stepsByMinutes(Map<Integer, Integer> graph_map){
+
+        //***** Create column chart using AnyChart library *********/
+        Cartesian cartesian = AnyChart.column();
+
+        List<DataEntry> data = new ArrayList<>();
+
+
+        for (Map.Entry<Integer,Integer> entry : graph_map.entrySet())
+            data.add(new ValueDataEntry(entry.getKey(), entry.getValue()));
+
+        Log.d("ProvaHikeDetails", "stepsByMinutes: " + data.toString());
+
+        Column column = cartesian.column(data);
+
+        //***** Modify the UI of the chart *********/
+        column.fill("#006a67");
+        column.stroke("#006a67");
+
+
+        column.tooltip()
+                .titleFormat("At hour: {%X}")
+                .format("{%Value} Steps")
+                .anchor(Anchor.RIGHT_BOTTOM);
+
+        column.tooltip()
+                .position(Position.RIGHT_TOP)
+                .offsetX(0d)
+                .offsetY(5);
+
+        // Modifying properties of cartesian
+        cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
+        cartesian.interactivity().hoverMode(HoverMode.BY_X);
+        cartesian.yScale().minimum(0);
+
+
+        cartesian.yAxis(0).title("Number of steps");
+        cartesian.xAxis(0).title("subroute");
+        cartesian.background().fill("#00000000");
+        cartesian.animation(true);
+
+        return cartesian;
+    }
 
 }
