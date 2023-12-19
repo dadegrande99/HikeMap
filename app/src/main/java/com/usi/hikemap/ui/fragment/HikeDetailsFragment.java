@@ -53,7 +53,7 @@ public class HikeDetailsFragment extends Fragment {
     private HikeDetailsViewModel mHikeDetailsViewModel;
     MeowBottomNavigation bottomNavigation;
 
-    TextView kms, up, down, time, calories, steps;
+    TextView kms, up, down, time, calories, steps, speed, intervals;
 
 
     public HikeDetailsFragment() {
@@ -112,6 +112,8 @@ public class HikeDetailsFragment extends Fragment {
         time = root.findViewById(R.id.chronometer_hikeDetails);
         calories = root.findViewById(R.id.kal_value_hikeDetails);
         steps = root.findViewById(R.id.steps_value_hikeDetails);
+        speed = root.findViewById(R.id.speedValue);
+        intervals = root.findViewById(R.id.intervalsValue);
 
         steps.setText("0");
         kms.setText("0");
@@ -119,6 +121,9 @@ public class HikeDetailsFragment extends Fragment {
         calories.setText("0");
         down.setText("0");
         up.setText("0");
+        speed.setText("0");
+        intervals.setText("0");
+
 
         Bundle args = getArguments();
 
@@ -135,6 +140,9 @@ public class HikeDetailsFragment extends Fragment {
 
                     int subroute = route.get(0).getSubRoute();
                     int subrouteCount = 0;
+                    double distance = 0.0;
+                    double uphill = 0.0;
+                    double downhill = 0.0;
                     SimpleDateFormat sdf  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS", Locale.getDefault());
                     Date date1 = null;
                     try {
@@ -160,6 +168,24 @@ public class HikeDetailsFragment extends Fragment {
                             }
                             totaltime += date2.getTime() - date1.getTime();
                             date1 = date2;
+                        }else{
+                            Location currentLocation = new Location("currentLocation");
+                            currentLocation.setLatitude(currentRoute.getLatitude());
+                            currentLocation.setLongitude(currentRoute.getLongitude());
+                            currentLocation.setAltitude(currentRoute.getAltitude());
+
+                            Location previousLocation = new Location("previousLocation");
+                            previousLocation.setLatitude(previousRoute.getLatitude());
+                            previousLocation.setLongitude(previousRoute.getLongitude());
+                            previousLocation.setAltitude(previousRoute.getAltitude());
+
+                            distance += previousLocation.distanceTo(currentLocation);
+
+                            if (currentRoute.getAltitude() > previousRoute.getAltitude()){
+                                uphill += currentRoute.getAltitude() - previousRoute.getAltitude();
+                            } else if (currentRoute.getAltitude() < previousRoute.getAltitude()) {
+                                downhill += previousRoute.getAltitude() - currentRoute.getAltitude();
+                            }
                         }
                         previousRoute = currentRoute;
                     }
@@ -173,47 +199,17 @@ public class HikeDetailsFragment extends Fragment {
 
                     int seconds = (int) (totaltime / 1000) % 60 ;
                     int minutes = (int) ((totaltime / (1000*60)));
+
                     this.time.setText(String.format("%02d:%02d", minutes, seconds));
+                    this.intervals.setText(String.valueOf(subrouteCount));
+                    this.kms.setText(String.valueOf(Math.round(distance) / 1000.0));
+                    this.speed.setText(String.valueOf(Math.round(((distance) / (totaltime/(1000))) * 10.0*3.6) / 10.0));
+                    this.up.setText(String.valueOf(Math.round(uphill * 10.0) / 10.0));
+                    this.down.setText(String.valueOf(Math.round(downhill * 10.0) / 10.0));
+                    this.steps.setText(String.valueOf(route.size()));
 
-                    // Loop through the receivedRoutes
-                    for (int i = 0; i < route.size() - 1; i++) {
-
-                        Route currentRoute = route.get(i);
-                        Route nextRoute = route.get(i + 1);
-
-                        Location currentLocation = new Location("currentLocation");
-                        currentLocation.setLatitude(currentRoute.getLatitude());
-                        currentLocation.setLongitude(currentRoute.getLongitude());
-                        currentLocation.setAltitude(currentRoute.getAltitude());
-
-                        Location nextLocation = new Location("nextLocation");
-                        nextLocation.setLatitude(nextRoute.getLatitude());
-                        nextLocation.setLongitude(nextRoute.getLongitude());
-                        nextLocation.setAltitude(nextRoute.getAltitude());
-
-                        double distance = currentLocation.distanceTo(nextLocation) / 1000;
-                        distance += Double.parseDouble(this.kms.getText().toString());
-                        this.kms.setText(String.valueOf(Math.round(distance * 1000.0) / 1000.0));
-
-
-                        double elevation = nextLocation.getAltitude() - currentLocation.getAltitude();
-                        if (elevation > 0) {
-                            double tmpUp = Double.parseDouble(this.up.getText().toString());
-                            tmpUp += elevation;
-                            this.up.setText(String.valueOf(Math.round(tmpUp * 10.0) / 10.0));
-                        } else if (elevation < 0) {
-                            double tmpDown = Double.parseDouble(this.down.getText().toString());
-                            tmpDown -= elevation;
-                            this.down.setText(String.valueOf(Math.round(tmpDown * 10.0) / 10.0));
-                        }
-
-                        int steps = route.size();
-                        this.steps.setText(String.valueOf(steps));
-
-                        // timing
-
-
-                    }
+                    // calories computation
+                    this.calories.setText(String.valueOf(Math.round(50.0 * (distance/1000) * 10.0) / 10.0));
 
 
 
