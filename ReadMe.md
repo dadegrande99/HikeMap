@@ -48,10 +48,10 @@ To manually install the Hiking App on your smartphone, you will need:
 
 ## Contributors
 
-- [Martino Andrian](mailto:martino.andrian@usi.ch)
-- [Davide Grandesso](mailto:davide.grandesso@usi.ch)
-- [Andrea Messa](mailto:andrea.messa@usi.ch)
+- [Martino Andrian](https://github.com/Martino-Andrian)
+- [Davide Grandesso](https://github.com/dadegrande99/)
+- [Andrea Messa](https://github.com/MagicAndrew5)
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](https://choosealicense.com/licenses/mit/) - see the [LICENSE](LICENSE) file for details.
